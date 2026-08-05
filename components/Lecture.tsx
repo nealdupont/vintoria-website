@@ -68,7 +68,12 @@ const accords: Record<string, { ordre: string[]; mots: Record<string, string> }>
   },
 };
 
-export function Lecture() {
+export function Lecture({
+  onRobe,
+}: {
+  /** Remonte l'identifiant du vin retenu : la salle s'accorde à sa robe. */
+  onRobe?: (vinId: string | null) => void;
+}) {
   const reduce = useReducedMotion();
   const [platId, setPlatId] = useState<string | null>(null);
   const [lit, setLit] = useState(false);
@@ -93,6 +98,12 @@ export function Lecture() {
     }
     setTimeout(() => setLit(true), 420);
   }
+
+  // La robe est portée par le vin retenu, et seulement une fois la lecture faite.
+  const vinRetenu = lit && platId ? accords[platId].ordre[0] : null;
+  useEffect(() => {
+    onRobe?.(vinRetenu);
+  }, [vinRetenu, onRobe]);
 
   const accord = platId ? accords[platId] : null;
   const rang = accord
@@ -137,7 +148,7 @@ export function Lecture() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.22 }}
-                className={lit ? "text-tungstene" : "text-cendre"}
+                className={lit ? "robe-teinte" : "text-cendre"}
               >
                 {platId === null
                   ? "en attente"
@@ -172,7 +183,7 @@ export function Lecture() {
                         aria-hidden
                         animate={{ opacity: premier ? 1 : 0 }}
                         transition={{ duration: 0.4 }}
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-tungstene"
+                        className="robe-pastille h-1.5 w-1.5 shrink-0 rounded-full"
                       />
                       <span
                         className={`voix truncate transition-colors duration-500 ${

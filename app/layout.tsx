@@ -1,27 +1,31 @@
 import type { Metadata } from "next";
-import { Fraunces, Schibsted_Grotesk, Geist_Mono } from "next/font/google";
+import { Spectral, Archivo } from "next/font/google";
 import "./globals.css";
 import { Chrome } from "@/components/Chrome";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+/**
+ * Deux voix, une règle : la MARQUE parle en sérif, l'INTERFACE en grotesque.
+ *
+ * Spectral (Production Type) — sérif taillé, lisible de 12 à 100 px. C'est la
+ * voix de Vintoria : le titre, la citation, les mots du sommelier.
+ * Archivo (Omnibus-Type) — grotesque neutre et précise. C'est la voix de
+ * l'outil : labels, métadonnées, navigation, boutons.
+ *
+ * Aucun monospace : il annonce la technologie, alors que nous la voulons
+ * invisible — et c'est la signature la plus datable de la décennie.
+ */
+const spectral = Spectral({
+  variable: "--font-voix-src",
   subsets: ["latin"],
   weight: ["300", "400", "500"],
   style: ["normal", "italic"],
   display: "swap",
 });
 
-const schibsted = Schibsted_Grotesk({
-  variable: "--font-schibsted",
+const archivo = Archivo({
+  variable: "--font-structure-src",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const mono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -46,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${fraunces.variable} ${schibsted.variable} ${mono.variable} antialiased`}
+      className={`${spectral.variable} ${archivo.variable} antialiased`}
     >
       <body className="filmgrain min-h-screen bg-encre text-os">
         <a

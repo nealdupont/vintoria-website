@@ -1,25 +1,32 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { Line } from "@/components/Line";
 import { Lecture } from "@/components/Lecture";
+import { robeDe, variablesRobe } from "@/lib/robes";
 
 /**
  * ACTE I — L’ACCORD.
  * Objection levée : « C’est quoi, concrètement ? »
  * La démonstration est le héros : message clair à gauche, geste vivant à droite.
+ *
+ * L’acte porte la robe du vin retenu : la salle s’accorde au verre.
  */
 export function Accord() {
+  const [vinRetenu, setVinRetenu] = useState<string | null>(null);
+  const onRobe = useCallback((id: string | null) => setVinRetenu(id), []);
+  const robe = robeDe(vinRetenu);
+
   return (
-    <section className="px relative min-h-[100svh] overflow-hidden pb-24 pt-32 lg:pt-36">
-      {/* la lampe de salle */}
+    <section
+      className="px relative min-h-[100svh] overflow-hidden pb-24 pt-32 lg:pt-36"
+      style={variablesRobe(robe)}
+    >
+      {/* la lampe de salle — elle prend la robe du verre */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-[-10%] top-[-15%] h-[70vh] w-[70vh] rounded-full opacity-70"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(232,200,140,0.13), rgba(110,16,35,0.09) 42%, transparent 70%)",
-        }}
+        className="robe-halo pointer-events-none absolute right-[-10%] top-[-15%] h-[70vh] w-[70vh] rounded-full opacity-40"
       />
 
       <div className="relative z-10 mx-auto grid max-w-[1500px] items-center gap-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-20">
@@ -84,7 +91,7 @@ export function Accord() {
           className="relative"
         >
           <div className="rounded-2xl border border-[color:var(--color-filet)] bg-encre-2/70 p-6 backdrop-blur-sm sm:p-8">
-            <Lecture />
+            <Lecture onRobe={onRobe} />
           </div>
         </motion.div>
       </div>

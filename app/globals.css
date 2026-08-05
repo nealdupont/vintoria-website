@@ -29,9 +29,9 @@
   --color-filet-fort: rgba(236, 229, 216, 0.24);
 
   /* --- Voix ---------------------------------------------------- */
-  --font-voix: var(--font-fraunces);
-  --font-structure: var(--font-schibsted);
-  --font-data: var(--font-geist-mono);
+  /* La marque parle en sérif. L'interface parle en grotesque. */
+  --font-voix: var(--font-voix-src); /* Spectral — Vintoria parle */
+  --font-structure: var(--font-structure-src); /* Archivo — l'outil affiche */
 
   --ease-film: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -39,6 +39,34 @@
 :root {
   --background: var(--color-encre);
   --foreground: var(--color-os);
+
+  /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
+  --robe-profond: #4a3a22;
+  --robe-lumiere: #e8c88c;
+}
+
+/*
+  La robe se pose en 1,2 s : assez lent pour être perçu comme une
+  respiration, jamais comme un changement de thème. Appliqué UNIQUEMENT
+  aux éléments qui portent la robe — jamais en cascade, pour ne pas
+  alourdir les états de survol.
+*/
+.robe-teinte {
+  color: var(--robe-lumiere);
+  transition: color 1200ms var(--ease-film);
+}
+.robe-pastille {
+  background-color: var(--robe-lumiere);
+  transition: background-color 1200ms var(--ease-film);
+}
+.robe-halo {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--robe-profond) 55%, transparent),
+    color-mix(in srgb, var(--robe-profond) 18%, transparent) 42%,
+    transparent 70%
+  );
+  transition: background 1200ms var(--ease-film);
 }
 
 html {
@@ -67,8 +95,17 @@ body {
 }
 
 /* ============================================================
-   Échelle typographique — 7 degrés, pas un de plus.
-   Chaque saut est une intention, jamais un ajustement.
+   HIÉRARCHIE — 7 degrés, pas un de plus.
+   Chaque degré a une fonction. Aucun n'existe pour « faire joli ».
+
+   .t-display   Sérif · l'affirmation qui ouvre un acte. Une par écran.
+   .t-titre     Sérif · le titre d'acte. Il annonce l'objection levée.
+   .t-citation  Sérif · la voix humaine — conviction, fondateur.
+   .t-tete      Sérif · l'entrée d'une liste. Nomme, ne développe pas.
+   .t-chapeau   Grotesque · le paragraphe d'entrée. Explique en une fois.
+   .t-corps     Grotesque · le texte courant. Le plus lu du site.
+   .t-meta      Grotesque · la mention de service (délai, réserve).
+   .eyebrow     Grotesque capitales · l'étiquette. Situe, ne dit rien.
    ============================================================ */
 
 .t-display {
@@ -104,21 +141,25 @@ body {
   line-height: 1.55;
 }
 
+/* La voix de la marque */
 .voix {
   font-family: var(--font-voix), ui-serif, Georgia, serif;
   font-weight: 300;
 }
 
+/* La voix de l'outil : millésimes, régions, repères. Chiffres alignés. */
 .data {
-  font-family: var(--font-data), ui-monospace, monospace;
-  font-feature-settings: "tnum";
+  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
 }
 
-/* Le label de générique — 12px, 4.8:1, lisible */
+/* L'étiquette — 12 px, capitales espacées, 4.8:1 */
 .eyebrow {
-  font-family: var(--font-data), ui-monospace, monospace;
+  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.75rem;
-  letter-spacing: 0.24em;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-cendre-2);
 }
