@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "motion/react";
 
 /**
  * L’instrument — le geste signature de Vintoria.
@@ -75,18 +81,22 @@ export function Lecture({
   onRobe?: (vinId: string | null) => void;
 }) {
   const reduce = useReducedMotion();
+  const racine = useRef<HTMLDivElement>(null);
+  // Le geste ne se joue qu'une fois la démonstration atteinte — sinon il
+  // se jouerait sans témoin, avant même qu'on ait fait défiler.
+  const vu = useInView(racine, { once: true, amount: 0.35 });
   const [platId, setPlatId] = useState<string | null>(null);
   const [lit, setLit] = useState(false);
 
-  // Le geste s'ouvre seul. Sans animation, il est déjà joué à l'arrivée.
   useEffect(() => {
-    const a = setTimeout(() => setPlatId("boeuf"), reduce ? 0 : 900);
-    const b = setTimeout(() => setLit(true), reduce ? 0 : 1350);
+    if (!vu) return;
+    const a = setTimeout(() => setPlatId("boeuf"), reduce ? 0 : 700);
+    const b = setTimeout(() => setLit(true), reduce ? 0 : 1150);
     return () => {
       clearTimeout(a);
       clearTimeout(b);
     };
-  }, [reduce]);
+  }, [vu, reduce]);
 
   function lire(id: string) {
     if (id === platId) return;
@@ -114,7 +124,7 @@ export function Lecture({
     : CARTE;
 
   return (
-    <div className="w-full">
+    <div ref={racine} className="w-full">
       <span className="eyebrow">Ce soir, on sert</span>
       <div className="mt-4 flex flex-wrap gap-2.5">
         {PLATS.map((p) => {

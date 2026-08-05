@@ -33,7 +33,7 @@ const MECANIQUES = [
 
 export function Preuve() {
   return (
-    <section className="px rythme relative">
+    <section id="benefices" className="px rythme relative">
       <div className="mx-auto max-w-[1500px]">
         <p className="eyebrow mb-14">La preuve</p>
 

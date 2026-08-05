@@ -20,7 +20,8 @@ export function Accord() {
 
   return (
     <section
-      className="px relative min-h-[100svh] overflow-hidden pb-24 pt-32 lg:pt-36"
+      id="demonstration"
+      className="px rythme relative overflow-hidden"
       style={variablesRobe(robe)}
     >
       {/* la lampe de salle — elle prend la robe du verre */}
@@ -38,36 +39,38 @@ export function Accord() {
             transition={{ duration: 0.9, delay: 0.1 }}
             className="eyebrow mb-8"
           >
-            Vintoria · pour les restaurants
+            La démonstration
           </motion.p>
 
-          <h1 className="voix t-display text-os">
-            <Line delay={0.2}>L’expertise d’un sommelier,</Line>
-            <Line delay={0.32}>
-              <span className="italic text-tungstene">à chaque table.</span>
+          <h2 className="voix t-titre text-os">
+            <Line inView>Voici ce que voit</Line>
+            <Line inView delay={0.08}>
+              <span className="italic text-tungstene">votre client.</span>
             </Line>
-          </h1>
+          </h2>
 
           <motion.p
             initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="t-chapeau mt-8 max-w-md text-cendre"
           >
-            Vintoria lit vos plats, classe votre carte des vins et donne à
-            chaque équipe le bon accord — avec la raison qui va avec. En salle,
-            à chaque service.
+            Il choisit son plat. Votre carte se réordonne, et chaque vin retenu
+            arrive avec la raison qui le justifie — comme si un sommelier
+            s’était arrêté à sa table.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4"
           >
             <a
               href="#reserver"
-              className="group inline-flex min-h-[3rem] items-center gap-3 whitespace-nowrap rounded-full bg-os px-6 text-[0.75rem] uppercase tracking-[0.11em] text-encre sm:px-8 sm:tracking-[0.16em] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-12px_rgba(236,229,216,0.45)]"
+              className="group inline-flex min-h-[3rem] items-center gap-3 whitespace-nowrap rounded-full border border-[color:var(--color-filet-fort)] px-6 text-[0.75rem] uppercase tracking-[0.11em] text-os sm:px-8 sm:tracking-[0.16em] transition-colors duration-500 hover:border-os/40 hover:bg-white/[0.05]"
             >
               Réserver une démonstration
               <span
@@ -86,8 +89,9 @@ export function Accord() {
         {/* Le geste */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
           <div className="rounded-2xl border border-[color:var(--color-filet)] bg-encre-2/70 p-6 backdrop-blur-sm sm:p-8">
