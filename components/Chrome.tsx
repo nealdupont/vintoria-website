@@ -147,7 +147,7 @@ export function Chrome() {
 
         {/* Les liens — desktop, très espacés */}
         <nav className="hidden lg:block" aria-label="Sections">
-          <ul className="flex items-center gap-14">
+          <ul className="flex items-center gap-10 xl:gap-14">
             {LIENS.map((l) => (
               <li key={l.href}>
                 <a
@@ -186,6 +186,22 @@ export function Chrome() {
               </motion.button>
             )}
           </AnimatePresence>
+
+          {/*
+            L'ACCÈS AU PRODUIT — pour qui connaît déjà Vintoria.
+            Texte seul, en cendre-2 : le CTA reste le seul objet en ivoire et
+            le seul entouré d'un contour. Deux intentions, deux registres,
+            jamais deux boutons. Sous lg, il vit dans le sommaire.
+          */}
+          <a
+            href="https://vintoria.app"
+            className="eyebrow hidden min-h-11 shrink-0 items-center whitespace-nowrap transition-colors duration-300 hover:text-os lg:inline-flex"
+          >
+            {/* Même idiome que le CTA : le libellé s'abrège quand la barre
+                se resserre. L'adresse dit la destination sans détour. */}
+            <span className="xl:hidden">Vintoria.app</span>
+            <span className="hidden xl:inline">Accéder à Vintoria</span>
+          </a>
 
           {/* Le CTA */}
           <a
@@ -280,6 +296,17 @@ export function Chrome() {
                 <p className="eyebrow mt-5 text-center">
                   20 minutes · sur votre carte
                 </p>
+
+                {/* L'accès au produit — sous le CTA, jamais à sa hauteur. */}
+                <div className="mt-8 border-t border-[color:var(--color-filet)] pt-6">
+                  <a
+                    href="https://vintoria.app"
+                    onClick={() => setOuvert(false)}
+                    className="eyebrow flex min-h-11 items-center justify-center transition-colors duration-300 hover:text-os"
+                  >
+                    Accéder à Vintoria
+                  </a>
+                </div>
               </motion.div>
             </div>
           </motion.div>
