@@ -36,12 +36,12 @@ export function Ouverture() {
       style={variablesRobe(ROBES.cdp)}
     >
       {/* Le verre — moitié droite, débordant du cadre */}
-      <Verre className="absolute right-[-14%] top-1/2 h-[112%] w-[62%] -translate-y-1/2 sm:right-[-8%] sm:w-[46%] lg:right-[-4%] lg:w-[38%]" />
+      <Verre className="absolute right-[-26%] top-1/2 h-[92%] w-[62%] -translate-y-1/2 sm:right-[-12%] sm:h-[104%] sm:w-[46%] lg:right-[-8%] lg:h-[108%] lg:w-[34%]" />
 
       {/* Le voile qui garantit que le texte domine toujours */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-encre via-encre/85 to-transparent"
+        className="absolute inset-0 bg-gradient-to-r from-encre via-encre/92 to-encre/45 sm:via-encre/85 sm:to-transparent"
       />
 
       <div className="px relative z-10 mx-auto w-full max-w-[1500px]">
