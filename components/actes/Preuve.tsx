@@ -20,7 +20,7 @@ const MECANIQUES = [
     avant:
       "Un client qui n’ose pas demande « la deuxième moins chère ». C’est le réflexe le plus répandu en salle.",
     apres:
-      "Une raison énoncée lève le doute. On ne vend pas plus cher : on vend le vin qui convient — et il est rarement le plus modeste.",
+      "Une raison énoncée lève le doute. On ne vend pas plus cher : on vend le vin qui convient. Et il est rarement le plus modeste.",
   },
   {
     cle: "La cohérence, midi et soir",

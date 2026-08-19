@@ -8,7 +8,7 @@ import { Line } from "@/components/Line";
 
 const DEROULE = [
   { t: "Avant", d: "Vous nous envoyez votre carte des vins. Nous la chargeons." },
-  { t: "20 min", d: "Nous vous montrons Vintoria à l’œuvre — sur vos vins, vos plats." },
+  { t: "20 min", d: "Nous vous montrons Vintoria à l’œuvre, sur vos vins comme sur vos plats." },
   { t: "Après", d: "Vous décidez. Aucun engagement, aucune installation." },
 ];
 

@@ -64,7 +64,7 @@ export function Verite() {
         {/* I — Le cadrage. Il situe l’enjeu, il ne le porte pas. */}
         <p className="eyebrow">La vérité du service</p>
         <p className="t-corps mt-7 max-w-md text-cendre">
-          Le vin est le poste le plus rentable de votre salle — et le plus
+          Le vin est le poste le plus rentable de votre salle, et le plus
           difficile à tenir.
         </p>
 
@@ -97,7 +97,7 @@ export function Verite() {
             Il ne peut pas être à la table 12 et à la table 4 en même temps.
           </p>
           <p className="t-corps mt-3 text-cendre-2">
-            Les autres tables commandent au hasard — ou ne commandent pas.
+            Les autres tables commandent au hasard, ou ne commandent pas.
           </p>
         </div>
 

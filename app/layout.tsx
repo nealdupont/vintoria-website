@@ -31,9 +31,9 @@ const archivo = Archivo({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vintoria.com"),
-  title: "Vintoria — L’expertise du sommelier, à chaque table",
+  title: "Vintoria · L’expertise du sommelier, à chaque table",
   description:
-    "Un accord juste, et un repas devient un souvenir. Vintoria prolonge le sommelier dans votre salle — à chaque table, à chaque service.",
+    "Un accord juste, et un repas devient un souvenir. Vintoria prolonge le sommelier dans votre salle : à chaque table, à chaque service.",
   openGraph: {
     title: "Vintoria",
     description: "L’expertise du sommelier, à chaque table.",

@@ -52,7 +52,7 @@ export function Accord() {
             className="t-chapeau mt-8 max-w-md text-cendre"
           >
             Il choisit son plat. Votre carte se réordonne, et chaque vin retenu
-            arrive avec la raison qui le justifie — comme si un sommelier
+            est accompagné de la raison qui le justifie. Comme si un sommelier
             s’était arrêté à sa table.
           </motion.p>
 
@@ -104,7 +104,7 @@ export function Accord() {
               <div className="grid gap-x-6 border-b border-[color:var(--color-filet)] py-4 sm:grid-cols-[7.5rem_1fr]">
                 <dt className="eyebrow">Le plat</dt>
                 <dd className="t-meta mt-2 text-cendre sm:mt-0">
-                  sa cuisson, sa sauce, son intensité — et le moment qu’il
+                  sa cuisson, sa sauce, son intensité et le moment qu’il
                   accompagne
                 </dd>
               </div>
@@ -119,7 +119,7 @@ export function Accord() {
 
             <p className="t-corps mt-7 text-cendre">
               Une intelligence générale répond à une question : quel vin va
-              avec ce plat ? Vintoria en pose une autre — parmi les vins que
+              avec ce plat ? Vintoria en pose une autre : parmi les vins que
               vous avez ce soir, lequel est le plus juste pour ce plat, à
               cette table ?
             </p>

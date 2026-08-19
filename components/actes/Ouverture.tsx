@@ -92,7 +92,7 @@ export function Ouverture() {
             transition={t(1.8)}
           >
             Vos clients scannent un QR code, choisissent leur plat, et
-            découvrent les meilleurs vins de votre carte — expliqués comme le
+            découvrent les meilleurs vins de votre carte, expliqués comme le
             ferait un sommelier.
           </motion.p>
 

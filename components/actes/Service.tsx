@@ -31,7 +31,7 @@ const TEMPS = [
     t: "à table",
     titre: "Il choisit",
     detail:
-      "Il ne commande plus au hasard, ni par défaut. Il ose — et il se souvient de ce qu’il a bu.",
+      "Il ne commande plus au hasard, ni par défaut. Il ose. Et il se souvient de ce qu’il a bu.",
   },
 ];
 

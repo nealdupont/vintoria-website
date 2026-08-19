@@ -29,9 +29,9 @@ export function Origine() {
 
         <blockquote className="voix t-citation text-os">
           <Line inView>« Le vin n’est pas compliqué.</Line>
-          <Line inView delay={0.08}>On l’a compliqué. Le savoir existe —</Line>
+          <Line inView delay={0.08}>On l’a compliqué. Le savoir existe.</Line>
           <Line inView delay={0.16}>
-            il est resté dans quelques têtes,
+            Il est resté dans quelques têtes,
           </Line>
           <Line inView delay={0.24}>
             <span className="italic text-tungstene">
@@ -44,7 +44,7 @@ export function Origine() {
           Vintoria n’est pas né dans un laboratoire, mais derrière le passe.
           D’une conviction simple, apprise en des milliers de services : ce
           savoir ne nous appartient pas. Il nous a été confié, et notre métier
-          est de le rendre — à la table, chaque soir.
+          est de le rendre. À la table, chaque soir.
         </p>
 
         <p className="voix mt-14 text-[clamp(1.5rem,3vw,2.2rem)] italic leading-tight text-os">
