@@ -27,6 +27,13 @@ export function Invitation() {
         }}
       />
 
+      {/* La trace du vin retenu — voir components/Salle.tsx */}
+      <div
+        aria-hidden
+        className="robe-trace pointer-events-none absolute right-[4%] top-[10%] h-[52vh] w-[52vh] rounded-full"
+        style={{ "--trace-force": "0.05", "--trace-retard": "480ms" } as React.CSSProperties}
+      />
+
       <div className="relative z-10 mx-auto max-w-[1500px]">
         <div className="grid items-end gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-24">
           <div>
@@ -35,7 +42,7 @@ export function Invitation() {
               <Line inView>Faites entrer un sommelier</Line>
               <Line inView delay={0.08}>
                 <span className="italic text-tungstene">
-                  dans chaque service.
+                  à chaque table.
                 </span>
               </Line>
             </h2>

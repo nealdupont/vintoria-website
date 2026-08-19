@@ -1,29 +1,24 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 import { Line } from "@/components/Line";
 import { Lecture } from "@/components/Lecture";
-import { robeDe, variablesRobe } from "@/lib/robes";
+import { useRobeRetenue } from "@/components/Salle";
 
 /**
  * ACTE I — L’ACCORD.
  * Objection levée : « C’est quoi, concrètement ? »
  * La démonstration est le héros : message clair à gauche, geste vivant à droite.
  *
- * L’acte porte la robe du vin retenu : la salle s’accorde au verre.
+ * L’acte porte la robe du vin retenu : la salle s’accorde au verre. Elle ne
+ * s’arrête plus au bord de l’acte — la robe est remontée à la Salle, qui la
+ * fait porter par toute la page. Voir components/Salle.tsx.
  */
 export function Accord() {
-  const [vinRetenu, setVinRetenu] = useState<string | null>(null);
-  const onRobe = useCallback((id: string | null) => setVinRetenu(id), []);
-  const robe = robeDe(vinRetenu);
+  const poserRobe = useRobeRetenue();
 
   return (
-    <section
-      id="demonstration"
-      className="px rythme relative overflow-hidden"
-      style={variablesRobe(robe)}
-    >
+    <section id="demonstration" className="px rythme relative overflow-hidden">
       {/* la lampe de salle — elle prend la robe du verre */}
       <div
         aria-hidden
@@ -95,7 +90,43 @@ export function Accord() {
           className="relative"
         >
           <div className="rounded-2xl border border-[color:var(--color-filet)] bg-encre-2/70 p-6 backdrop-blur-sm sm:p-8">
-            <Lecture onRobe={onRobe} />
+            <Lecture onRobe={poserRobe} />
+          </div>
+
+          {/*
+            LA MÉTHODE — hors de la carte, volontairement : la carte est
+            l’écran du client, cette annotation s’adresse au restaurateur.
+          */}
+          <div className="mt-10">
+            <p className="eyebrow text-laiton">Ce que Vintoria regarde</p>
+
+            <dl className="mt-5 border-t border-[color:var(--color-filet)]">
+              <div className="grid gap-x-6 border-b border-[color:var(--color-filet)] py-4 sm:grid-cols-[7.5rem_1fr]">
+                <dt className="eyebrow">Le plat</dt>
+                <dd className="t-meta mt-2 text-cendre sm:mt-0">
+                  sa cuisson, sa sauce, son intensité — et le moment qu’il
+                  accompagne
+                </dd>
+              </div>
+              <div className="grid gap-x-6 border-b border-[color:var(--color-filet)] py-4 sm:grid-cols-[7.5rem_1fr]">
+                <dt className="eyebrow">Votre carte</dt>
+                <dd className="t-meta mt-2 text-cendre sm:mt-0">
+                  chaque vin réellement disponible ce soir, son millésime, sa
+                  maturité
+                </dd>
+              </div>
+            </dl>
+
+            <p className="t-corps mt-7 text-cendre">
+              Une intelligence générale répond à une question : quel vin va
+              avec ce plat ? Vintoria en pose une autre — parmi les vins que
+              vous avez ce soir, lequel est le plus juste pour ce plat, à
+              cette table ?
+            </p>
+
+            <p className="voix mt-5 text-[1.15rem] italic leading-snug text-os">
+              Ce n’est pas une meilleure réponse. C’est une autre question.
+            </p>
           </div>
         </motion.div>
       </div>

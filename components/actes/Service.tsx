@@ -6,6 +6,8 @@ import { Line } from "@/components/Line";
 /**
  * ACTE III — LE SERVICE.
  * Objection levée : « Est-ce que ça tient en plein coup de feu ? »
+ * Le récit suit LE CLIENT à table — jamais l'équipe : c'est lui qui scanne,
+ * comprend et choisit. Le restaurateur achète ; le client vit l'expérience.
  *
  * Traitement : une PARTITION temporelle — une seule ligne de temps, trois
  * instants posés dessus. Pas de cartes, pas de grille : le temps lui-même
@@ -15,21 +17,21 @@ import { Line } from "@/components/Line";
 const TEMPS = [
   {
     t: "0 s",
-    titre: "La commande tombe",
+    titre: "Il scanne",
     detail:
-      "Le plat part en cuisine. Vintoria a déjà lu l’assiette et classé votre carte pour cette table.",
+      "Le QR code est posé sur la table, son téléphone suffit. Il indique ce qu’il mange ce soir.",
   },
   {
     t: "4 s",
-    titre: "Le serveur sait",
+    titre: "Il comprend",
     detail:
-      "Sur son écran : trois vins de votre carte, dans l’ordre, avec une phrase à dire. Pas un manuel — une phrase.",
+      "Trois vins de votre carte, et pour chacun la raison. Pas une liste de noms : un conseil.",
   },
   {
     t: "à table",
-    titre: "Le client comprend",
+    titre: "Il choisit",
     detail:
-      "Il ne subit plus une liste de noms. On lui raconte pourquoi ce vin-là, ce soir, avec ce plat. Il dit oui.",
+      "Il ne commande plus au hasard, ni par défaut. Il ose — et il se souvient de ce qu’il a bu.",
   },
 ];
 
@@ -43,6 +45,13 @@ export function Service() {
           background:
             "radial-gradient(circle, rgba(232,200,140,0.10), transparent 68%)",
         }}
+      />
+
+      {/* La trace du vin retenu — voir components/Salle.tsx */}
+      <div
+        aria-hidden
+        className="robe-trace pointer-events-none absolute right-[3%] top-1/2 h-[54vh] w-[54vh] -translate-y-1/2 rounded-full"
+        style={{ "--trace-force": "0.085", "--trace-retard": "120ms" } as React.CSSProperties}
       />
 
       <div className="relative z-10 mx-auto max-w-[1500px]">
@@ -103,8 +112,8 @@ export function Service() {
         </div>
 
         <p className="t-corps mt-24 max-w-xl text-cendre">
-          Aucune formation à prévoir. Aucun matériel à installer. Vintoria
-          s’ouvre dans le navigateur que vos équipes utilisent déjà.
+          Aucune application à télécharger, aucun matériel à installer.
+          Vintoria s’ouvre dans le navigateur du téléphone de votre client.
         </p>
       </div>
     </section>

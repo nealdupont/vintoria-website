@@ -5,6 +5,7 @@ import { Service } from "@/components/actes/Service";
 import { Preuve } from "@/components/actes/Preuve";
 import { Origine } from "@/components/actes/Origine";
 import { Invitation } from "@/components/actes/Invitation";
+import { Salle } from "@/components/Salle";
 
 /**
  * L’ouverture porte la marque et la promesse.
@@ -15,10 +16,13 @@ import { Invitation } from "@/components/actes/Invitation";
  * IV  La preuve    — « Est-ce que ça rapporte ? »
  * V   L’origine    — « Puis-je leur faire confiance ? »
  * VI  L’invitation — « Je fais quoi maintenant ? »
+ *
+ * La Salle enveloppe l’ensemble : le vin retenu à l’acte I laisse sa robe
+ * sur tous les actes suivants. Le choix du visiteur a une conséquence.
  */
 export default function Page() {
   return (
-    <>
+    <Salle>
       <Ouverture />
       <Accord />
       <Verite />
@@ -26,6 +30,6 @@ export default function Page() {
       <Preuve />
       <Origine />
       <Invitation />
-    </>
+    </Salle>
   );
 }

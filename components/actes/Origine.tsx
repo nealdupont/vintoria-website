@@ -17,6 +17,13 @@ export function Origine() {
         }}
       />
 
+      {/* La trace du vin retenu — voir components/Salle.tsx */}
+      <div
+        aria-hidden
+        className="robe-trace pointer-events-none absolute left-1/2 top-1/2 h-[66vh] w-[66vh] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ "--trace-force": "0.06", "--trace-retard": "360ms" } as React.CSSProperties}
+      />
+
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <p className="eyebrow mb-14">L’origine</p>
 
@@ -28,7 +35,7 @@ export function Origine() {
           </Line>
           <Line inView delay={0.24}>
             <span className="italic text-tungstene">
-              au lieu de descendre en salle. »
+              au lieu d’arriver jusqu’à la table. »
             </span>
           </Line>
         </blockquote>
@@ -44,9 +51,15 @@ export function Origine() {
           Servir, c’est transmettre.
         </p>
 
-        <div className="mt-12 flex items-center justify-center gap-4">
+        <div className="mt-14 flex flex-col items-center">
           <span aria-hidden className="h-px w-10 bg-laiton/60" />
-          <span className="eyebrow">Le fondateur de Vintoria, sommelier</span>
+          <p className="voix mt-6 text-[1.05rem] tracking-[0.22em] text-os">
+            NEAL DUPONT
+          </p>
+          <p className="t-meta mt-2.5 max-w-sm text-cendre-2">
+            Sommelier savoyard · dix ans en restaurants gastronomiques
+            étoilés, en France et à l’international
+          </p>
         </div>
       </div>
     </section>

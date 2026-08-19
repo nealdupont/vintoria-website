@@ -27,14 +27,21 @@ const MECANIQUES = [
     avant:
       "La qualité du conseil dépend de qui travaille ce soir-là. Le client, lui, ne fait pas la différence entre vos équipes.",
     apres:
-      "Le même niveau d’exigence à chaque service, quelle que soit l’équipe en place.",
+      "Le conseil ne dépend plus de l’équipe : il arrive à la table, identique midi et soir.",
   },
 ];
 
 export function Preuve() {
   return (
     <section id="benefices" className="px rythme relative">
-      <div className="mx-auto max-w-[1500px]">
+      {/* La trace du vin retenu — voir components/Salle.tsx */}
+      <div
+        aria-hidden
+        className="robe-trace pointer-events-none absolute left-[2%] top-[12%] h-[56vh] w-[56vh] rounded-full"
+        style={{ "--trace-force": "0.07", "--trace-retard": "240ms" } as React.CSSProperties}
+      />
+
+      <div className="relative z-10 mx-auto max-w-[1500px]">
         <p className="eyebrow mb-14">La preuve</p>
 
         <h2 className="voix t-titre max-w-3xl text-os">

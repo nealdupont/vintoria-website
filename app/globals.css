@@ -43,6 +43,13 @@
   /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
   --robe-profond: #4a3a22;
   --robe-lumiere: #e8c88c;
+
+  /*
+    L'interrupteur de la trace. 0 tant que la démonstration n'a rien
+    retenu : la page d'avant la sélection est exactement celle d'hier.
+    Posé à 1 par components/Salle.tsx dès qu'un vin est lu.
+  */
+  --robe-presence: 0;
 }
 
 /*
@@ -59,6 +66,33 @@
   background-color: var(--robe-lumiere);
   transition: background-color 1200ms var(--ease-film);
 }
+/*
+  LA TRACE — ce que le vin choisi laisse dans le reste de l'expérience.
+
+  La démonstration allume une lumière ; les actes suivants n'en reçoivent
+  qu'un reste, réglé acte par acte via --trace-force et de plus en plus
+  faible à mesure qu'on s'éloigne de la source (0.10 → 0.05).
+
+  Elle ne colore rien : elle éclaire du noir, très peu, et seulement lui.
+  Aucun fond, aucun texte, aucun filet — donc aucun contraste touché.
+  Et jamais --robe-lumiere, qui appartient au texte.
+
+  --trace-retard fait descendre la lumière d'acte en acte plutôt que de
+  faire basculer la page d'un bloc.
+*/
+.robe-trace {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--robe-profond) 62%, transparent),
+    color-mix(in srgb, var(--robe-profond) 20%, transparent) 45%,
+    transparent 72%
+  );
+  opacity: calc(var(--robe-presence, 0) * var(--trace-force, 0.08));
+  transition:
+    opacity 1600ms var(--ease-film) var(--trace-retard, 0ms),
+    background 1600ms var(--ease-film) var(--trace-retard, 0ms);
+}
+
 .robe-halo {
   background: radial-gradient(
     circle,
