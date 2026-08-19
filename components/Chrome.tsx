@@ -29,6 +29,17 @@ const LIENS = [
   { href: "#origine", id: "origine", label: "L’origine" },
 ];
 
+/*
+  Le sommaire ouvre sur l'accès au produit, puis déroule les sections.
+  L'entrée n'a pas d'`id` : elle sort du site, elle n'est donc jamais
+  « active » et reste hors de l'IntersectionObserver et de la nav
+  « Sections » du desktop, qui ne connaissent que LIENS.
+*/
+const SOMMAIRE: { href: string; id?: string; label: string }[] = [
+  { href: "https://vintoria.app", label: "Accéder à Vintoria" },
+  ...LIENS,
+];
+
 export function Chrome() {
   const reduce = useReducedMotion();
   const [pose, setPose] = useState(false);
@@ -130,7 +141,7 @@ export function Chrome() {
         {/* La marque */}
         <a
           href="#top"
-          aria-label="Vintoria — accueil"
+          aria-label="Vintoria, accueil"
           className="flex min-h-11 shrink-0 items-center gap-3"
         >
           <Image
@@ -140,7 +151,7 @@ export function Chrome() {
             height={512}
             className="h-6 w-auto"
           />
-          <span className="voix hidden text-[0.95rem] tracking-[0.3em] text-os sm:inline">
+          <span className="voix hidden text-[0.95rem] tracking-[0.3em] text-os sm:inline lg:hidden xl:inline">
             VINTORIA
           </span>
         </a>
@@ -195,12 +206,19 @@ export function Chrome() {
           */}
           <a
             href="https://vintoria.app"
-            className="eyebrow hidden min-h-11 shrink-0 items-center whitespace-nowrap transition-colors duration-300 hover:text-os lg:inline-flex"
+            className={`eyebrow min-h-11 shrink-0 items-center whitespace-nowrap transition-colors duration-300 hover:text-os ${
+              /* Sous lg, la barre ne peut pas porter l'accès ET le
+                 déclencheur du sommaire : dans l'Ouverture l'accès est
+                 là, ensuite le sommaire le reprend en première entrée.
+                 En deçà de 380 px, « Accéder à Vintoria » (172 px) ne
+                 tient plus face à « Réserver » : le sommaire seul le
+                 porte, plutôt que d'abréger le libellé. */
+              horsOuverture
+                ? "hidden lg:inline-flex"
+                : "hidden min-[380px]:inline-flex lg:inline-flex"
+            }`}
           >
-            {/* Même idiome que le CTA : le libellé s'abrège quand la barre
-                se resserre. L'adresse dit la destination sans détour. */}
-            <span className="xl:hidden">Vintoria.app</span>
-            <span className="hidden xl:inline">Accéder à Vintoria</span>
+            Accéder à Vintoria
           </a>
 
           {/* Le CTA */}
@@ -236,7 +254,7 @@ export function Chrome() {
           >
             <div className="px flex min-h-full flex-col pb-12 pt-6">
               <ul>
-                {LIENS.map((l, i) => (
+                {SOMMAIRE.map((l, i) => (
                   <motion.li
                     key={l.href}
                     initial={{ opacity: 0, y: reduce ? 0 : 12 }}
@@ -296,17 +314,6 @@ export function Chrome() {
                 <p className="eyebrow mt-5 text-center">
                   20 minutes · sur votre carte
                 </p>
-
-                {/* L'accès au produit — sous le CTA, jamais à sa hauteur. */}
-                <div className="mt-8 border-t border-[color:var(--color-filet)] pt-6">
-                  <a
-                    href="https://vintoria.app"
-                    onClick={() => setOuvert(false)}
-                    className="eyebrow flex min-h-11 items-center justify-center transition-colors duration-300 hover:text-os"
-                  >
-                    Accéder à Vintoria
-                  </a>
-                </div>
               </motion.div>
             </div>
           </motion.div>
