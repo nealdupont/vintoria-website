@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Spectral, Archivo } from "next/font/google";
 import "./globals.css";
 import { Chrome } from "@/components/Chrome";
@@ -28,6 +28,24 @@ const archivo = Archivo({
   weight: ["400", "500", "600"],
   display: "swap",
 });
+
+/*
+ * Le fond de Vintoria va d'un bord à l'autre de l'écran.
+ *
+ * `viewportFit: "cover"` : sans lui, iOS Safari rétrécit le viewport de
+ * mise en page pour tenir entre les zones système. La page ne PEUT pas
+ * peindre derrière la barre d'état ni l'encoche, d'où le bandeau en haut.
+ *
+ * Le contenu, lui, reste tenu à l'écart de ces zones par env(safe-area-*).
+ *
+ * La barre d'outils de Safari n'est pas peinte par la page mais par le
+ * navigateur, qui suit l'apparence système : aucun site ne peut la forcer.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vintoria.com"),

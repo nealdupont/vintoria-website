@@ -131,7 +131,9 @@ export function Chrome() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: reduce ? 0 : 1.2, delay: reduce ? 0 : 0.15 }}
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      /* Le fond du bandeau part du bord haut de l'écran ; la marge haute
+         fait commencer sa barre de 4,5 rem sous la zone système. */
+      className={`fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         pose || ouvert
           ? "border-b border-[color:var(--color-filet)] bg-encre/72 backdrop-blur-xl"
           : "border-b border-transparent"
@@ -250,9 +252,9 @@ export function Chrome() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduce ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-0 bottom-0 top-[4.5rem] z-40 overflow-y-auto bg-encre lg:hidden"
+            className="fixed inset-x-0 bottom-0 top-[calc(4.5rem_+_env(safe-area-inset-top))] z-40 overflow-y-auto bg-encre lg:hidden"
           >
-            <div className="px flex min-h-full flex-col pb-12 pt-6">
+            <div className="px flex min-h-full flex-col pb-[calc(3rem_+_env(safe-area-inset-bottom))] pt-6">
               <ul>
                 {SOMMAIRE.map((l, i) => (
                   <motion.li

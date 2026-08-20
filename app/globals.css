@@ -104,6 +104,11 @@
 }
 
 html {
+  /*
+    Le canevas porte l'encre, pas seulement le body : c'est lui qu'on voit
+    dans le rebond élastique d'iOS, au-delà des bords de la page.
+  */
+  background: var(--color-encre);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
@@ -211,14 +216,19 @@ body {
   padding-block: clamp(8.5rem, 15.5vw, 13.5rem);
 }
 
+/*
+  En paysage, l'encoche mord sur les côtés. `max()` ne retient l'inset que
+  s'il dépasse le rythme habituel : partout ailleurs env() vaut 0 et la
+  valeur d'origine est conservée telle quelle.
+*/
 .px {
-  padding-left: clamp(1.5rem, 6vw, 7rem);
-  padding-right: clamp(1.5rem, 6vw, 7rem);
+  padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
+  padding-right: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-right));
 }
 
 /* L'en-tête est fixe : les ancres ne doivent jamais atterrir dessous. */
 section[id] {
-  scroll-margin-top: 6rem;
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top));
 }
 
 /* Grain de pellicule — la matière du noir */
