@@ -51,7 +51,7 @@ const MOUVEMENTS: Entree[] = [
 
 const FORMULES: Entree = { href: "/tarifs", label: "Formules" };
 const ACCES: Entree = {
-  href: "https://vintoria.app",
+  href: "https://www.vintoria.app",
   label: "Accéder à Vintoria",
   externe: true,
 };

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /**
@@ -36,9 +37,26 @@ export function Pied() {
       <div className="relative z-10 mx-auto max-w-[1180px]">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="voix text-[1.05rem] tracking-[0.3em] text-fort">
-              VINTORIA
-            </p>
+            {/*
+              Le lockup horizontal de la marque. Le pied ne connaît pas la
+              route : les deux variantes sont posées, la feuille de style
+              montre `fonce` sur les routes du soir et `clair` sur l'accueil
+              (voir `.logo-clair` dans app/globals.css).
+            */}
+            <Image
+              src="/marque/lockup-horizontal-fonce.svg"
+              alt="Vintoria"
+              width={1606}
+              height={400}
+              className="logo-fonce h-9 w-auto"
+            />
+            <Image
+              src="/marque/lockup-horizontal-clair.svg"
+              alt="Vintoria"
+              width={1606}
+              height={400}
+              className="logo-clair h-9 w-auto"
+            />
             <p className="t-meta mt-3 max-w-[34ch] text-faible">
               L’expertise du sommelier, à chaque table.
             </p>
@@ -64,7 +82,7 @@ export function Pied() {
               </li>
               <li>
                 <a
-                  href="https://vintoria.app"
+                  href="https://www.vintoria.app"
                   className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
                 >
                   Accéder à Vintoria

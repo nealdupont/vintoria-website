@@ -1028,3 +1028,15 @@ body:has(.lumiere) .lueur-pied {
       rgba(107, 29, 56, 0) 60%
     );
 }
+
+/* Le logo du pied : variante `fonce` sur les routes du soir, `clair` sur
+   l'accueil. Le pied est rendu côté serveur et ne connaît pas la route. */
+.logo-clair {
+  display: none;
+}
+body:has(.lumiere) footer .logo-clair {
+  display: block;
+}
+body:has(.lumiere) footer .logo-fonce {
+  display: none;
+}

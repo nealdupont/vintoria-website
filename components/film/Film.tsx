@@ -175,11 +175,13 @@ export function Film() {
           </div>
 
           {/* ── 07 · VINTORIA ───────────────────────────────────────── */}
+          {/* Le wordmark officiel, en tracés : jamais recomposé en texte. La
+              scène est aria-hidden, le récit dit déjà « Vintoria ». */}
           <p data-anim className={s.marque}>
-            VINTORIA
+            <Image src="/marque/wordmark-creme.svg" alt="" width={1059} height={102} />
           </p>
           <p data-anim className={s.signature}>
-            L’expertise du sommelier, à chaque table.
+            Le vin à sa juste place.
           </p>
 
         </div>
