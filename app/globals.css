@@ -1,45 +1,97 @@
 @import "tailwindcss";
 
 /* ============================================================
-   VINTORIA — « SERVICE »
-   Un film gastronomique. Le noir, la lumière, la braise du vin.
+   VINTORIA — SYSTÈME
 
-   Système : contrastes mesurés, échelle typographique fermée,
-   rythme vertical à deux respirations. Rien d'arbitraire.
+   Un restaurant a deux temps. LE SERVICE, le soir, à l'encre.
+   LE TRAVAIL DE LA CAVE, le matin, sur le crème.
+
+   D'où la règle qui gouverne tout ce fichier : les couleurs ne sont
+   pas nommées par ce qu'elles SONT mais par ce qu'elles FONT. Un même
+   composant écrit `text-fort` et se lit correctement sur les deux
+   surfaces, sans condition et sans variante. La bascule se fait en un
+   seul endroit : la classe `jour`.
    ============================================================ */
 
 @theme {
   /* --- Matière ------------------------------------------------ */
   --color-encre: #0b0a0c; /* la salle avant le service */
   --color-encre-2: #121013; /* surface posée sur l'encre */
+  --color-jour: #ece5d8; /* le matin, la cave, le carnet */
+  --color-jour-2: #e3dacb; /* surface posée sur le crème */
 
-  /* --- Échelle de texte, contrastes vérifiés sur --encre ------- */
-  --color-os: #ece5d8; /* 15.8:1 — titres, texte fort */
-  --color-cendre: #a8a298; /* 7.8:1 — texte courant */
-  --color-cendre-2: #837d73; /* 4.8:1 — métadonnées, labels */
+  /* --- Échelle de texte, contrastes vérifiés sur l'encre -------- */
+  /* Couche BRUTE : la matière, nommée par ce qu'elle est. Elle sert aux
+     composants qui vivent toujours du même côté — la démonstration, le
+     verre. Les mouvements, eux, emploient la couche sémantique. */
+  --color-os: #ece5d8; /* 15,8:1 — titres, texte fort */
+  --color-cendre: #a8a298; /* 7,8:1 — texte courant */
+  --color-cendre-2: #837d73; /* 4,8:1 — métadonnées, labels */
 
   /* --- Accents ------------------------------------------------ */
-  --color-braise: #6e1023; /* la robe du vin, rare */
+  --color-braise: #6e1023; /* la robe du vin */
   --color-braise-vive: #8e2a3a;
-  --color-laiton: #b08a4a; /* 6.2:1 — le métal */
-  --color-tungstene: #e8c88c; /* 12.3:1 — la lampe de salle */
-
-  /* --- Filets -------------------------------------------------- */
-  --color-filet: rgba(236, 229, 216, 0.14);
-  --color-filet-fort: rgba(236, 229, 216, 0.24);
+  --color-laiton: #d4b96a; /* l'or de Vintoria Pro — 10,30:1 sur l'encre */
+  --color-tungstene: #e8c88c; /* la lampe de salle — 12,30:1 */
 
   /* --- Voix ---------------------------------------------------- */
   /* La marque parle en sérif. L'interface parle en grotesque. */
   --font-voix: var(--font-voix-src); /* Spectral — Vintoria parle */
   --font-structure: var(--font-structure-src); /* Archivo — l'outil affiche */
 
-  --ease-film: cubic-bezier(0.16, 1, 0.3, 1);
+  /* --- Mouvement ----------------------------------------------- */
+  /* Quatre durées, pas une de plus. Chacune a un emploi. */
+  --duree-tactile: 120ms; /* ce que le doigt déclenche */
+  --duree-etat: 240ms; /* ce qui change d'état */
+  --duree-entree: 560ms; /* ce qui entre dans le champ */
+  --duree-robe: 1200ms; /* ce que le vin dépose */
+
+  --ease-film: cubic-bezier(0.16, 1, 0.3, 1); /* entrées */
+  --ease-sortie: cubic-bezier(0.4, 0, 1, 1); /* sorties, plus sèches */
+
+  /* ============================================================
+     JETONS SÉMANTIQUES — la valeur par défaut est celle du SOIR.
+     Voir la classe `jour` plus bas pour le jeu du matin.
+     Contrastes mesurés sur l'encre #0b0a0c :
+       fort 15,8:1 · texte 7,8:1 · faible 4,8:1 · accent 10,3:1
+     ============================================================ */
+  --color-fond: #0b0a0c;
+  --color-surface: #121013;
+  --color-fort: #ece5d8; /* titres, texte appuyé */
+  --color-texte: #a8a298; /* texte courant */
+  --color-faible: #837d73; /* métadonnées, étiquettes */
+  --color-accent: #d4b96a; /* le métal qui signale */
+  --color-filet: rgba(236, 229, 216, 0.14);
+  --color-filet-fort: rgba(236, 229, 216, 0.24);
+}
+
+/* ============================================================
+   LE JOUR — la cave, le matin.
+
+   Contrastes mesurés sur le crème #ece5d8 :
+     fort 15,8:1 · texte 7,7:1 · faible 4,7:1 · accent (braise) 9,5:1
+
+   L'OR EST INTERDIT ICI : #d4b96a ne donne que 1,53:1 sur le crème.
+   C'est la braise qui prend le relais de l'accent. Cette substitution
+   est la raison d'être des jetons sémantiques — aucun composant n'a
+   à connaître la règle, il écrit `text-accent` et elle s'applique.
+   ============================================================ */
+.jour {
+  --color-fond: #ece5d8;
+  --color-surface: #e3dacb;
+  --color-fort: #0b0a0c;
+  --color-texte: #4a443c;
+  --color-faible: #6b6459;
+  --color-accent: #6e1023;
+  --color-filet: rgba(11, 10, 12, 0.14);
+  --color-filet-fort: rgba(11, 10, 12, 0.26);
+
+  background-color: var(--color-fond);
+  color: var(--color-texte);
+  color-scheme: light;
 }
 
 :root {
-  --background: var(--color-encre);
-  --foreground: var(--color-os);
-
   /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
   --robe-profond: #4a3a22;
   --robe-lumiere: #e8c88c;
@@ -60,25 +112,19 @@
 */
 .robe-teinte {
   color: var(--robe-lumiere);
-  transition: color 1200ms var(--ease-film);
+  transition: color var(--duree-robe) var(--ease-film);
 }
 .robe-pastille {
   background-color: var(--robe-lumiere);
-  transition: background-color 1200ms var(--ease-film);
+  transition: background-color var(--duree-robe) var(--ease-film);
 }
+
 /*
   LA TRACE — ce que le vin choisi laisse dans le reste de l'expérience.
-
-  La démonstration allume une lumière ; les actes suivants n'en reçoivent
-  qu'un reste, réglé acte par acte via --trace-force et de plus en plus
-  faible à mesure qu'on s'éloigne de la source (0.10 → 0.05).
 
   Elle ne colore rien : elle éclaire du noir, très peu, et seulement lui.
   Aucun fond, aucun texte, aucun filet — donc aucun contraste touché.
   Et jamais --robe-lumiere, qui appartient au texte.
-
-  --trace-retard fait descendre la lumière d'acte en acte plutôt que de
-  faire basculer la page d'un bloc.
 */
 .robe-trace {
   background: radial-gradient(
@@ -100,7 +146,7 @@
     color-mix(in srgb, var(--robe-profond) 18%, transparent) 42%,
     transparent 70%
   );
-  transition: background 1200ms var(--ease-film);
+  transition: background var(--duree-robe) var(--ease-film);
 }
 
 html {
@@ -117,7 +163,7 @@ html {
 
 body {
   background: var(--color-encre);
-  color: var(--color-os);
+  color: var(--color-fort);
   font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
   font-synthesis-weight: none;
@@ -125,25 +171,30 @@ body {
 
 ::selection {
   background: var(--color-braise);
-  color: var(--color-os);
+  color: #ece5d8;
+}
+.jour ::selection {
+  background: var(--color-braise);
+  color: #ece5d8;
 }
 
 :focus-visible {
-  outline: 1px solid var(--color-laiton);
-  outline-offset: 4px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ============================================================
    HIÉRARCHIE — 7 degrés, pas un de plus.
    Chaque degré a une fonction. Aucun n'existe pour « faire joli ».
 
-   .t-display   Sérif · l'affirmation qui ouvre un acte. Une par écran.
-   .t-titre     Sérif · le titre d'acte. Il annonce l'objection levée.
-   .t-citation  Sérif · la voix humaine — conviction, fondateur.
+   .t-display   Sérif · l'affirmation qui ouvre. Une par écran.
+   .t-titre     Sérif · le titre de mouvement.
+   .t-citation  Sérif · la voix humaine.
    .t-tete      Sérif · l'entrée d'une liste. Nomme, ne développe pas.
-   .t-chapeau   Grotesque · le paragraphe d'entrée. Explique en une fois.
+   .t-chapeau   Grotesque · le paragraphe d'entrée.
    .t-corps     Grotesque · le texte courant. Le plus lu du site.
-   .t-meta      Grotesque · la mention de service (délai, réserve).
+   .t-meta      Grotesque · la mention de service.
    .eyebrow     Grotesque capitales · l'étiquette. Situe, ne dit rien.
    ============================================================ */
 
@@ -193,27 +244,106 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* L'étiquette — 12 px, capitales espacées, 4.8:1 */
+/* L'étiquette — 12 px, capitales espacées */
 .eyebrow {
   font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-cendre-2);
+  color: var(--color-faible);
+}
+
+/* ============================================================
+   BOUTONS — trois rangs, une seule logique.
+
+   Un écran n'a qu'une action principale. Le rang dit lequel :
+     primaire   l'action commerciale. Un par mouvement, jamais deux.
+     second     l'alternative, pour qui n'est pas prêt à décider.
+     fantome    la navigation, qui n'engage rien.
+
+   La hauteur minimale de 48 px n'est pas négociable : c'est la cible
+   tactile. Elle s'applique AUSSI au rang fantôme, le plus petit.
+   ============================================================ */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding-inline: 1.6rem;
+  border-radius: 999px;
+  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--duree-tactile) var(--ease-film),
+    border-color var(--duree-tactile) var(--ease-film),
+    color var(--duree-tactile) var(--ease-film),
+    transform var(--duree-tactile) var(--ease-film),
+    opacity var(--duree-tactile) var(--ease-film);
+}
+.bouton:active {
+  transform: translateY(1px);
+}
+.bouton:disabled,
+.bouton[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* L'action commerciale — la seule qui porte la pleine surface claire. */
+.bouton-primaire {
+  background: var(--color-fort);
+  color: var(--color-fond);
+}
+.bouton-primaire:hover:not(:disabled) {
+  background: var(--color-tungstene);
+}
+.jour .bouton-primaire:hover:not(:disabled) {
+  background: var(--color-braise);
+  color: #ece5d8;
+}
+
+/* L'alternative — dessinée, pas remplie. */
+.bouton-second {
+  background: transparent;
+  color: var(--color-fort);
+  border-color: var(--color-filet-fort);
+}
+.bouton-second:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* La navigation — aucune surface, aucun trait. */
+.bouton-fantome {
+  background: transparent;
+  color: var(--color-texte);
+  padding-inline: 0.9rem;
+}
+.bouton-fantome:hover {
+  color: var(--color-fort);
 }
 
 /* ============================================================
    Rythme vertical — deux respirations, choisies.
-   `rythme`       : les actes qui expliquent
-   `rythme-ample` : les actes qui laissent respirer
+   `rythme`       : les mouvements qui expliquent
+   `rythme-ample` : les mouvements qui laissent respirer
    ============================================================ */
 
 .rythme {
-  padding-block: clamp(6.5rem, 12vw, 10.5rem);
+  padding-block: clamp(4rem, 7.5vw, 6.5rem);
 }
 .rythme-ample {
-  padding-block: clamp(8.5rem, 15.5vw, 13.5rem);
+  padding-block: clamp(5rem, 9.5vw, 8.5rem);
 }
 
 /*
@@ -227,11 +357,12 @@ body {
 }
 
 /* L'en-tête est fixe : les ancres ne doivent jamais atterrir dessous. */
-section[id] {
+section[id],
+:target {
   scroll-margin-top: calc(6rem + env(safe-area-inset-top));
 }
 
-/* Grain de pellicule — la matière du noir */
+/* Grain de pellicule — la matière du noir. Le jour n'en a pas besoin. */
 .filmgrain::after {
   content: "";
   position: fixed;
@@ -244,7 +375,62 @@ section[id] {
   background-size: 180px;
 }
 
+/* ============================================================
+   ENTRÉE AU DÉFILEMENT — en CSS pur, sans JavaScript.
+
+   `animation-timeline: view()` fait porter l'animation par la position
+   de l'élément dans le champ, pas par une horloge. Rien à hydrater,
+   rien à observer : zéro octet de JavaScript pour tout le site.
+   Là où la propriété manque, l'élément est simplement déjà visible —
+   c'est le repli, et il est correct.
+   ============================================================ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parait {
+      animation: parait linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+  }
+}
+
+@keyframes parait {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Le header à l'arrivée, et le panneau du sommaire : un fondu simple. */
+@keyframes entree {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Les entrées du sommaire, décalées l'une après l'autre. */
+@keyframes monte {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

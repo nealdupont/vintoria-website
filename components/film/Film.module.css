@@ -1,0 +1,716 @@
+/* ============================================================
+   LA DÉMONSTRATION — 32 s, sept séquences.
+
+   Repère : 1 s = 3,125 %.
+     01 la carte       0 → 5,5 s     0 → 17,2 %
+     02 la cave      5,5 → 11 s   17,2 → 34,4 %
+     03 le stock      11 → 15,5 s  34,4 → 48,4 %
+     04 l'inventaire 15,5 → 20,5 s 48,4 → 64,1 %
+     05 le client   20,5 → 27 s    64,1 → 84,4 %
+     06 la boucle     27 → 30 s    84,4 → 93,8 %
+     07 Vintoria      30 → 32 s    93,8 → 100 %
+
+   LE PRODUIT EST CLAIR MAINTENANT. Vintoria Pro 2.0.2 a remplacé son
+   back-office sombre à texture de bois par une interface crème et bordeaux.
+   Deux conséquences sur ce fichier :
+
+   1. AUCUN `filter: brightness()` sur les captures. La version précédente en
+      portait un de 1,72 pour sauver une interface presque noire — sur une
+      interface claire, il brûlerait tout. Il amplifiait d'ailleurs le bois
+      au point de le faire dominer, alors que le produit le veut discret.
+
+   2. La caméra ENTRE dans les écrans au lieu de les recouvrir. L'ancienne
+      interface étant illisible, il fallait reconstruire ses chiffres en DOM
+      par-dessus. La nouvelle se lit : on la montre.
+
+   Il ne reste qu'un calque, la ligne de mouvement — une capture ne peut pas
+   montrer un chiffre qui change.
+
+   RÈGLES TENUES, parce qu'elles ont été payées :
+   - rien n'anime la mise en page ;
+   - on ne croise jamais couleur de texte et couleur de fond ;
+   - AUCUN `background` sur l'élément porteur de `perspective` + `preserve-3d`
+     (son fond occulte tout descendant à Z négatif) ;
+   - tout élément animé porte `data-anim`, sinon il n'hérite d'aucune durée.
+   ============================================================ */
+
+.film {
+  --duree: 32s;
+  --prof: 1600px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1rem;
+  /* Le fond vit ICI, jamais sur `.scene` : voir la règle ci-dessus. */
+  background: radial-gradient(130% 100% at 50% 110%, #1d140e 0%, #130d09 48%, #0b0a0c 82%);
+  contain: layout paint style;
+}
+
+.film [data-anim] {
+  animation-duration: var(--duree);
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+.joue [data-anim] {
+  animation-play-state: running;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  perspective: var(--prof);
+  perspective-origin: 50% 48%;
+  transform-style: preserve-3d;
+}
+
+/* ── Les écrans du produit ───────────────────────────────────────────── */
+
+/*
+  Un écran CLAIR posé dans une pièce sombre. Il n'a besoin ni d'être relevé
+  ni d'être cerné : c'est lui la source de lumière. La lueur chaude autour
+  dit simplement qu'il éclaire ce qui l'entoure.
+*/
+.ecran {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #f7f4ec;
+  box-shadow:
+    0 0 0 1px rgba(11, 10, 12, 0.5),
+    0 0 90px -12px rgba(247, 244, 236, 0.17),
+    0 48px 90px -42px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+}
+.ecran img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Gabarit des écrans de bureau — ils occupent le cadre, on vient les lire. */
+.planCarte,
+.planAjouter,
+.planCave,
+.planAujourdhui {
+  left: 50%;
+  top: 50%;
+  width: 90%;
+  margin-left: -45%;
+  margin-top: -28.2%;
+}
+
+/* ── 01 · LA CARTE — l'écran « Carte » de l'Atelier, puis l'ajout ────── */
+
+.planCarte {
+  animation-name: planCarte;
+}
+@keyframes planCarte {
+  0% {
+    transform: translate3d(0, 2%, -300px) rotateY(6deg);
+    opacity: 0;
+  }
+  2.5% {
+    transform: translate3d(0, 0, -60px) rotateY(3deg);
+    opacity: 1;
+  }
+  7.5% {
+    transform: translate3d(0, 1%, 60px) rotateY(1deg) scale(1.06);
+    opacity: 1;
+  }
+  9.5%,
+  100% {
+    transform: translate3d(-3%, 1%, 200px) rotateY(-2deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* La fiche d'ajout — « Quel vin ajoutez-vous ? » et son bouton bordeaux. */
+.planAjouter {
+  animation-name: planAjouter;
+}
+@keyframes planAjouter {
+  0%,
+  9% {
+    transform: translate3d(5%, 0, -320px) rotateY(-7deg);
+    opacity: 0;
+  }
+  11.5% {
+    transform: translate3d(0, 0, -50px) rotateY(-2deg);
+    opacity: 1;
+  }
+  /* on vient lire le panneau de saisie, à droite */
+  16% {
+    transform: translate3d(-9%, 0, 90px) rotateY(0deg) scale(1.14);
+    opacity: 1;
+  }
+  18%,
+  100% {
+    transform: translate3d(-11%, -1%, 220px) scale(1.18);
+    opacity: 0;
+  }
+}
+
+/* ── 02 · LA CAVE — 179 bouteilles, la composition ───────────────────── */
+
+.planCave {
+  animation-name: planCave;
+}
+@keyframes planCave {
+  0%,
+  17% {
+    transform: translate3d(0, 3%, -360px) rotateX(5deg);
+    opacity: 0;
+  }
+  19.5% {
+    transform: translate3d(0, 0, -60px) rotateX(2deg);
+    opacity: 1;
+  }
+  /*
+    LA POUSSÉE sur le panneau de droite : « VOTRE CAVE · 179 bouteilles ·
+    COMPOSITION ». Le produit l'affiche déjà, il n'y a rien à redessiner.
+  */
+  27% {
+    transform: translate3d(-18%, 2%, 160px) rotateX(0deg) scale(1.28);
+    opacity: 1;
+  }
+  32% {
+    transform: translate3d(-19%, 2%, 180px) scale(1.32);
+    opacity: 1;
+  }
+  34.5%,
+  100% {
+    transform: translate3d(-21%, 3%, 300px) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ── 03 · LE RÉASSORT — « Aujourd'hui » le dit lui-même ──────────────── */
+
+.planAujourdhui {
+  animation-name: planAujourdhui;
+}
+@keyframes planAujourdhui {
+  0%,
+  34% {
+    transform: translate3d(-5%, 0, -300px) rotateY(7deg);
+    opacity: 0;
+  }
+  36.5% {
+    transform: translate3d(0, 0, -60px) rotateY(2deg);
+    opacity: 1;
+  }
+  /* on descend sur « 1 vin à réassortir : 4 bouteilles suggérées » */
+  44% {
+    transform: translate3d(2%, -11%, 140px) rotateY(0deg) scale(1.26);
+    opacity: 1;
+  }
+  46.5% {
+    transform: translate3d(2%, -12%, 160px) scale(1.3);
+    opacity: 1;
+  }
+  48.5%,
+  100% {
+    transform: translate3d(3%, -14%, 280px) scale(1.36);
+    opacity: 0;
+  }
+}
+
+/* ── 04 · L'INVENTAIRE — le PDF réel, généré par la v2.0.2 ───────────── */
+
+/*
+  C'est un DOCUMENT, pas une interface : il ne vieillit pas avec la coque.
+  Celui-ci porte « Vintoria 2.0.2 » dans son propre bloc de métadonnées —
+  la version précédente du film en montrait un tamponné « Vintoria 1.24.1 ».
+*/
+.planPdf {
+  left: 50%;
+  top: 50%;
+  width: 38%;
+  margin-left: -19%;
+  margin-top: -13.4%;
+  border-radius: 0.25rem;
+  background: #fff;
+  animation-name: planPdf;
+}
+@keyframes planPdf {
+  0%,
+  49% {
+    transform: translate3d(0, 24%, -20px) rotateX(44deg) scale(0.92);
+    opacity: 0;
+  }
+  53% {
+    transform: translate3d(0, 9%, 90px) rotateX(22deg) scale(0.97);
+    opacity: 1;
+  }
+  57% {
+    transform: translate3d(0, 0, 190px) rotateX(3deg) scale(1);
+    opacity: 1;
+  }
+  62% {
+    transform: translate3d(0, 0, 210px) rotateX(1deg) scale(1);
+    opacity: 1;
+  }
+  65%,
+  100% {
+    transform: translate3d(6%, -2%, 380px) scale(1.04);
+    opacity: 0;
+  }
+}
+
+/* ── 05 · LE CLIENT — le soir, l'écran redevient sombre ──────────────── */
+
+/*
+  Le parcours convive est resté SOMBRE dans le produit, et c'est juste : le
+  client est à table, le soir. Le back-office travaille de jour, en clair.
+  Ce contraste n'est pas un accident de versions : c'est la dualité du métier,
+  et le film s'en sert comme d'une respiration.
+*/
+.tel {
+  left: 50%;
+  top: 50%;
+  width: 14%;
+  margin-left: -7%;
+  margin-top: -15.1%;
+  border-radius: 0.9rem;
+  background: #170f0a;
+  box-shadow:
+    0 0 0 1px rgba(236, 229, 216, 0.2),
+    0 40px 70px -36px rgba(0, 0, 0, 0.95);
+}
+.telPlats {
+  animation-name: telPlats;
+}
+@keyframes telPlats {
+  0%,
+  64% {
+    transform: translate3d(0, 3%, -240px) rotateY(15deg);
+    opacity: 0;
+  }
+  66%,
+  70% {
+    transform: translate3d(-18%, 0, 0) rotateY(9deg);
+    opacity: 1;
+  }
+  75%,
+  100% {
+    transform: translate3d(-25%, 0, -260px) rotateY(15deg);
+    opacity: 0;
+  }
+}
+.telCouleur {
+  animation-name: telCouleur;
+}
+@keyframes telCouleur {
+  0%,
+  67% {
+    transform: translate3d(0, 3%, -240px);
+    opacity: 0;
+  }
+  69%,
+  73% {
+    transform: translate3d(0, 0, 40px);
+    opacity: 1;
+  }
+  77%,
+  100% {
+    transform: translate3d(0, 0, -260px);
+    opacity: 0;
+  }
+}
+.telResultat {
+  width: 17%;
+  margin-left: -8.5%;
+  margin-top: -18.4%;
+  animation-name: telResultat;
+}
+@keyframes telResultat {
+  0%,
+  71% {
+    transform: translate3d(0, 4%, -200px) rotateY(-13deg);
+    opacity: 0;
+  }
+  74%,
+  83% {
+    transform: translate3d(15%, 0, 120px) rotateY(-6deg);
+    opacity: 1;
+  }
+  85.5%,
+  100% {
+    transform: translate3d(11%, -3%, 330px) rotateY(0deg);
+    opacity: 0;
+  }
+}
+
+
+/* ── 06 · LA BOUCLE ──────────────────────────────────────────────────── */
+
+.boucle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.6rem, 2.4vw, 2rem);
+  animation-name: boucle;
+}
+@keyframes boucle {
+  0%,
+  84% {
+    opacity: 0;
+  }
+  85%,
+  93% {
+    opacity: 1;
+  }
+  94.5%,
+  100% {
+    opacity: 0;
+  }
+}
+.maillon {
+  position: relative;
+  font-family: var(--font-voix), serif;
+  font-size: clamp(0.7rem, 2.1vw, 1.7rem);
+  color: #ece5d8;
+}
+.maillon:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: clamp(-1.3rem, -1.6vw, -0.45rem);
+  color: #d4b96a;
+  font-size: 0.62em;
+}
+.film .m1,
+.film .m2,
+.film .m3,
+.film .m4 {
+  animation-name: maillon;
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes maillon {
+  0% {
+    transform: translateY(0.5em) scale(0.94);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+.film .m1 {
+  animation-delay: 27.3s;
+}
+.film .m2 {
+  animation-delay: 27.7s;
+}
+.film .m3 {
+  animation-delay: 28.1s;
+}
+.film .m4 {
+  animation-delay: 28.5s;
+}
+
+/* ── 07 · VINTORIA ───────────────────────────────────────────────────── */
+
+.marque {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 43%;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-voix), serif;
+  font-size: clamp(0.95rem, 3.4vw, 2.6rem);
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  color: #ece5d8;
+  animation-name: marque;
+}
+/* Arrivée en profondeur, jamais en `letter-spacing` : mesuré, l'interlettrage
+   animé coûtait 24 mises en page par seconde quand tout le reste en fait zéro. */
+@keyframes marque {
+  0%,
+  93.5% {
+    transform: translate3d(0, 0.16em, -380px) scale(1.12);
+    opacity: 0;
+  }
+  97% {
+    transform: translate3d(0, 0, -30px) scale(1.01);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+.signature {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 56%;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-structure), system-ui, sans-serif;
+  font-size: clamp(0.3rem, 0.78vw, 0.62rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #837d73;
+  animation-name: signature;
+}
+@keyframes signature {
+  0%,
+  96% {
+    transform: translateY(0.5em);
+    opacity: 0;
+  }
+  99%,
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── LES PHRASES ─────────────────────────────────────────────────────── */
+
+/*
+  LE VOILE EST INDISPENSABLE MAINTENANT. Les écrans sont CLAIRS : du texte
+  crème posé dessus serait invisible. Le voile porte donc tout le bas du
+  cadre, et il est franc. Il est STATIQUE — une seule passe de peinture — et
+  déclaré AVANT les phrases, sinon il éteindrait le texte qu'il doit servir.
+*/
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      rgba(11, 10, 12, 0.97) 0%,
+      rgba(11, 10, 12, 0.92) 11%,
+      rgba(11, 10, 12, 0.6) 19%,
+      transparent 29%
+    ),
+    radial-gradient(
+      86% 74% at 50% 46%,
+      transparent 56%,
+      rgba(0, 0, 0, 0.26) 90%,
+      rgba(0, 0, 0, 0.44) 100%
+    );
+}
+
+.phrases {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 6.5%;
+  text-align: center;
+  pointer-events: none;
+}
+.phrase {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  font-family: var(--font-voix), serif;
+  font-size: clamp(0.76rem, 2vw, 1.55rem);
+  line-height: 1.22;
+  color: #ece5d8;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.95);
+}
+.phrase1 {
+  animation-name: phrase1;
+}
+.phrase2 {
+  animation-name: phrase2;
+}
+.phrase3 {
+  animation-name: phrase3;
+}
+.phrase4 {
+  animation-name: phrase4;
+}
+.phrase5 {
+  animation-name: phrase5;
+}
+@keyframes phrase1 {
+  0% {
+    transform: translateY(0.9em);
+    opacity: 0;
+  }
+  3%,
+  15% {
+    transform: none;
+    opacity: 1;
+  }
+  17%,
+  100% {
+    transform: translateY(-0.9em);
+    opacity: 0;
+  }
+}
+@keyframes phrase2 {
+  0%,
+  17% {
+    transform: translateY(0.9em);
+    opacity: 0;
+  }
+  19.5%,
+  32% {
+    transform: none;
+    opacity: 1;
+  }
+  34%,
+  100% {
+    transform: translateY(-0.9em);
+    opacity: 0;
+  }
+}
+@keyframes phrase3 {
+  0%,
+  34.5% {
+    transform: translateY(0.9em);
+    opacity: 0;
+  }
+  36.5%,
+  46% {
+    transform: none;
+    opacity: 1;
+  }
+  48%,
+  100% {
+    transform: translateY(-0.9em);
+    opacity: 0;
+  }
+}
+@keyframes phrase4 {
+  0%,
+  48.5% {
+    transform: translateY(0.9em);
+    opacity: 0;
+  }
+  50.5%,
+  62% {
+    transform: none;
+    opacity: 1;
+  }
+  64%,
+  100% {
+    transform: translateY(-0.9em);
+    opacity: 0;
+  }
+}
+@keyframes phrase5 {
+  0%,
+  64.5% {
+    transform: translateY(0.9em);
+    opacity: 0;
+  }
+  66.5%,
+  82% {
+    transform: none;
+    opacity: 1;
+  }
+  84%,
+  100% {
+    transform: translateY(-0.9em);
+    opacity: 0;
+  }
+}
+
+/* ── ÉTATS ───────────────────────────────────────────────────────────── */
+
+/* Mouvement réduit ou économie de données : on ne joue rien, on compose
+   l'image qui dit le plus — la recommandation à table. */
+.statique [data-anim] {
+  animation: none !important;
+}
+.statique .telResultat {
+  transform: translate3d(15%, 0, 120px) rotateY(-6deg);
+  opacity: 1;
+}
+.statique .phrase5 {
+  transform: none;
+  opacity: 1;
+}
+.statique .planCarte,
+.statique .planAjouter,
+.statique .planCave,
+.statique .planAujourdhui,
+.statique .planPdf,
+.statique .telPlats,
+.statique .telCouleur,
+.statique .boucle,
+.statique .marque,
+.statique .signature,
+.statique .phrase1,
+.statique .phrase2,
+.statique .phrase3,
+.statique .phrase4 {
+  opacity: 0;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+
+/*
+  Sous 760 px le cadre passe en 4/3 : un 16/9 de 390 px ne fait que 219 px de
+  haut. Les écrans de bureau y occupent toute la largeur — on n'y lit pas le
+  détail, mais on reconnaît un vrai logiciel, clair et ordonné, et c'est ce
+  qu'ils ont à dire. Les poussées de caméra sont renforcées, parce qu'à cette
+  taille c'est le seul moyen de rendre un chiffre lisible.
+*/
+@media (max-width: 760px) {
+  .film {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.75rem;
+    --prof: 1000px;
+  }
+  .planCarte,
+  .planAjouter,
+  .planCave,
+  .planAujourdhui {
+    width: 96%;
+    margin-left: -48%;
+    margin-top: -30%;
+  }
+  .planPdf {
+    width: 56%;
+    margin-left: -28%;
+    margin-top: -19.8%;
+  }
+  .tel {
+    width: 25%;
+    margin-left: -12.5%;
+    margin-top: -27%;
+  }
+  /* Le conseil en DOM disparaît : il doublonnait avec le téléphone, déjà
+     lisible, et se superposait à lui. */
+  .telResultat {
+    width: 26%;
+    margin-left: -13%;
+    margin-top: -32%;
+    top: 46%;
+  }
+  .phrases {
+    left: 4%;
+    right: 4%;
+    bottom: 5.5%;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .film {
+    aspect-ratio: 2 / 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film [data-anim] {
+    animation: none !important;
+  }
+}
