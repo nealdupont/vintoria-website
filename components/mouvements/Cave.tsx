@@ -1,7 +1,7 @@
 /**
  * LA CAVE — le seul mouvement de jour.
  *
- * Un restaurant a deux temps. Le service se passe le soir, à l'encre : c'est
+ * Un restaurant a deux temps. Le service se passe le soir, dans la nuit : c'est
  * tout le reste de cette page. Le travail de la cave se fait le matin, dans
  * la lumière, avec un carnet et des cartons. La bascule sur le crème n'est
  * pas une respiration graphique : c'est le changement d'heure qui raconte le
@@ -9,8 +9,8 @@
  *
  * La classe `jour` redéfinit les jetons sémantiques pour tout le sous-arbre.
  * Les composants écrivent `text-fort` et `text-accent` comme partout
- * ailleurs — mais l'accent devient la braise, parce que l'or ne donne que
- * 1,53:1 sur le crème et y serait illisible. Voir app/globals.css.
+ * ailleurs — mais l'accent passe du bordeaux 400 (lisible sur la nuit) au bordeaux 700
+ * (lisible sur le crème) : le thème crème de la marque. Voir app/globals.css.
  *
  * Les intitulés ci-dessous sont ceux de Vintoria Pro, repris mot pour mot
  * de ses dictionnaires : rien n'est inventé pour la vitrine.
