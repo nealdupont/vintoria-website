@@ -43,7 +43,7 @@
   overflow: hidden;
   border-radius: 1rem;
   /* Le fond vit ICI, jamais sur `.scene` : voir la règle ci-dessus. */
-  background: radial-gradient(130% 100% at 50% 110%, #1d140e 0%, #130d09 48%, #0b0a0c 82%);
+  background: radial-gradient(130% 100% at 50% 110%, var(--vintoria-nuit-eleve) 0%, var(--vintoria-nuit-surface) 48%, var(--vintoria-nuit-fond) 82%);
   contain: layout paint style;
 }
 
@@ -76,10 +76,10 @@
   position: absolute;
   overflow: hidden;
   border-radius: 0.5rem;
-  background: #f7f4ec;
+  background: var(--vintoria-creme-surface);
   box-shadow:
-    0 0 0 1px rgba(11, 10, 12, 0.5),
-    0 0 90px -12px rgba(247, 244, 236, 0.17),
+    0 0 0 1px color-mix(in srgb, var(--vintoria-nuit-fond) 50%, transparent),
+    0 0 90px -12px color-mix(in srgb, var(--vintoria-creme-surface) 17%, transparent),
     0 48px 90px -42px rgba(0, 0, 0, 0.9);
   opacity: 0;
 }
@@ -274,9 +274,9 @@
   margin-left: -7%;
   margin-top: -15.1%;
   border-radius: 0.9rem;
-  background: #170f0a;
+  background: var(--vintoria-nuit-surface);
   box-shadow:
-    0 0 0 1px rgba(236, 229, 216, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--vintoria-nuit-texte) 20%, transparent),
     0 40px 70px -36px rgba(0, 0, 0, 0.95);
 }
 .telPlats {
@@ -373,15 +373,15 @@
 }
 .maillon {
   position: relative;
-  font-family: var(--font-voix), serif;
+  font-family: var(--font-voix);
   font-size: clamp(0.7rem, 2.1vw, 1.7rem);
-  color: #ece5d8;
+  color: var(--vintoria-nuit-texte);
 }
 .maillon:not(:last-child)::after {
   content: "→";
   position: absolute;
   right: clamp(-1.3rem, -1.6vw, -0.45rem);
-  color: #d4b96a;
+  color: var(--vintoria-nuit-accent);
   font-size: 0.62em;
 }
 .film .m1,
@@ -424,12 +424,14 @@
   top: 43%;
   margin: 0;
   text-align: center;
-  font-family: var(--font-voix), serif;
-  font-size: clamp(0.95rem, 3.4vw, 2.6rem);
-  letter-spacing: 0.34em;
-  text-indent: 0.34em;
-  color: #ece5d8;
   animation-name: marque;
+}
+/* Le wordmark de la marque, en tracés SVG : sa hauteur suit le cadre. */
+.marque img {
+  display: block;
+  width: auto;
+  height: clamp(0.7rem, 2.4vw, 1.85rem);
+  margin-inline: auto;
 }
 /* Arrivée en profondeur, jamais en `letter-spacing` : mesuré, l'interlettrage
    animé coûtait 24 mises en page par seconde quand tout le reste en fait zéro. */
@@ -455,11 +457,11 @@
   top: 56%;
   margin: 0;
   text-align: center;
-  font-family: var(--font-structure), system-ui, sans-serif;
+  font-family: var(--font-interface);
   font-size: clamp(0.3rem, 0.78vw, 0.62rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #837d73;
+  color: var(--vintoria-nuit-texte-discret);
   animation-name: signature;
 }
 @keyframes signature {
@@ -490,9 +492,9 @@
   background:
     linear-gradient(
       to top,
-      rgba(11, 10, 12, 0.97) 0%,
-      rgba(11, 10, 12, 0.92) 11%,
-      rgba(11, 10, 12, 0.6) 19%,
+      color-mix(in srgb, var(--vintoria-nuit-fond) 97%, transparent) 0%,
+      color-mix(in srgb, var(--vintoria-nuit-fond) 92%, transparent) 11%,
+      color-mix(in srgb, var(--vintoria-nuit-fond) 60%, transparent) 19%,
       transparent 29%
     ),
     radial-gradient(
@@ -517,10 +519,10 @@
   right: 0;
   bottom: 0;
   margin: 0;
-  font-family: var(--font-voix), serif;
+  font-family: var(--font-voix);
   font-size: clamp(0.76rem, 2vw, 1.55rem);
   line-height: 1.22;
-  color: #ece5d8;
+  color: var(--vintoria-nuit-texte);
   text-shadow: 0 2px 22px rgba(0, 0, 0, 0.95);
 }
 .phrase1 {

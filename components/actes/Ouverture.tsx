@@ -10,7 +10,7 @@ import { ROBES, variablesRobe } from "@/lib/robes";
  *
  * Une seule colonne centrée, 70 % de vide. Le regard n'a aucun choix à
  * faire : à chaque étape, un seul élément est le plus contrasté de l'écran.
- *   sceau → VINTORIA → l'accroche → l'explication → le CTA → descendre
+ *   symbole → wordmark → l'accroche → l'explication → le CTA → descendre
  *
  * L'accroche crée l'émotion ; la ligne suivante supprime toute ambiguïté.
  * On raconte la valeur vécue par le CLIENT à table, jamais la mécanique
@@ -41,7 +41,7 @@ export function Ouverture() {
       {/* Le voile qui garantit que le texte domine toujours */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-encre via-encre/92 to-encre/45 sm:via-encre/85 sm:to-transparent"
+        className="absolute inset-0 bg-gradient-to-r from-nuit via-nuit/92 to-nuit/45 sm:via-nuit/85 sm:to-transparent"
       />
 
       <div className="px relative z-10 mx-auto w-full max-w-[1500px]">
@@ -53,24 +53,31 @@ export function Ouverture() {
             transition={{ ...t(0.15), duration: reduce ? 0 : 1.1 }}
           >
             <Image
-              src="/vintoria-logo.png"
+              src="/marque/symbole-tonal-creme.png"
               alt=""
-              width={422}
-              height={512}
+              width={950}
+              height={780}
               priority
               className="h-14 w-auto sm:h-16"
             />
           </motion.div>
 
           <h1 className="mt-10 flex flex-col items-center">
-            {/* VINTORIA — l'interlettrage se resserre en se posant */}
+            {/* Le wordmark officiel, en tracés SVG — jamais recomposé en texte. */}
             <motion.span
-              className="voix block text-[clamp(2.9rem,10.5vw,9rem)] leading-[0.92] text-os"
-              initial={{ opacity: 0, letterSpacing: reduce ? "0.14em" : "0.42em" }}
-              animate={{ opacity: 1, letterSpacing: "0.14em" }}
+              className="block w-[clamp(14rem,72vw,40rem)]"
+              initial={{ opacity: 0, scale: reduce ? 1 : 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ ...t(0.5), duration: reduce ? 0 : 1.4 }}
             >
-              VINTORIA
+              <Image
+                src="/marque/wordmark-creme.svg"
+                alt="Vintoria"
+                width={1059}
+                height={102}
+                priority
+                className="h-auto w-full"
+              />
             </motion.span>
 
             {/* L'accroche — l'émotion */}
@@ -105,7 +112,7 @@ export function Ouverture() {
           >
             <a
               href="#reserver"
-              className="group inline-flex min-h-[3.25rem] items-center gap-3 whitespace-nowrap rounded-full bg-os px-8 text-[0.75rem] uppercase tracking-[0.12em] text-encre transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-14px_rgba(236,229,216,0.5)] sm:px-9 sm:tracking-[0.16em]"
+              className="group inline-flex min-h-[3.25rem] items-center gap-3 whitespace-nowrap rounded-full bg-os px-8 text-[0.75rem] uppercase tracking-[0.12em] text-nuit transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-14px_rgb(237_232_229/0.5)] sm:px-9 sm:tracking-[0.16em]"
             >
               Réserver une démonstration
               <span

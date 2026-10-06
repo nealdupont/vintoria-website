@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /**
@@ -12,11 +13,18 @@ export function Pied() {
   const annee = new Date().getFullYear();
 
   return (
-    <footer className="px border-t border-filet bg-encre pb-[calc(3rem_+_env(safe-area-inset-bottom))] pt-16">
+    <footer className="px border-t border-filet bg-nuit pb-[calc(3rem_+_env(safe-area-inset-bottom))] pt-16">
       <div className="mx-auto max-w-[1180px]">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="voix text-[1.05rem] tracking-[0.3em] text-os">VINTORIA</p>
+            {/* Le lockup horizontal de la marque, variante `fonce`. */}
+            <Image
+              src="/marque/lockup-horizontal-fonce.svg"
+              alt="Vintoria"
+              width={1606}
+              height={400}
+              className="h-9 w-auto"
+            />
             <p className="t-meta mt-3 max-w-[34ch] text-cendre-2">
               L’expertise du sommelier, à chaque table.
             </p>
@@ -42,7 +50,7 @@ export function Pied() {
               </li>
               <li>
                 <a
-                  href="https://vintoria.app"
+                  href="https://www.vintoria.app"
                   className="t-corps inline-flex min-h-11 items-center text-cendre transition-colors duration-300 hover:text-os"
                 >
                   Accéder à Vintoria

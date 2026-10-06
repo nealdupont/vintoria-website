@@ -42,7 +42,7 @@ const MOUVEMENTS: Entree[] = [
 ];
 
 const FORMULES: Entree = { href: "/tarifs", label: "Formules" };
-const ACCES: Entree = { href: "https://vintoria.app", label: "Accéder à Vintoria", externe: true };
+const ACCES: Entree = { href: "https://www.vintoria.app", label: "Accéder à Vintoria", externe: true };
 
 export function Chrome() {
   const chemin = usePathname();
@@ -155,9 +155,9 @@ export function Chrome() {
       <header
         className={`fixed inset-x-0 top-0 z-50 animate-[entree_1.2s_cubic-bezier(0.16,1,0.3,1)_0.15s_both] pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           pose || ouvert
-            ? "border-b border-[color:var(--color-filet)] bg-encre/72 backdrop-blur-xl"
+            ? "border-b border-[color:var(--color-filet)] bg-nuit/72 backdrop-blur-xl"
             : "border-b border-transparent"
-        } ${ouvert ? "bg-encre" : ""}`}
+        } ${ouvert ? "bg-nuit" : ""}`}
       >
         <div className="px flex h-[4.5rem] items-center justify-between gap-4 lg:gap-6 xl:gap-8">
           {/* La marque */}
@@ -172,22 +172,32 @@ export function Chrome() {
              */
             prefetch={false}
             aria-label="Vintoria, accueil"
-            /* `min-w-11` : sous `sm` le mot VINTORIA disparaît et il ne reste
-               que le sceau de 24 px — en dessous de la cible tactile. */
-            className="flex min-h-11 min-w-11 shrink-0 items-center gap-3 pr-1"
+            /* `min-w-11` : sous `sm` il ne reste que le symbole de 24 px —
+               en dessous de la cible tactile. */
+            className="flex min-h-11 min-w-11 shrink-0 items-center pr-1"
           >
+            {/*
+              Le logo de la marque, variante `fonce` (fond nuit). Deux formes,
+              jamais recomposées ici : le symbole tonal crème seul quand la
+              place manque (24 px, le minimum officiel), le lockup horizontal
+              de vintoria-brand quand elle le permet (128 px, au-dessus des
+              120 px minimum).
+            */}
             <Image
-              src="/vintoria-logo.webp"
+              src="/marque/symbole-tonal-creme.png"
               alt=""
-              width={256}
-              height={311}
-              sizes="24px"
-              priority
-              className="h-6 w-auto"
+              width={950}
+              height={780}
+              sizes="30px"
+              className="h-6 w-auto sm:hidden lg:block xl:hidden"
             />
-            <span className="voix hidden text-[0.95rem] tracking-[0.3em] text-os sm:inline lg:hidden xl:inline">
-              VINTORIA
-            </span>
+            <Image
+              src="/marque/lockup-horizontal-fonce.svg"
+              alt=""
+              width={1606}
+              height={400}
+              className="hidden h-8 w-auto sm:block lg:hidden xl:block"
+            />
           </Link>
 
           {/* Les liens — grand écran, très espacés */}
@@ -267,14 +277,14 @@ export function Chrome() {
           role="dialog"
           aria-modal="true"
           aria-label="Sommaire"
-          className="fixed inset-x-0 bottom-0 top-[calc(4.5rem_+_env(safe-area-inset-top))] z-40 animate-[entree_0.32s_cubic-bezier(0.16,1,0.3,1)_both] overflow-y-auto bg-encre lg:hidden"
+          className="fixed inset-x-0 bottom-0 top-[calc(4.5rem_+_env(safe-area-inset-top))] z-40 animate-[entree_0.32s_cubic-bezier(0.16,1,0.3,1)_both] overflow-y-auto bg-nuit lg:hidden"
         >
           <div className="px flex min-h-full flex-col pb-[calc(3rem_+_env(safe-area-inset-bottom))] pt-6">
             <ul>
               {sommaire.map((l, i) => {
                 const contenu = (
                   <>
-                    <span className="data w-6 shrink-0 text-[0.75rem] text-laiton">
+                    <span className="data w-6 shrink-0 text-[0.75rem] text-accent">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span

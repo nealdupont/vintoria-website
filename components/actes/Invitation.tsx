@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Line } from "@/components/Line";
 
 /**
@@ -23,7 +24,7 @@ export function Invitation() {
         className="pointer-events-none absolute left-1/2 top-1/3 h-[60vh] w-[60vh] -translate-x-1/2 rounded-full opacity-80"
         style={{
           background:
-            "radial-gradient(circle, rgba(232,200,140,0.16), rgba(110,16,35,0.10) 42%, transparent 70%)",
+            "radial-gradient(circle, color-mix(in srgb, var(--vintoria-nuit-accent) 16%, transparent), color-mix(in srgb, var(--vintoria-bordeaux-700) 10%, transparent) 42%, transparent 70%)",
         }}
       />
 
@@ -41,7 +42,7 @@ export function Invitation() {
             <h2 className="voix t-display text-os">
               <Line inView>Faites entrer un sommelier</Line>
               <Line inView delay={0.08}>
-                <span className="italic text-tungstene">
+                <span className="italic text-accent">
                   à chaque table.
                 </span>
               </Line>
@@ -50,7 +51,7 @@ export function Invitation() {
             <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-5">
               <a
                 href="mailto:contact@vintoria.com?subject=D%C3%A9monstration%20Vintoria&body=Bonjour%2C%0A%0AJe%20souhaite%20r%C3%A9server%20une%20d%C3%A9monstration%20de%20Vintoria.%0A%0A%C3%89tablissement%20%3A%0AVille%20%3A%0ACouverts%20par%20service%20%3A%0AR%C3%A9f%C3%A9rences%20%C3%A0%20la%20carte%20%3A%0A%0AMerci."
-                className="group inline-flex min-h-[3.25rem] items-center gap-3 whitespace-nowrap rounded-full bg-os px-6 text-[0.75rem] uppercase tracking-[0.11em] text-encre sm:px-9 sm:tracking-[0.16em] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_12px_36px_-12px_rgba(236,229,216,0.5)]"
+                className="group inline-flex min-h-[3.25rem] items-center gap-3 whitespace-nowrap rounded-full bg-os px-6 text-[0.75rem] uppercase tracking-[0.11em] text-nuit sm:px-9 sm:tracking-[0.16em] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_12px_36px_-12px_rgb(237_232_229/0.5)]"
               >
                 Réserver une démonstration
                 <span
@@ -73,7 +74,7 @@ export function Invitation() {
                 key={e.t}
                 className="grid grid-cols-[5.5rem_1fr] gap-x-6 border-b border-[color:var(--color-filet)] py-6"
               >
-                <span className="data pt-1 text-[0.75rem] text-laiton">
+                <span className="data pt-1 text-[0.75rem] text-accent">
                   {e.t}
                 </span>
                 <p className="t-corps text-cendre">{e.d}</p>
@@ -83,7 +84,13 @@ export function Invitation() {
         </div>
 
         <footer className="mt-28 flex flex-wrap items-baseline justify-between gap-6 border-t border-[color:var(--color-filet)] pt-10">
-          <span className="voix text-lg tracking-[0.2em] text-os">VINTORIA</span>
+          <Image
+            src="/marque/wordmark-creme.svg"
+            alt="Vintoria"
+            width={1059}
+            height={102}
+            className="h-3 w-auto"
+          />
           <span className="eyebrow">
             L’expertise du sommelier, à chaque table
           </span>

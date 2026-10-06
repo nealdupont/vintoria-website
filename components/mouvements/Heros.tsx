@@ -11,7 +11,7 @@ import { ROBES, variablesRobe } from "@/lib/robes";
  *
  * Une seule colonne centrée, beaucoup de vide. Le regard n'a aucun choix à
  * faire : à chaque étape, un seul élément est le plus contrasté de l'écran.
- *   sceau → VINTORIA → l'accroche → l'explication → le CTA → pour qui
+ *   symbole → wordmark → l'accroche → l'explication → le CTA → pour qui
  *
  * L'accroche crée l'émotion ; la ligne suivante supprime toute ambiguïté.
  * On raconte la valeur vécue par le CLIENT à table, jamais la mécanique
@@ -47,37 +47,48 @@ export function Heros() {
       {/* Le voile qui garantit que le texte domine toujours */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-encre via-encre/92 to-encre/45 sm:via-encre/85 sm:to-transparent"
+        className="absolute inset-0 bg-gradient-to-r from-nuit via-nuit/92 to-nuit/45 sm:via-nuit/85 sm:to-transparent"
       />
 
       <div className="px relative z-10 mx-auto w-full max-w-[1500px] py-28">
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-          {/* Le sceau */}
+          {/* Le symbole — variante tonale crème, celle des fonds sombres */}
           <motion.div
             initial={{ opacity: 0, scale: reduce ? 1 : 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ ...t(0.15), duration: reduce ? 0 : 1.1 }}
           >
             <Image
-              src="/vintoria-logo.webp"
+              src="/marque/symbole-tonal-creme.png"
               alt=""
-              width={256}
-              height={311}
-              sizes="(min-width: 640px) 64px, 56px"
+              width={950}
+              height={780}
+              sizes="(min-width: 640px) 78px, 68px"
               priority
               className="h-14 w-auto sm:h-16"
             />
           </motion.div>
 
           <h1 className="mt-10 flex flex-col items-center">
-            {/* VINTORIA — l'interlettrage se resserre en se posant */}
+            {/*
+              Le wordmark officiel, en tracés SVG — jamais recomposé en texte.
+              Il arrive en profondeur : une échelle uniforme, jamais un
+              interlettrage animé, qui déformerait le dessin de la marque.
+            */}
             <motion.span
-              className="voix block text-[clamp(2.9rem,10.5vw,9rem)] leading-[0.92] text-os"
-              initial={{ opacity: 0, letterSpacing: reduce ? "0.14em" : "0.42em" }}
-              animate={{ opacity: 1, letterSpacing: "0.14em" }}
+              className="block w-[clamp(14rem,72vw,40rem)]"
+              initial={{ opacity: 0, scale: reduce ? 1 : 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ ...t(0.5), duration: reduce ? 0 : 1.4 }}
             >
-              VINTORIA
+              <Image
+                src="/marque/wordmark-creme.svg"
+                alt="Vintoria"
+                width={1059}
+                height={102}
+                priority
+                className="h-auto w-full"
+              />
             </motion.span>
 
             {/* L'accroche — l'émotion */}
