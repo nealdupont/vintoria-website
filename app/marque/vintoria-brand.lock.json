@@ -2,18 +2,18 @@
   "$description": "Verrou de marque — écrit par vintoria-brand (scripts/sync.mjs). Ne pas modifier : changer la marque dans vintoria-brand puis resynchroniser.",
   "marque": "vintoria-brand",
   "version": "2026.1.0",
-  "commit": "0a641f4",
+  "commit": "1dd7ffd",
   "cible": "website",
   "fichiers": [
     {
       "fichier": "app/marque/vintoria.css",
       "source": "tokens/vintoria.css",
-      "sha256": "ee4648449bc1a14c6288adaa0f24267a5803ce30c3ef198a119ee3de48dfa089"
+      "sha256": "1b9abcdc3114ad7227efcbec7829aa5f3713bebd53f65382101297d0fae96a2e"
     },
     {
       "fichier": "app/marque/tailwind.css",
       "source": "tokens/tailwind.css",
-      "sha256": "f781098b9ac46d9f2e0d1feb5ea680736dc7ec73a174a6078ae96f197fd13169"
+      "sha256": "915736fe7f04ef4b76de6af363f3844ec65596be4f43de2763cb7a38b5c6c793"
     },
     {
       "fichier": "app/favicon.ico",

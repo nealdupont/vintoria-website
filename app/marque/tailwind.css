@@ -41,6 +41,9 @@
   --color-v-accent-survol: var(--vintoria-accent-survol);
   --color-v-sur-accent: var(--vintoria-sur-accent);
   --color-v-accent-voile: var(--vintoria-accent-voile);
+  --color-v-action: var(--vintoria-action);
+  --color-v-action-survol: var(--vintoria-action-survol);
+  --color-v-sur-action: var(--vintoria-sur-action);
   --color-v-focus: var(--vintoria-focus);
   --color-v-succes: var(--vintoria-succes);
   --color-v-attention: var(--vintoria-attention);

@@ -39,6 +39,9 @@
   --vintoria-creme-accent-survol: #5D1A33;
   --vintoria-creme-sur-accent: #F8F1EA;
   --vintoria-creme-accent-voile: rgb(114 35 64 / 0.07);
+  --vintoria-creme-action: #722340;
+  --vintoria-creme-action-survol: #5D1A33;
+  --vintoria-creme-sur-action: #F8F1EA;
   --vintoria-creme-focus: #722340;
   --vintoria-creme-succes: #3D6A4C;
   --vintoria-creme-attention: #87591F;
@@ -61,6 +64,9 @@
   --vintoria-pierre-accent-survol: #5D1A33;
   --vintoria-pierre-sur-accent: #FAF9F6;
   --vintoria-pierre-accent-voile: rgb(114 35 64 / 0.07);
+  --vintoria-pierre-action: #722340;
+  --vintoria-pierre-action-survol: #5D1A33;
+  --vintoria-pierre-sur-action: #FAF9F6;
   --vintoria-pierre-focus: #722340;
   --vintoria-pierre-succes: #3D6A4C;
   --vintoria-pierre-attention: #87591F;
@@ -83,6 +89,9 @@
   --vintoria-nuit-accent-survol: #F0AABD;
   --vintoria-nuit-sur-accent: #290914;
   --vintoria-nuit-accent-voile: rgb(222 128 156 / 0.1);
+  --vintoria-nuit-action: #722340;
+  --vintoria-nuit-action-survol: #9E3B5E;
+  --vintoria-nuit-sur-action: #F8F1EA;
   --vintoria-nuit-focus: #DE809C;
   --vintoria-nuit-succes: #86B395;
   --vintoria-nuit-attention: #D9955A;
@@ -158,6 +167,9 @@
   --vintoria-accent-survol: var(--vintoria-creme-accent-survol);
   --vintoria-sur-accent: var(--vintoria-creme-sur-accent);
   --vintoria-accent-voile: var(--vintoria-creme-accent-voile);
+  --vintoria-action: var(--vintoria-creme-action);
+  --vintoria-action-survol: var(--vintoria-creme-action-survol);
+  --vintoria-sur-action: var(--vintoria-creme-sur-action);
   --vintoria-focus: var(--vintoria-creme-focus);
   --vintoria-succes: var(--vintoria-creme-succes);
   --vintoria-attention: var(--vintoria-creme-attention);
@@ -182,6 +194,9 @@
   --vintoria-accent-survol: var(--vintoria-pierre-accent-survol);
   --vintoria-sur-accent: var(--vintoria-pierre-sur-accent);
   --vintoria-accent-voile: var(--vintoria-pierre-accent-voile);
+  --vintoria-action: var(--vintoria-pierre-action);
+  --vintoria-action-survol: var(--vintoria-pierre-action-survol);
+  --vintoria-sur-action: var(--vintoria-pierre-sur-action);
   --vintoria-focus: var(--vintoria-pierre-focus);
   --vintoria-succes: var(--vintoria-pierre-succes);
   --vintoria-attention: var(--vintoria-pierre-attention);
@@ -206,6 +221,9 @@
   --vintoria-accent-survol: var(--vintoria-nuit-accent-survol);
   --vintoria-sur-accent: var(--vintoria-nuit-sur-accent);
   --vintoria-accent-voile: var(--vintoria-nuit-accent-voile);
+  --vintoria-action: var(--vintoria-nuit-action);
+  --vintoria-action-survol: var(--vintoria-nuit-action-survol);
+  --vintoria-sur-action: var(--vintoria-nuit-sur-action);
   --vintoria-focus: var(--vintoria-nuit-focus);
   --vintoria-succes: var(--vintoria-nuit-succes);
   --vintoria-attention: var(--vintoria-nuit-attention);
