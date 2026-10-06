@@ -1,0 +1,84 @@
+/*
+ * Vintoria — tailwind.css. GÉNÉRÉ par vintoria-brand (npm run build) depuis tokens/tokens.json.
+ * Ne pas modifier à la main : toute évolution se fait dans vintoria-brand, puis se synchronise.
+ *
+ * Tailwind v4. À importer APRÈS vintoria.css :
+ *   @import './vintoria.css';  @import './tailwind.css';
+ * Classes : bg-bordeaux-700 · text-encre · bg-creme · bg-v-fond · text-v-texte-discret ·
+ *           border-v-filet · bg-v-accent · font-voix · font-interface · rounded-v-carte
+ */
+@theme inline {
+  --color-bordeaux: var(--vintoria-bordeaux);
+  --color-vin: var(--vintoria-vin);
+  --color-vin-clair: var(--vintoria-vin-clair);
+  --color-creme: var(--vintoria-creme);
+  --color-creme-tuile: var(--vintoria-creme-tuile);
+  --color-encre: var(--vintoria-encre);
+  --color-noir: var(--vintoria-noir);
+  --color-gris-fonce: var(--vintoria-gris-fonce);
+  --color-gris-clair: var(--vintoria-gris-clair);
+  --color-bordeaux-50: var(--vintoria-bordeaux-50);
+  --color-bordeaux-100: var(--vintoria-bordeaux-100);
+  --color-bordeaux-200: var(--vintoria-bordeaux-200);
+  --color-bordeaux-300: var(--vintoria-bordeaux-300);
+  --color-bordeaux-400: var(--vintoria-bordeaux-400);
+  --color-bordeaux-500: var(--vintoria-bordeaux-500);
+  --color-bordeaux-600: var(--vintoria-bordeaux-600);
+  --color-bordeaux-700: var(--vintoria-bordeaux-700);
+  --color-bordeaux-800: var(--vintoria-bordeaux-800);
+  --color-bordeaux-900: var(--vintoria-bordeaux-900);
+  --color-bordeaux-950: var(--vintoria-bordeaux-950);
+  --color-v-fond: var(--vintoria-fond);
+  --color-v-surface: var(--vintoria-surface);
+  --color-v-eleve: var(--vintoria-eleve);
+  --color-v-voile: var(--vintoria-voile);
+  --color-v-texte: var(--vintoria-texte);
+  --color-v-texte-secondaire: var(--vintoria-texte-secondaire);
+  --color-v-texte-discret: var(--vintoria-texte-discret);
+  --color-v-filet: var(--vintoria-filet);
+  --color-v-filet-fort: var(--vintoria-filet-fort);
+  --color-v-accent: var(--vintoria-accent);
+  --color-v-accent-survol: var(--vintoria-accent-survol);
+  --color-v-sur-accent: var(--vintoria-sur-accent);
+  --color-v-accent-voile: var(--vintoria-accent-voile);
+  --color-v-action: var(--vintoria-action);
+  --color-v-action-survol: var(--vintoria-action-survol);
+  --color-v-sur-action: var(--vintoria-sur-action);
+  --color-v-focus: var(--vintoria-focus);
+  --color-v-succes: var(--vintoria-succes);
+  --color-v-attention: var(--vintoria-attention);
+  --color-v-erreur: var(--vintoria-erreur);
+  --color-v-info: var(--vintoria-info);
+  --color-v-survol: var(--vintoria-survol);
+  --color-v-presse: var(--vintoria-presse);
+  --font-voix: var(--vintoria-police-voix);
+  --font-interface: var(--vintoria-police-interface);
+  --text-v-12: var(--vintoria-texte-12);
+  --text-v-12--line-height: var(--vintoria-texte-12-interligne);
+  --text-v-14: var(--vintoria-texte-14);
+  --text-v-14--line-height: var(--vintoria-texte-14-interligne);
+  --text-v-16: var(--vintoria-texte-16);
+  --text-v-16--line-height: var(--vintoria-texte-16-interligne);
+  --text-v-20: var(--vintoria-texte-20);
+  --text-v-20--line-height: var(--vintoria-texte-20-interligne);
+  --text-v-24: var(--vintoria-texte-24);
+  --text-v-24--line-height: var(--vintoria-texte-24-interligne);
+  --text-v-32: var(--vintoria-texte-32);
+  --text-v-32--line-height: var(--vintoria-texte-32-interligne);
+  --text-v-38: var(--vintoria-texte-38);
+  --text-v-38--line-height: var(--vintoria-texte-38-interligne);
+  --text-v-48: var(--vintoria-texte-48);
+  --text-v-48--line-height: var(--vintoria-texte-48-interligne);
+  --text-v-64: var(--vintoria-texte-64);
+  --text-v-64--line-height: var(--vintoria-texte-64-interligne);
+  --radius-v-s: var(--vintoria-rayon-s);
+  --radius-v-m: var(--vintoria-rayon-m);
+  --radius-v-controle: var(--vintoria-rayon-controle);
+  --radius-v-l: var(--vintoria-rayon-l);
+  --radius-v-carte: var(--vintoria-rayon-carte);
+  --radius-v-feuille: var(--vintoria-rayon-feuille);
+  --shadow-v: var(--vintoria-ombre);
+  --ease-v-sortie: var(--vintoria-courbe-sortie);
+  --ease-v-entree: var(--vintoria-courbe-entree);
+  --ease-v-etat: var(--vintoria-courbe-etat);
+}
