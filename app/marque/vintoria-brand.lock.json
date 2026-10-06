@@ -2,7 +2,7 @@
   "$description": "Verrou de marque — écrit par vintoria-brand (scripts/sync.mjs). Ne pas modifier : changer la marque dans vintoria-brand puis resynchroniser.",
   "marque": "vintoria-brand",
   "version": "2026.1.0",
-  "commit": "655d6e1+modifs",
+  "commit": "0a641f4",
   "cible": "website",
   "fichiers": [
     {
@@ -28,7 +28,7 @@
     {
       "fichier": "app/apple-icon.png",
       "source": "web/apple-touch-icon.png",
-      "sha256": "2376ab0cd21b4fb05a4c2d1b18cc3ef00ff1dffcaf3edf5799d1406fc1d24887"
+      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
     },
     {
       "fichier": "app/opengraph-image.png",
