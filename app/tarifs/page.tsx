@@ -47,10 +47,10 @@ function AvisDeveloppement() {
   return (
     <div className="px pt-6">
       <p
-        className="mx-auto max-w-[1180px] rounded-xl border border-dashed border-braise-vive bg-braise/15 px-5 py-4 text-left"
+        className="mx-auto max-w-[1180px] rounded-xl border border-dashed border-accent bg-bordeaux-700/15 px-5 py-4 text-left"
         data-test="avis-tarifs"
       >
-        <span className="eyebrow block text-braise-vive">Développement — prix non publiés</span>
+        <span className="eyebrow block text-accent">Développement — prix non publiés</span>
         <span className="t-meta mt-2 block text-texte">
           La page rend « Sur demande ». Le catalogue du produit porte
           Essentiel&nbsp;{PRIX_TROUVES.essential}&nbsp;€, Business&nbsp;
@@ -95,7 +95,7 @@ export default function Page() {
           {FORMULES.map((f) => (
             <li
               key={f.cle}
-              className="relative flex flex-col bg-encre p-7 lg:p-8"
+              className="relative flex flex-col bg-nuit p-7 lg:p-8"
               data-formule={f.cle}
             >
               {f.recommandee ? (

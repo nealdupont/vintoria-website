@@ -92,7 +92,7 @@ export function Produit() {
                 key={e.src}
                 className="flex w-[68vw] shrink-0 snap-start flex-col sm:w-auto sm:shrink"
               >
-                <div className="aspect-[9/13] overflow-hidden rounded-[1.75rem] border border-filet bg-encre-2">
+                <div className="aspect-[9/13] overflow-hidden rounded-[1.75rem] border border-filet bg-nuit-2">
                   <Image
                     src={e.src}
                     alt={e.alt}

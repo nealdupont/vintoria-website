@@ -59,7 +59,7 @@ export function Conseil() {
           <h2 className="voix t-titre text-fort">
             <Line inView>Voici ce que voit</Line>
             <Line inView delay={0.08}>
-              <span className="italic text-tungstene">votre client.</span>
+              <span className="italic text-accent">votre client.</span>
             </Line>
           </h2>
 
@@ -103,7 +103,7 @@ export function Conseil() {
           transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
-          <div className="rounded-2xl border border-filet bg-encre-2/70 p-6 backdrop-blur-sm sm:p-8">
+          <div className="rounded-2xl border border-filet bg-nuit-2/70 p-6 backdrop-blur-sm sm:p-8">
             <Lecture onRobe={poserRobe} />
           </div>
         </motion.div>

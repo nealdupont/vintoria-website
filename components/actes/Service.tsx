@@ -43,7 +43,7 @@ export function Service() {
         className="pointer-events-none absolute left-[-15%] top-1/2 h-[60vh] w-[60vh] -translate-y-1/2 rounded-full opacity-60"
         style={{
           background:
-            "radial-gradient(circle, rgba(232,200,140,0.10), transparent 68%)",
+            "radial-gradient(circle, color-mix(in srgb, var(--vintoria-nuit-accent) 10%, transparent), transparent 68%)",
         }}
       />
 
@@ -60,7 +60,7 @@ export function Service() {
         <h2 className="voix t-titre max-w-3xl text-os">
           <Line inView>Quatre secondes.</Line>
           <Line inView delay={0.08}>
-            <span className="italic text-tungstene">
+            <span className="italic text-accent">
               C’est tout ce que ça prend.
             </span>
           </Line>
@@ -75,11 +75,11 @@ export function Service() {
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute left-0 top-0 hidden h-px w-full origin-left bg-gradient-to-r from-laiton/70 via-laiton/40 to-transparent md:block"
+            className="absolute left-0 top-0 hidden h-px w-full origin-left bg-gradient-to-r from-accent/70 via-accent/40 to-transparent md:block"
           />
           <span
             aria-hidden
-            className="absolute left-0 top-0 h-full w-px bg-gradient-to-b from-laiton/60 to-transparent md:hidden"
+            className="absolute left-0 top-0 h-full w-px bg-gradient-to-b from-accent/60 to-transparent md:hidden"
           />
 
           <ol className="grid gap-14 md:grid-cols-3 md:gap-10">
@@ -99,9 +99,9 @@ export function Service() {
                 {/* le point sur la ligne */}
                 <span
                   aria-hidden
-                  className="absolute left-[-3.5px] top-1.5 h-[7px] w-[7px] rounded-full bg-tungstene md:left-0 md:top-[-3.5px]"
+                  className="absolute left-[-3.5px] top-1.5 h-[7px] w-[7px] rounded-full bg-accent md:left-0 md:top-[-3.5px]"
                 />
-                <span className="data block text-[0.75rem] tracking-[0.16em] text-tungstene">
+                <span className="data block text-[0.75rem] tracking-[0.16em] text-accent">
                   {m.t}
                 </span>
                 <h3 className="voix t-tete mt-5 text-os">{m.titre}</h3>

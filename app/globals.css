@@ -1,43 +1,55 @@
 @import "tailwindcss";
 
+/*
+  LA MARQUE — Brand System Vintoria 2026, synchronisé depuis vintoria-brand
+  (scripts/sync.mjs website). Ces deux fichiers ne se modifient jamais ici :
+  toute couleur, toute police de ce site en descend.
+*/
+@import "./marque/vintoria.css";
+@import "./marque/tailwind.css";
+
 /* ============================================================
    VINTORIA — SYSTÈME
 
-   Un restaurant a deux temps. LE SERVICE, le soir, à l'encre.
-   LE TRAVAIL DE LA CAVE, le matin, sur le crème.
+   Un restaurant a deux temps. LE SERVICE, le soir, en thème `nuit`.
+   LE TRAVAIL DE LA CAVE, le matin, en thème `creme`.
 
    D'où la règle qui gouverne tout ce fichier : les couleurs ne sont
    pas nommées par ce qu'elles SONT mais par ce qu'elles FONT. Un même
    composant écrit `text-fort` et se lit correctement sur les deux
    surfaces, sans condition et sans variante. La bascule se fait en un
    seul endroit : la classe `jour`.
+
+   Aucune valeur n'est saisie ici : chaque jeton pointe vers un rôle de
+   la marque (--vintoria-*). Le site est sombre : <html> porte
+   data-vintoria-theme="nuit", ce qui règle aussi les classes `v-*`.
    ============================================================ */
+
+/*
+  next/font auto-héberge Bodoni Moda et Schibsted Grotesk sous un nom haché :
+  les rôles typographiques de la marque sont rattachés à ces fichiers, et
+  `font-voix` / `font-interface` les suivent. Voir app/layout.tsx.
+*/
+:root {
+  --vintoria-police-voix:
+    var(--font-bodoni-moda), ui-serif, Georgia, "Times New Roman", serif;
+  --vintoria-police-interface:
+    var(--font-schibsted-grotesk), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+}
 
 @theme {
   /* --- Matière ------------------------------------------------ */
-  --color-encre: #0b0a0c; /* la salle avant le service */
-  --color-encre-2: #121013; /* surface posée sur l'encre */
-  --color-jour: #ece5d8; /* le matin, la cave, le carnet */
-  --color-jour-2: #e3dacb; /* surface posée sur le crème */
+  --color-nuit: var(--vintoria-nuit-fond); /* la salle avant le service */
+  --color-nuit-2: var(--vintoria-nuit-surface); /* surface posée sur la nuit */
 
-  /* --- Échelle de texte, contrastes vérifiés sur l'encre -------- */
+  /* --- Échelle de texte, thème nuit ----------------------------- */
   /* Couche BRUTE : la matière, nommée par ce qu'elle est. Elle sert aux
      composants qui vivent toujours du même côté — la démonstration, le
      verre. Les mouvements, eux, emploient la couche sémantique. */
-  --color-os: #ece5d8; /* 15,8:1 — titres, texte fort */
-  --color-cendre: #a8a298; /* 7,8:1 — texte courant */
-  --color-cendre-2: #837d73; /* 4,8:1 — métadonnées, labels */
-
-  /* --- Accents ------------------------------------------------ */
-  --color-braise: #6e1023; /* la robe du vin */
-  --color-braise-vive: #8e2a3a;
-  --color-laiton: #d4b96a; /* l'or de Vintoria Pro — 10,30:1 sur l'encre */
-  --color-tungstene: #e8c88c; /* la lampe de salle — 12,30:1 */
-
-  /* --- Voix ---------------------------------------------------- */
-  /* La marque parle en sérif. L'interface parle en grotesque. */
-  --font-voix: var(--font-voix-src); /* Spectral — Vintoria parle */
-  --font-structure: var(--font-structure-src); /* Archivo — l'outil affiche */
+  --color-os: var(--vintoria-nuit-texte); /* titres, texte fort */
+  --color-cendre: var(--vintoria-nuit-texte-secondaire); /* texte courant */
+  --color-cendre-2: var(--vintoria-nuit-texte-discret); /* métadonnées */
 
   /* --- Mouvement ----------------------------------------------- */
   /* Quatre durées, pas une de plus. Chacune a un emploi. */
@@ -50,41 +62,43 @@
   --ease-sortie: cubic-bezier(0.4, 0, 1, 1); /* sorties, plus sèches */
 
   /* ============================================================
-     JETONS SÉMANTIQUES — la valeur par défaut est celle du SOIR.
-     Voir la classe `jour` plus bas pour le jeu du matin.
-     Contrastes mesurés sur l'encre #0b0a0c :
-       fort 15,8:1 · texte 7,8:1 · faible 4,8:1 · accent 10,3:1
+     JETONS SÉMANTIQUES — la valeur par défaut est celle du SOIR
+     (thème nuit). Voir la classe `jour` plus bas pour le matin.
+     Contrastes sur le fond nuit #0F0D0E :
+       fort 15,9:1 · texte 7,8:1 · faible 6,0:1 · accent 7,1:1
      ============================================================ */
-  --color-fond: #0b0a0c;
-  --color-surface: #121013;
-  --color-fort: #ece5d8; /* titres, texte appuyé */
-  --color-texte: #a8a298; /* texte courant */
-  --color-faible: #837d73; /* métadonnées, étiquettes */
-  --color-accent: #d4b96a; /* le métal qui signale */
-  --color-filet: rgba(236, 229, 216, 0.14);
-  --color-filet-fort: rgba(236, 229, 216, 0.24);
+  --color-fond: var(--vintoria-nuit-fond);
+  --color-surface: var(--vintoria-nuit-surface);
+  --color-fort: var(--vintoria-nuit-texte); /* titres, texte appuyé */
+  --color-texte: var(--vintoria-nuit-texte-secondaire); /* texte courant */
+  --color-faible: var(--vintoria-nuit-texte-discret); /* métadonnées */
+  --color-accent: var(--vintoria-nuit-accent); /* bordeaux 400, lisible sur la nuit */
+  --color-erreur: var(--vintoria-nuit-erreur);
+  --color-filet: var(--vintoria-nuit-filet);
+  --color-filet-fort: var(--vintoria-nuit-filet-fort);
 }
 
 /* ============================================================
-   LE JOUR — la cave, le matin.
+   LE JOUR — la cave, le matin : le thème crème de la marque.
 
-   Contrastes mesurés sur le crème #ece5d8 :
-     fort 15,8:1 · texte 7,7:1 · faible 4,7:1 · accent (braise) 9,5:1
+   Contrastes sur le crème #F8F1EA :
+     fort 15,1:1 · texte 7,0:1 · faible 5,5:1 · accent (bordeaux 700) 9,2:1
 
-   L'OR EST INTERDIT ICI : #d4b96a ne donne que 1,53:1 sur le crème.
-   C'est la braise qui prend le relais de l'accent. Cette substitution
-   est la raison d'être des jetons sémantiques — aucun composant n'a
-   à connaître la règle, il écrit `text-accent` et elle s'applique.
+   L'accent change de ton : sur la nuit c'est le bordeaux 400, sur le
+   crème le bordeaux 700. C'est la raison d'être des jetons sémantiques —
+   aucun composant n'a à connaître la règle, il écrit `text-accent` et
+   elle s'applique.
    ============================================================ */
 .jour {
-  --color-fond: #ece5d8;
-  --color-surface: #e3dacb;
-  --color-fort: #0b0a0c;
-  --color-texte: #4a443c;
-  --color-faible: #6b6459;
-  --color-accent: #6e1023;
-  --color-filet: rgba(11, 10, 12, 0.14);
-  --color-filet-fort: rgba(11, 10, 12, 0.26);
+  --color-fond: var(--vintoria-creme-fond);
+  --color-surface: var(--vintoria-creme-surface);
+  --color-fort: var(--vintoria-creme-texte);
+  --color-texte: var(--vintoria-creme-texte-secondaire);
+  --color-faible: var(--vintoria-creme-texte-discret);
+  --color-accent: var(--vintoria-creme-accent);
+  --color-erreur: var(--vintoria-creme-erreur);
+  --color-filet: var(--vintoria-creme-filet);
+  --color-filet-fort: var(--vintoria-creme-filet-fort);
 
   background-color: var(--color-fond);
   color: var(--color-texte);
@@ -92,9 +106,9 @@
 }
 
 :root {
-  /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
-  --robe-profond: #4a3a22;
-  --robe-lumiere: #e8c88c;
+  /* La robe — aucun vin lu : la couleur de la marque. Voir lib/robes.ts */
+  --robe-profond: var(--vintoria-bordeaux-900);
+  --robe-lumiere: var(--vintoria-nuit-accent);
 
   /*
     L'interrupteur de la trace. 0 tant que la démonstration n'a rien
@@ -151,10 +165,10 @@
 
 html {
   /*
-    Le canevas porte l'encre, pas seulement le body : c'est lui qu'on voit
+    Le canevas porte la nuit, pas seulement le body : c'est lui qu'on voit
     dans le rebond élastique d'iOS, au-delà des bords de la page.
   */
-  background: var(--color-encre);
+  background: var(--color-nuit);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
@@ -162,20 +176,16 @@ html {
 }
 
 body {
-  background: var(--color-encre);
+  background: var(--color-nuit);
   color: var(--color-fort);
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-interface);
   overflow-x: hidden;
   font-synthesis-weight: none;
 }
 
 ::selection {
-  background: var(--color-braise);
-  color: #ece5d8;
-}
-.jour ::selection {
-  background: var(--color-braise);
-  color: #ece5d8;
+  background: var(--color-bordeaux-700);
+  color: var(--color-creme);
 }
 
 :focus-visible {
@@ -233,20 +243,20 @@ body {
 
 /* La voix de la marque */
 .voix {
-  font-family: var(--font-voix), ui-serif, Georgia, serif;
-  font-weight: 300;
+  font-family: var(--font-voix);
+  font-weight: 400;
 }
 
 /* La voix de l'outil : millésimes, régions, repères. Chiffres alignés. */
 .data {
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-interface);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
 }
 
 /* L'étiquette — 12 px, capitales espacées */
 .eyebrow {
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-interface);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -274,7 +284,7 @@ body {
   min-height: 48px;
   padding-inline: 1.6rem;
   border-radius: 999px;
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-interface);
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.11em;
@@ -299,17 +309,15 @@ body {
   transform: none;
 }
 
-/* L'action commerciale — la seule qui porte la pleine surface claire. */
+/* L'action commerciale — la seule qui porte la pleine surface claire.
+   Au survol, elle prend le bordeaux de la marque, texte crème. */
 .bouton-primaire {
   background: var(--color-fort);
   color: var(--color-fond);
 }
 .bouton-primaire:hover:not(:disabled) {
-  background: var(--color-tungstene);
-}
-.jour .bouton-primaire:hover:not(:disabled) {
-  background: var(--color-braise);
-  color: #ece5d8;
+  background: var(--color-bordeaux-700);
+  color: var(--color-creme);
 }
 
 /* L'alternative — dessinée, pas remplie. */

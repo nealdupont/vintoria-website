@@ -9,7 +9,7 @@
  *
  * Une règle porte toute la composition : L’IVOIRE N’APPARAÎT QU’UNE FOIS.
  * Le cadrage, les deux vérités mineures et la preuve sont en cendre ; la
- * résolution en tungstène. Un seul objet de la section est en os — la thèse.
+ * résolution en accent. Un seul objet de la section est en os — la thèse.
  * La hiérarchie n’est donc pas seulement une affaire de corps : c’est la
  * seule chose entièrement éclairée de l’écran.
  */
@@ -39,7 +39,7 @@ const MINEURES = [
   coupure est une décision, jamais un accident de repli.
 
   La marge restante à 320 px est d’environ 10 % : assez pour que la ligne
-  tienne encore si Spectral n’est pas chargée et qu’une sérif de repli, plus
+  tienne encore si Bodoni Moda n’est pas chargée et qu’une sérif de repli, plus
   large, prend sa place le temps du swap.
 
   Interlettrage et interligne repris de `.t-display`, dont c’est le degré.
@@ -103,8 +103,8 @@ export function Verite() {
 
         {/* VI — La résolution. « Ubiquité » répond à « ne se démultiplie pas ». */}
         <div className="mt-24 sm:mt-28">
-          <span aria-hidden className="block h-px w-10 bg-laiton/60" />
-          <p className="voix t-citation mt-9 max-w-2xl italic text-tungstene">
+          <span aria-hidden className="block h-px w-10 bg-accent/60" />
+          <p className="voix t-citation mt-9 max-w-2xl italic text-accent">
             Vintoria ne remplace pas votre sommelier. Il lui donne le don
             d’ubiquité.
           </p>

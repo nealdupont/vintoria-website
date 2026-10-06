@@ -40,7 +40,7 @@ export function Accord() {
           <h2 className="voix t-titre text-os">
             <Line inView>Voici ce que voit</Line>
             <Line inView delay={0.08}>
-              <span className="italic text-tungstene">votre client.</span>
+              <span className="italic text-accent">votre client.</span>
             </Line>
           </h2>
 
@@ -89,7 +89,7 @@ export function Accord() {
           transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
-          <div className="rounded-2xl border border-[color:var(--color-filet)] bg-encre-2/70 p-6 backdrop-blur-sm sm:p-8">
+          <div className="rounded-2xl border border-[color:var(--color-filet)] bg-nuit-2/70 p-6 backdrop-blur-sm sm:p-8">
             <Lecture onRobe={poserRobe} />
           </div>
 
@@ -98,7 +98,7 @@ export function Accord() {
             l’écran du client, cette annotation s’adresse au restaurateur.
           */}
           <div className="mt-10">
-            <p className="eyebrow text-laiton">Ce que Vintoria regarde</p>
+            <p className="eyebrow text-accent">Ce que Vintoria regarde</p>
 
             <dl className="mt-5 border-t border-[color:var(--color-filet)]">
               <div className="grid gap-x-6 border-b border-[color:var(--color-filet)] py-4 sm:grid-cols-[7.5rem_1fr]">

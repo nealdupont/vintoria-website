@@ -13,7 +13,7 @@ export function Origine() {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[52vh] w-[52vh] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
         style={{
           background:
-            "radial-gradient(circle, rgba(110,16,35,0.16), transparent 66%)",
+            "radial-gradient(circle, color-mix(in srgb, var(--vintoria-bordeaux-700) 16%, transparent), transparent 66%)",
         }}
       />
 
@@ -34,7 +34,7 @@ export function Origine() {
             Il est resté dans quelques têtes,
           </Line>
           <Line inView delay={0.24}>
-            <span className="italic text-tungstene">
+            <span className="italic text-accent">
               au lieu d’arriver jusqu’à la table. »
             </span>
           </Line>
@@ -52,7 +52,7 @@ export function Origine() {
         </p>
 
         <div className="mt-14 flex flex-col items-center">
-          <span aria-hidden className="h-px w-10 bg-laiton/60" />
+          <span aria-hidden className="h-px w-10 bg-accent/60" />
           <p className="voix mt-6 text-[1.05rem] tracking-[0.22em] text-os">
             NEAL DUPONT
           </p>

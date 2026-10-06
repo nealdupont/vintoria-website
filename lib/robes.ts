@@ -7,12 +7,13 @@
  * Chaque robe a deux tons, et deux seulement :
  *   · profond  — la bouteille. Halos, fonds, matière. Jamais du texte.
  *   · lumiere  — le vin incliné vers la lampe. Texte et filets.
- *                Toujours ≥ 6:1 sur l'encre (#0b0a0c).
+ *                Toujours ≥ 6:1 sur le fond nuit (#0F0D0E).
  *
  * Elle ne touche que trois éléments : la pastille de l'accord, le libellé
  * de service, et le halo de la salle. Au-delà, c'est un thème coloré.
  *
- * Quand aucun vin n'est lu, la robe se retire : la page redevient encre et os.
+ * Quand aucun vin n'est lu, la robe se retire : la page reprend le bordeaux
+ * de la marque (thème nuit).
  */
 
 export type Robe = {
@@ -20,15 +21,15 @@ export type Robe = {
   nom: string;
   /** La bouteille — matière et halos. */
   profond: string;
-  /** Le vin devant la lampe — texte et filets. ≥ 6:1 sur l'encre. */
+  /** Le vin devant la lampe — texte et filets. ≥ 6:1 sur le fond nuit. */
   lumiere: string;
 };
 
-/** Aucune lecture en cours : la lumière de salle, sans vin. */
+/** Aucune lecture en cours : la couleur de la marque, sans vin. */
 export const ROBE_NEUTRE: Robe = {
-  nom: "lumière de salle",
-  profond: "#4a3a22",
-  lumiere: "#e8c88c",
+  nom: "bordeaux Vintoria",
+  profond: "var(--vintoria-bordeaux-900)",
+  lumiere: "var(--vintoria-nuit-accent)",
 };
 
 export const ROBES: Record<string, Robe> = {

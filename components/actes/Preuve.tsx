@@ -47,7 +47,7 @@ export function Preuve() {
         <h2 className="voix t-titre max-w-3xl text-os">
           <Line inView>Ce qu’un accord juste</Line>
           <Line inView delay={0.08}>
-            <span className="italic text-tungstene">change dans vos comptes.</span>
+            <span className="italic text-accent">change dans vos comptes.</span>
           </Line>
         </h2>
 
@@ -65,9 +65,9 @@ export function Preuve() {
               <div className="relative lg:pl-12">
                 <span
                   aria-hidden
-                  className="absolute left-0 top-0 hidden h-full w-px bg-gradient-to-b from-transparent via-laiton/50 to-transparent lg:block"
+                  className="absolute left-0 top-0 hidden h-full w-px bg-gradient-to-b from-transparent via-accent/50 to-transparent lg:block"
                 />
-                <p className="eyebrow mb-3 text-laiton">Avec Vintoria</p>
+                <p className="eyebrow mb-3 text-accent">Avec Vintoria</p>
                 <p className="t-corps text-os">{m.apres}</p>
               </div>
             </div>

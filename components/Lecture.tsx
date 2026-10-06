@@ -137,7 +137,7 @@ export function Lecture({
               aria-pressed={actif}
               className={`inline-flex min-h-[2.75rem] items-center rounded-full border px-4 text-[0.875rem] transition-[color,background-color,border-color] duration-300 ${
                 actif
-                  ? "border-tungstene/55 bg-tungstene/[0.09] text-os"
+                  ? "border-accent/55 bg-accent/[0.09] text-os"
                   : "border-[color:var(--color-filet)] text-cendre hover:border-[color:var(--color-filet-fort)] hover:bg-white/[0.03] hover:text-os"
               }`}
             >
