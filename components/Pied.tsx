@@ -26,7 +26,7 @@ export function Pied() {
               className="h-9 w-auto"
             />
             <p className="t-meta mt-3 max-w-[34ch] text-cendre-2">
-              L’expertise du sommelier, à chaque table.
+              Le vin à sa juste place.
             </p>
           </div>
 
