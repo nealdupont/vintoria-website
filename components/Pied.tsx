@@ -58,7 +58,7 @@ export function Pied() {
               className="logo-clair h-9 w-auto"
             />
             <p className="t-meta mt-3 max-w-[34ch] text-faible">
-              L’expertise du sommelier, à chaque table.
+              Le vin à sa juste place.
             </p>
           </div>
 
