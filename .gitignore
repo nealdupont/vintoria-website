@@ -45,3 +45,10 @@ next-env.d.ts
 # résultats de tests Playwright
 /test-results/
 /playwright-report/
+
+# Planches de revue produites pour juger un rendu (captures assemblées,
+# séquences de chorégraphie). Elles sont posées à la racine pour être
+# ouvertes depuis le dossier de session, et n'ont rien à faire ni dans
+# l'historique ni en production.
+/hero-*.png
+/planche-*.png
