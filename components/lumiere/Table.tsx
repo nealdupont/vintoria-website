@@ -135,7 +135,8 @@ export function Table() {
               {/* Le QR est IMPRIMÉ dans la capture : une fois le carré parti,
                   son double resurgirait et on en verrait deux. Cette pièce
                   comble le trou — sa couleur est prélevée dans la capture
-                  elle-même (#f2f1ed, la « pierre » de l'Atelier). */}
+                  elle-même : la surface du thème `pierre` de la marque, celui de
+                  l'Atelier. */}
               <motion.div
                 aria-hidden
                 className="absolute rounded-[2%]"
@@ -144,7 +145,7 @@ export function Table() {
                   top: "15.2%",
                   width: "21.4%",
                   height: "36.8%",
-                  background: "#f2f1ed",
+                  background: "var(--vintoria-pierre-surface)",
                 }}
                 variants={{
                   pose: { opacity: 0 },
@@ -169,7 +170,7 @@ export function Table() {
                   x: "0%",
                   y: "0%",
                   scale: 1,
-                  boxShadow: "0px 0px 0px 0px rgba(27,22,24,0)",
+                  boxShadow: "0px 0px 0px 0px color-mix(in srgb, var(--vintoria-encre) 0%, transparent)",
                 },
                 detache: reduit
                   ? { x: "0%", y: "0%", scale: 1 }
@@ -177,7 +178,7 @@ export function Table() {
                       x: `${VERS_CENTRE.x * 100}%`,
                       y: `${VERS_CENTRE.y * 100}%`,
                       scale: 2.4,
-                      boxShadow: "0px 48px 90px -36px rgba(27,22,24,0.4)",
+                      boxShadow: "0px 48px 90px -36px color-mix(in srgb, var(--vintoria-encre) 40%, transparent)",
                     },
               }}
               transition={t(0.45, 1.3)}

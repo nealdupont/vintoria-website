@@ -128,7 +128,7 @@ export function Verre({ className = "" }: { className?: string }) {
             <stop offset="1" stopColor="#6b1c28" stopOpacity="0.2" />
           </linearGradient>
 
-          {/* Le foyer : la braise au creux de la panse */}
+          {/* Le foyer : le cœur du vin, au creux de la panse */}
           <radialGradient id="vin-foyer" cx="0.38" cy="0.58" r="0.42">
             <stop offset="0" stopColor="#8e2f40" stopOpacity="0.07" />
             <stop offset="1" stopColor="#8e2f40" stopOpacity="0" />

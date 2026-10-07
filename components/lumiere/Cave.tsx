@@ -10,10 +10,10 @@ import { ciel } from "@/lib/lumiere";
  * La preuve. Après le désir (I) et le manque (II), l'outil : il existe, il
  * est beau, et il parle de lui-même.
  *
- * LE FOND DEVIENT #FCFAF5 — la craie de l'Atelier lui-même. La page prend la
- * couleur du produit au moment où elle parle du produit : la marque et
- * l'outil cessent d'être deux mondes. C'est aussi pourquoi les quatre
- * couleurs de texte de ce site sont les jetons réels de Vintoria Pro.
+ * LE FOND DEVIENT LA CRÈME `eleve` DE LA MARQUE, sa surface la plus
+ * claire : plein midi, au moment où la page parle du produit. Le site et
+ * Vintoria Pro partagent les mêmes jetons (vintoria-brand) : la marque et
+ * l'outil cessent d'être deux mondes.
  *
  * UN SEUL GESTE PAR SECTION : ça ne tourne pas, ÇA SE POSE. L'écran Cave
  * monte depuis le bas et s'installe au ressort ; l'écran Aujourd'hui arrive

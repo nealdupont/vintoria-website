@@ -21,7 +21,7 @@ import { VerreBourgogne } from "./VerreBourgogne";
  * LE VERRE EST LA CAUSE. Jusqu'ici la page montrait ce que la lumière FAIT
  * sans montrer ce qu'elle traverse ; l'œil complétait. Le verre en place, la
  * chaîne est entière et elle se lit dans cet ordre exact :
- *   ivoire → jet → calice → le jet vire au bordeaux → flaque sur le chêne.
+ *   crème → jet → calice → le jet vire au bordeaux → flaque sur la table.
  * Le texte vit DANS le volume du calice, au-dessus du vin — là où, dans un
  * vrai verre, il n'y a que l'arôme.
  *
@@ -57,7 +57,7 @@ export function Ouverture() {
     >
       {/* ══ LA SCÈNE ══════════════════════════════════════════════ */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* Le chêne : le verre pose sur quelque chose. */}
+        {/* La table : le verre pose sur quelque chose. */}
         <div className="sol h-[26%] sm:h-[24%]" />
         <div className="arete bottom-[26%] sm:bottom-[24%]" />
 
@@ -97,7 +97,7 @@ export function Ouverture() {
             height: "17%",
             transform: "translateX(-50%)",
             background:
-              "linear-gradient(to bottom, rgba(107,29,56,0) 0%, rgba(107,29,56,0.3) 30%, rgba(154,58,34,0.28) 74%, rgba(154,58,34,0) 100%)",
+              "linear-gradient(to bottom, color-mix(in srgb, var(--vintoria-bordeaux-700) 0%, transparent) 0%, color-mix(in srgb, var(--vintoria-bordeaux-700) 30%, transparent) 30%, color-mix(in srgb, var(--vintoria-vin) 28%, transparent) 74%, color-mix(in srgb, var(--vintoria-vin) 0%, transparent) 100%)",
             mixBlendMode: "multiply",
             filter: "blur(14px)",
           }}
@@ -216,8 +216,11 @@ export function Ouverture() {
             </a>
           </motion.div>
 
+          {/* En texte SECONDAIRE et non discret : sur une fenêtre basse,
+              cette ligne passe au-dessus de la flaque (sonde de
+              tests/marque.spec.ts : 4,0:1 en discret, 5:1 ici). */}
           <motion.p
-            className="t-meta mt-10 max-w-[36rem] text-balance text-[color:var(--color-faible)]"
+            className="t-meta mt-10 max-w-[36rem] text-balance text-[color:var(--color-texte)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={pas(3.35, 1.2)}

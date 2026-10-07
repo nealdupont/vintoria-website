@@ -1,7 +1,7 @@
 /**
  * QUELLES ROUTES SONT ÉCLAIRÉES.
  *
- * L'accueil passe en lumière traversée — ivoire, chêne, lie. Les autres
+ * L'accueil passe en lumière traversée — le thème `creme` de la marque. Les autres
  * routes (tarifs, démonstration, film) restent au jeu du soir : elles n'ont
  * pas été redessinées, et les y faire basculer serait les casser.
  *

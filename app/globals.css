@@ -21,8 +21,15 @@
    seul endroit : la classe `jour`.
 
    Aucune valeur n'est saisie ici : chaque jeton pointe vers un rôle de
-   la marque (--vintoria-*). Le site est sombre : <html> porte
-   data-vintoria-theme="nuit", ce qui règle aussi les classes `v-*`.
+   la marque (--vintoria-*).
+
+   DEUX THÈMES, CHACUN À SA PLACE. L'accueil est dans le thème `creme`
+   de la marque (classe `lumiere`, plus bas) ; les routes du soir
+   — formules, démonstration, film — dans le thème `nuit`, qui est la
+   valeur par défaut de ces jetons. <html> porte donc
+   data-vintoria-theme="nuit", et l'enveloppe de l'accueil comme son
+   en-tête portent data-vintoria-theme="creme" : les classes `v-*` de
+   la marque suivent la même règle que les jetons du site.
    ============================================================ */
 
 /*
@@ -76,6 +83,13 @@
   --color-erreur: var(--vintoria-nuit-erreur);
   --color-filet: var(--vintoria-nuit-filet);
   --color-filet-fort: var(--vintoria-nuit-filet-fort);
+  /* L'action principale : toujours le bordeaux de marque, libellé crème
+     (rôle `action`, le même dans les trois thèmes). */
+  --color-action: var(--vintoria-nuit-action);
+  --color-action-survol: var(--vintoria-nuit-action-survol);
+  --color-sur-action: var(--vintoria-nuit-sur-action);
+  /* L'anneau de focus : bordeaux 400 sur la nuit (7,1:1). */
+  --color-focus: var(--vintoria-nuit-focus);
 }
 
 /* ============================================================
@@ -99,6 +113,10 @@
   --color-erreur: var(--vintoria-creme-erreur);
   --color-filet: var(--vintoria-creme-filet);
   --color-filet-fort: var(--vintoria-creme-filet-fort);
+  --color-action: var(--vintoria-creme-action);
+  --color-action-survol: var(--vintoria-creme-action-survol);
+  --color-sur-action: var(--vintoria-creme-sur-action);
+  --color-focus: var(--vintoria-creme-focus);
 
   background-color: var(--color-fond);
   color: var(--color-texte);
@@ -189,7 +207,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -309,15 +327,18 @@ body {
   transform: none;
 }
 
-/* L'action commerciale — la seule qui porte la pleine surface claire.
-   Au survol, elle prend le bordeaux de la marque, texte crème. */
+/* L'action commerciale — la seule qui porte un aplat. C'est le rôle
+   `action` de la marque : le bordeaux #722340, libellé crème (9,2:1), dans
+   les deux thèmes. Sur la nuit, son contour ne fait que 1,9:1 avec le fond :
+   c'est conforme (un bouton identifié par son libellé n'exige pas de contour
+   contrasté), et son anneau de focus est l'accent. */
 .bouton-primaire {
-  background: var(--color-fort);
-  color: var(--color-fond);
+  background: var(--color-action);
+  color: var(--color-sur-action);
 }
 .bouton-primaire:hover:not(:disabled) {
-  background: var(--color-bordeaux-700);
-  color: var(--color-creme);
+  background: var(--color-action-survol);
+  color: var(--color-sur-action);
 }
 
 /* L'alternative — dessinée, pas remplie. */
@@ -465,57 +486,45 @@ body:has(.lumiere).filmgrain::after {
 
    Le vin est le seul produit de bouche qu'on regarde À TRAVERS.
    Le geste du métier, c'est le verre levé vers la fenêtre : il exige
-   de la clarté DERRIÈRE. D'où l'ivoire — non par mode, par physique.
+   de la clarté DERRIÈRE. D'où la crème — non par mode, par physique.
 
-   Conséquence : la couleur est MÉRITÉE. Le bordeaux et la braise ne
-   sont pas des accents posés sur un fond, ce sont ce que la lumière
-   DEVIENT après avoir traversé le verre. Ils arrivent donc en
-   `multiply` — le mode de la matière translucide — et jamais en aplat.
+   C'est le thème `creme` de la marque : son fond, ses surfaces, son
+   encre, son bordeaux seul accent. Aucune autre couleur de marque.
 
-   Quatre des jetons de texte sont ceux de Vintoria Pro 2.0.2
-   (encre, ardoise, discret, lie). Le site adopte la palette du
-   produit : la marque et l'outil cessent d'être deux mondes.
+   Conséquence : la couleur est MÉRITÉE. Le bordeaux et le vin ne sont
+   pas des accents posés sur un fond, ce sont ce que la lumière DEVIENT
+   après avoir traversé le verre. Ils arrivent donc en `multiply` — le
+   mode de la matière translucide — et jamais en aplat.
+
+   LA LUMIÈRE N'EST PAS UNE COULEUR. Le jet, le front, les lueurs sont
+   des éclaircissements faits des crèmes les plus claires de la marque
+   (`eleve`, la crème de la tuile), en opacité. Il n'existe ni or, ni
+   ambre, ni laiton : la chaleur vient de la crème elle-même.
    ============================================================== */
 
 .lumiere {
-  /* --- Jetons sémantiques ---------------------------------------
-     MESURÉS SUR LE FOND RÉELLEMENT PEINT, et non sur le jeton de fond.
-     La sonde rend tout le texte transparent, photographie la page et
-     échantillonne les pixels sous chaque nœud : elle voit donc les
-     dégradés, le grain, et surtout les flaques en `multiply` qui
-     assombrissent le fond bien au-delà de ce qu'annonce `--color-fond`.
+  /* --- Jetons sémantiques : le thème `creme` de la marque -------
+     MESURÉS SUR LE FOND RÉELLEMENT PEINT, et non sur le jeton de fond :
+     la sonde de tests/qualite.spec.ts rend le texte transparent,
+     photographie la page et échantillonne les pixels sous chaque nœud.
+     Elle voit donc les dégradés, le grain et les flaques en `multiply`.
 
-     Elle a trouvé la ligne « pour qui » du héros à 4,46:1 sur un chêne
-     peint à #e3d9cc — sous le seuil AA, alors que le calcul sur jetons
-     seuls ne l'aurait pas signalée au bon endroit.
-
-     L'ardoise et le discret du produit sont donc ASSOMBRIS : ils gardent
-     leur teinte, mais tiennent 4,8:1 sur le point le plus sombre de tout
-     l'arc de lumière. La hiérarchie y gagne aussi — 4,8 % et 4,0 % de
-     séparation de luminance, contre 3,6 % auparavant.
-
-     contrastes · fond le plus sombre de l'arc → ivoire
-       fort 12,07 → 16,28 · texte 6,65 → 8,96 · faible 4,82 → 6,50
-       accent 7,63 → 10,29 · feuille 5,17 → 6,98                     */
-  --color-fond: #f7f4ed;
-  --color-surface: #fcfaf5; /* la craie de l'Atelier, telle quelle */
-  --color-fort: #1b1618; /* l'encre du produit, telle quelle */
-  --color-texte: #474245; /* l'ardoise du produit, assombrie */
-  --color-faible: #5d5659; /* le discret du produit, assombri */
-  --color-accent: #6b1d38; /* la lie du produit */
-  --color-filet: rgba(27, 22, 24, 0.1);
-  --color-filet-fort: rgba(27, 22, 24, 0.2);
-
-  /* --- La matière de la scène ----------------------------------
-     INTERDITS ÉTABLIS PAR LA MESURE : la sauge (2,9:1) et l'or
-     (1,7:1) ne portent JAMAIS de texte sur l'ivoire. Décor seul. */
-  --sol: #ede7da;
-  --chene: #c8a478; /* 4,5:1 — grands titres et matière */
-  --sauge: #8fa58a; /* décor seul */
-  --feuille: #3d5a42; /* 6,9:1 — le vert, en texte */
-  --lie: #6b1d38;
-  --braise: #9a3a22;
-  --or: #c9a94e; /* filets et marques seuls */
+     contrastes · point le plus sombre de l'arc → crème `eleve`
+       fort 13,1 → 16,7 · texte 6,0 → 7,7 · faible 4,7 → 6,0
+       accent 8,0 → 10,2                                            */
+  --color-fond: var(--vintoria-creme-fond);
+  --color-surface: var(--vintoria-creme-surface);
+  --color-fort: var(--vintoria-creme-texte);
+  --color-texte: var(--vintoria-creme-texte-secondaire);
+  --color-faible: var(--vintoria-creme-texte-discret);
+  --color-accent: var(--vintoria-creme-accent);
+  --color-erreur: var(--vintoria-creme-erreur);
+  --color-filet: var(--vintoria-creme-filet);
+  --color-filet-fort: var(--vintoria-creme-filet-fort);
+  --color-action: var(--vintoria-creme-action);
+  --color-action-survol: var(--vintoria-creme-action-survol);
+  --color-sur-action: var(--vintoria-creme-sur-action);
+  --color-focus: var(--vintoria-creme-focus);
 
   /* Repli : la navigation souligne en `--robe-lumiere`, que posaient les
      robes de vin de la Salle. L'accueil n'en a plus — sans ceci, le trait
@@ -537,7 +546,11 @@ body:has(.lumiere).filmgrain::after {
    `:has()` règle cela sans JavaScript et sans clignotement au premier
    rendu, là où une bascule de classe après coup en aurait produit un. */
 body:has(.lumiere) {
-  background-color: #f7f4ed;
+  background-color: var(--vintoria-creme-fond);
+  /* Le lien d'évitement vit hors de l'enveloppe : il suit l'accueil ici. */
+  --color-fond: var(--vintoria-creme-fond);
+  --color-fort: var(--vintoria-creme-texte);
+  --color-focus: var(--vintoria-creme-focus);
 }
 
 /* ET LE CANEVAS AVEC. Corriger `body` seul ne traitait que la moitié du
@@ -548,13 +561,29 @@ body:has(.lumiere) {
    les contrôles du navigateur en sombre tout le long d'une page claire — un
    rail presque noir sur toute la hauteur droite. */
 html:has(.lumiere) {
-  background: #f7f4ed;
+  background: var(--vintoria-creme-fond);
   color-scheme: light;
 }
 
 .lumiere ::selection {
-  background: rgba(107, 29, 56, 0.16);
+  background: var(--vintoria-bordeaux-100);
   color: var(--color-fort);
+}
+
+/* --- LA LUMIÈRE ----------------------------------------------
+   Deux lueurs, toutes deux faites des crèmes de la marque. Ce sont des
+   ÉCLAIRCISSEMENTS : posées en opacité sur la crème, elles l'allument,
+   elles ne la teintent pas. La « chaude » n'est que l'`eleve` mêlé à la
+   crème de la tuile — la chaleur de la marque, pas celle d'un métal.
+   Sur `:root` et non sur `.lumiere` : le pied, hors de l'enveloppe, les
+   emploie aussi. */
+:root {
+  --lueur: var(--vintoria-creme-eleve);
+  --lueur-chaude: color-mix(
+    in oklab,
+    var(--vintoria-creme-eleve) 70%,
+    var(--vintoria-creme-tuile)
+  );
 }
 
 /* --- LA SCÈNE ------------------------------------------------
@@ -563,7 +592,7 @@ html:has(.lumiere) {
    de fusion doivent se résoudre DANS la scène et non contre la
    page entière. */
 
-/* Le jet de lumière. Il descend à 11°, flou, blanc sur l'ivoire. */
+/* Le jet de lumière. Il descend à 11°, flou, clair sur la crème. */
 .jet {
   position: absolute;
   top: -24%;
@@ -572,10 +601,10 @@ html:has(.lumiere) {
   transform: translateX(-50%) rotate(11deg);
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 253, 247, 0.78) 32%,
-    rgba(255, 250, 240, 0.36) 60%,
-    rgba(255, 248, 236, 0) 86%
+    color-mix(in srgb, var(--lueur) 95%, transparent) 0%,
+    color-mix(in srgb, var(--lueur) 78%, transparent) 32%,
+    color-mix(in srgb, var(--lueur-chaude) 36%, transparent) 60%,
+    color-mix(in srgb, var(--lueur-chaude) 0%, transparent) 86%
   );
   filter: blur(44px);
   pointer-events: none;
@@ -591,10 +620,10 @@ html:has(.lumiere) {
   transform: translateX(-50%) rotate(11deg);
   background: linear-gradient(
     to bottom,
-    rgba(107, 29, 56, 0) 0%,
-    rgba(107, 29, 56, 0.44) 24%,
-    rgba(154, 58, 34, 0.5) 62%,
-    rgba(154, 58, 34, 0.12) 100%
+    color-mix(in srgb, var(--vintoria-bordeaux-700) 0%, transparent) 0%,
+    color-mix(in srgb, var(--vintoria-bordeaux-700) 44%, transparent) 24%,
+    color-mix(in srgb, var(--vintoria-vin) 50%, transparent) 62%,
+    color-mix(in srgb, var(--vintoria-vin) 12%, transparent) 100%
   );
   mix-blend-mode: multiply;
   filter: blur(36px);
@@ -610,42 +639,55 @@ html:has(.lumiere) {
   width: clamp(210px, 26vw, 450px);
   background: radial-gradient(
     ellipse at 50% 50%,
-    rgba(154, 58, 34, 0.64) 0%,
-    rgba(107, 29, 56, 0.4) 34%,
-    rgba(107, 29, 56, 0) 68%
+    color-mix(in srgb, var(--vintoria-vin) calc(64% * var(--flaque-force, 1)), transparent) 0%,
+    color-mix(in srgb, var(--vintoria-bordeaux-700) calc(40% * var(--flaque-force, 1)), transparent) 34%,
+    color-mix(in srgb, var(--vintoria-bordeaux-700) 0%, transparent) 68%
   );
   mix-blend-mode: multiply;
   filter: blur(20px);
   pointer-events: none;
 }
 
-/* Le cœur chaud du caustique. Pas de `screen` : sur un fond clair
-   il ne ferait rien. Un ambre quasi blanc, en fusion normale. */
+/* FENÊTRE BASSE (un portable de 720 à 820 px de haut) : le propos du héros
+   descend jusqu'au pied du verre, et la ligne « pour qui » passait sur la
+   flaque — 2,95:1, mesuré par la sonde de tests/marque.spec.ts. La flaque
+   reste, plus légère : elle se devine au lieu de s'imposer. */
+@media (min-width: 640px) and (max-height: 820px) {
+  #ouverture {
+    --flaque-force: 0.4;
+  }
+}
+
+/* Le cœur du caustique. Pas de `screen` : sur un fond clair il ne
+   ferait rien. La lueur chaude, presque pleine, en fusion normale. */
 .flaque-coeur {
   position: absolute;
   aspect-ratio: 3 / 1;
   width: clamp(96px, 11vw, 190px);
   background: radial-gradient(
     ellipse at 50% 50%,
-    rgba(255, 247, 226, 0.96) 0%,
-    rgba(255, 238, 200, 0.46) 42%,
-    rgba(255, 238, 200, 0) 70%
+    color-mix(in srgb, var(--lueur-chaude) 96%, transparent) 0%,
+    color-mix(in srgb, var(--lueur-chaude) 46%, transparent) 42%,
+    color-mix(in srgb, var(--lueur-chaude) 0%, transparent) 70%
   );
   filter: blur(10px);
   pointer-events: none;
 }
 
-/* Le chêne. Il se devine : le fil est à 5 % au plus fort. */
+/* La table. Elle se devine : le fil est à 5 % au plus fort. Ses tons
+   sont ceux de l'arc (lib/lumiere.ts) : la crème de la tuile, approfondie
+   par le filet — jamais plus de 35 %, pour que le texte discret qui
+   passe au-dessus garde 4,8:1. */
 .sol {
   position: absolute;
   inset: auto 0 0 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(237, 231, 218, 0) 0%,
-    rgba(237, 231, 218, 0.8) 12%,
-    #e9e1d1 44%,
-    #ded3bf 100%
+    color-mix(in srgb, var(--vintoria-creme-tuile) 0%, transparent) 0%,
+    color-mix(in srgb, var(--vintoria-creme-tuile) 80%, transparent) 12%,
+    color-mix(in oklab, var(--vintoria-creme-tuile), var(--vintoria-creme-filet) 15%) 44%,
+    color-mix(in oklab, var(--vintoria-creme-tuile), var(--vintoria-creme-filet) 35%) 100%
   );
 }
 
@@ -655,11 +697,11 @@ html:has(.lumiere) {
   inset: 0;
   background: repeating-linear-gradient(
     1deg,
-    rgba(138, 106, 69, 0.032) 0px,
-    rgba(138, 106, 69, 0) 3px,
-    rgba(138, 106, 69, 0) 13px,
-    rgba(138, 106, 69, 0.022) 16px,
-    rgba(138, 106, 69, 0) 24px
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 3.2%, transparent) 0px,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 0%, transparent) 3px,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 0%, transparent) 13px,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 2.2%, transparent) 16px,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 0%, transparent) 24px
   );
 }
 
@@ -672,10 +714,10 @@ html:has(.lumiere) {
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(138, 106, 69, 0) 0%,
-    rgba(138, 106, 69, 0.3) 22%,
-    rgba(138, 106, 69, 0.42) 54%,
-    rgba(138, 106, 69, 0) 100%
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 0%, transparent) 0%,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 30%, transparent) 22%,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 42%, transparent) 54%,
+    color-mix(in srgb, var(--vintoria-creme-filet-fort) 0%, transparent) 100%
   );
   pointer-events: none;
 }
@@ -697,30 +739,34 @@ html:has(.lumiere) {
    objet sur une table. Donc un filet d'un demi-pixel, une ombre
    portée réelle à deux étages, et aucun rayon généreux. */
 .objet {
-  border: 1px solid rgba(27, 22, 24, 0.09);
+  border: 1px solid color-mix(in srgb, var(--vintoria-encre) 9%, transparent);
   border-radius: 10px;
   background: var(--color-surface);
   box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.04),
-    0 10px 24px -10px rgba(27, 22, 24, 0.16),
-    0 36px 70px -32px rgba(107, 29, 56, 0.22);
+    0 1px 1px color-mix(in srgb, var(--vintoria-encre) 4%, transparent),
+    0 10px 24px -10px color-mix(in srgb, var(--vintoria-encre) 16%, transparent),
+    0 36px 70px -32px color-mix(in srgb, var(--vintoria-bordeaux-700) 22%, transparent);
 }
 
 .objet-leve {
   box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.05),
-    0 18px 36px -12px rgba(27, 22, 24, 0.2),
-    0 60px 110px -40px rgba(107, 29, 56, 0.3);
+    0 1px 1px color-mix(in srgb, var(--vintoria-encre) 5%, transparent),
+    0 18px 36px -12px color-mix(in srgb, var(--vintoria-encre) 20%, transparent),
+    0 60px 110px -40px color-mix(in srgb, var(--vintoria-bordeaux-700) 30%, transparent);
 }
 
 /* --- LA STROPHE ---------------------------------------------
    Le titre est une strophe, pas un paragraphe : les retours sont
-   posés à la main. Sérif MAIGRE à grande taille — l'inverse du
-   sérif gras devenu réflexe. C'est fragile, et c'est le propos. */
+   posés à la main. Bodoni Moda en Regular à grande taille, avec l'axe
+   optique : le dessin d'affichage aux déliés fins, celui de la marque —
+   l'inverse du sérif gras devenu réflexe. La police n'a pas de graisse
+   sous 400 ; l'approche, un peu desserrée, garde le titre aussi léger
+   qu'il l'était en maigre. */
 .strophe {
   font-family: var(--font-voix);
-  font-weight: 300;
-  letter-spacing: -0.022em;
+  font-weight: 400;
+  font-optical-sizing: auto;
+  letter-spacing: -0.016em;
   line-height: 1.02;
   color: var(--color-fort);
   text-wrap: balance;
@@ -728,41 +774,33 @@ html:has(.lumiere) {
 
 .strophe em {
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-accent);
 }
 
-/* Le filet d'or : la seule place où l'or est permis. */
-.filet-or {
+/* Le filet de marque : un trait d'accent qui naît et s'efface. Bordeaux
+   700 sur la crème, à 40 % — un ornement, jamais une information. */
+.filet-marque {
   background: linear-gradient(
     to right,
-    rgba(201, 169, 78, 0) 0%,
-    rgba(201, 169, 78, 0.55) 30%,
-    rgba(201, 169, 78, 0.55) 70%,
-    rgba(201, 169, 78, 0) 100%
+    color-mix(in srgb, var(--color-accent) 0%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 40%, transparent) 30%,
+    color-mix(in srgb, var(--color-accent) 40%, transparent) 70%,
+    color-mix(in srgb, var(--color-accent) 0%, transparent) 100%
   );
 }
 
-/* --- BOUTONS EN LUMIÈRE ------------------------------------- */
-.lumiere .bouton-primaire {
-  background: var(--lie);
-  color: #fcfaf5;
-  border-color: transparent;
-}
-
-.lumiere .bouton-primaire:hover:not(:disabled) {
-  background: #571730;
-  color: #fcfaf5;
-}
-
+/* --- BOUTONS EN LUMIÈRE -------------------------------------
+   Le primaire est déjà le rôle `action` de la marque (voir `.bouton-
+   primaire`) : il n'a besoin ici que de son ombre, plus bas. */
 .lumiere .bouton-fantome {
   color: var(--color-fort);
-  border-color: rgba(27, 22, 24, 0.22);
+  border-color: var(--color-filet-fort);
 }
 
 .lumiere .bouton-fantome:hover {
-  border-color: rgba(107, 29, 56, 0.5);
-  background: rgba(107, 29, 56, 0.045);
+  border-color: var(--color-accent);
+  background: var(--vintoria-creme-accent-voile);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -823,10 +861,10 @@ html:has(.lumiere) {
   pointer-events: none;
   background: linear-gradient(
     104deg,
-    rgba(255, 255, 255, 0) 38%,
-    rgba(255, 253, 246, 0.72) 48%,
-    rgba(255, 246, 228, 0.34) 54%,
-    rgba(255, 255, 255, 0) 64%
+    color-mix(in srgb, var(--lueur) 0%, transparent) 38%,
+    color-mix(in srgb, var(--lueur) 72%, transparent) 48%,
+    color-mix(in srgb, var(--lueur-chaude) 34%, transparent) 54%,
+    color-mix(in srgb, var(--lueur) 0%, transparent) 64%
   );
   filter: blur(14px);
 }
@@ -856,6 +894,12 @@ html:has(.lumiere) {
    Le vert n'est pas un aplat décoratif : c'est la lumière passée par
    une feuille. Il arrive donc comme les autres couleurs de ce site —
    en `multiply`, posé sur le fond, jamais à la place du fond.
+
+   CE N'EST PAS UNE COULEUR DE LA MARQUE, et il ne le devient pas : un
+   éclairage, flou à 46 px, à 16-30 % d'opacité, deux fois sur la page
+   (Le geste, Pour qui). Jamais de texte, de filet ni d'aplat en vert ;
+   un test vérifie qu'aucun texte rendu ne le porte. Ses valeurs restent
+   donc locales, faute de jeton à qui les confier.
    ============================================================== */
 
 /* Le vin du verre à Bourgogne : dilué sous 640 px, où le bloc de texte
@@ -934,27 +978,27 @@ html:has(.lumiere) {
 .objet-pris:focus-within {
   transform: translateY(-4px);
   box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.05),
-    0 20px 40px -14px rgba(27, 22, 24, 0.2),
-    0 64px 110px -44px rgba(107, 29, 56, 0.3);
+    0 1px 1px color-mix(in srgb, var(--vintoria-encre) 5%, transparent),
+    0 20px 40px -14px color-mix(in srgb, var(--vintoria-encre) 20%, transparent),
+    0 64px 110px -44px color-mix(in srgb, var(--vintoria-bordeaux-700) 30%, transparent);
 }
 
-/* Le bouton principal : la braise s'allume sous le doigt. */
+/* Le bouton principal : le bordeaux s'allume sous le doigt. */
 .lumiere .bouton-primaire {
   transition:
     background-color var(--duree-etat) var(--ease-film),
     box-shadow var(--duree-etat) var(--ease-film),
     transform var(--duree-tactile) var(--ease-film);
-  box-shadow: 0 10px 26px -14px rgba(107, 29, 56, 0.6);
+  box-shadow: 0 10px 26px -14px color-mix(in srgb, var(--vintoria-bordeaux-700) 60%, transparent);
 }
 
 .lumiere .bouton-primaire:hover:not(:disabled) {
-  box-shadow: 0 16px 34px -14px rgba(107, 29, 56, 0.72);
+  box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--vintoria-bordeaux-700) 72%, transparent);
 }
 
 .lumiere .bouton-primaire:active:not(:disabled) {
   transform: translateY(1px);
-  box-shadow: 0 6px 16px -12px rgba(107, 29, 56, 0.6);
+  box-shadow: 0 6px 16px -12px color-mix(in srgb, var(--vintoria-bordeaux-700) 60%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -973,9 +1017,9 @@ html:has(.lumiere) {
    LE PIED, EN LUMIÈRE
 
    Il vit dans la mise en page racine et sert les trois routes. Sur les
-   routes du soir il ne change pas d'un pixel : les jetons sémantiques
-   y valent exactement les jetons bruts qu'il employait avant
-   (fond=encre, fort=os, texte=cendre, faible=cendre-2).
+   routes du soir il reste dans le thème `nuit` (les valeurs par défaut
+   des jetons) ; sur l'accueil, il passe au thème `creme` et reprend le
+   dernier palier de l'arc (lib/lumiere.ts, heure « pied »).
 
    `:has()` suffit ici, là où l'en-tête réclamait une classe explicite :
    le pied est le DERNIER élément du document, donc l'enveloppe `.lumiere`
@@ -983,29 +1027,37 @@ html:has(.lumiere) {
    ============================================================== */
 
 body:has(.lumiere) footer {
-  --color-fond: #e9dcc4;
-  --color-surface: #efe4d0;
-  --color-fort: #1b1618;
-  --color-texte: #474245;
-  --color-faible: #5d5659;
-  --color-accent: #6b1d38;
-  --color-filet: rgba(27, 22, 24, 0.12);
-  --color-filet-fort: rgba(27, 22, 24, 0.22);
-  --robe-lumiere: #6b1d38;
+  --color-fond: var(--vintoria-creme-fond);
+  --color-surface: var(--vintoria-creme-surface);
+  --color-fort: var(--vintoria-creme-texte);
+  --color-texte: var(--vintoria-creme-texte-secondaire);
+  --color-faible: var(--vintoria-creme-texte-discret);
+  --color-accent: var(--vintoria-creme-accent);
+  --color-filet: var(--vintoria-creme-filet);
+  --color-filet-fort: var(--vintoria-creme-filet-fort);
+  --color-focus: var(--vintoria-creme-focus);
+  --robe-lumiere: var(--vintoria-creme-accent);
 
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: linear-gradient(to bottom, #e9dcc4 0%, #e3d4b8 100%);
+  /* = ciel("pied") de lib/lumiere.ts : la crème de la tuile, approfondie
+     de 35 % puis 50 % de filet. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--vintoria-creme-tuile), var(--vintoria-creme-filet) 35%) 0%,
+    color-mix(in oklab, var(--vintoria-creme-tuile), var(--vintoria-creme-filet) 50%) 100%
+  );
 }
 
 body:has(.lumiere) footer ::selection {
-  background: rgba(107, 29, 56, 0.16);
+  background: var(--vintoria-bordeaux-100);
   color: var(--color-fort);
 }
 
-/* La dernière lumière du jour : rasante, chaude, elle vient de la
-   gauche et s'éteint sans jamais devenir noire. */
+/* La dernière lumière du jour : rasante, elle vient de la gauche et
+   s'éteint sans jamais devenir noire. Faite de la lueur chaude (une
+   crème) et d'un souffle de vin à 7 %. */
 .lueur-pied {
   display: none;
 }
@@ -1018,14 +1070,14 @@ body:has(.lumiere) .lueur-pied {
   background:
     radial-gradient(
       120% 90% at 8% 0%,
-      rgba(255, 246, 226, 0.9) 0%,
-      rgba(255, 240, 208, 0.34) 36%,
-      rgba(255, 240, 208, 0) 68%
+      color-mix(in srgb, var(--lueur-chaude) 90%, transparent) 0%,
+      color-mix(in srgb, var(--lueur-chaude) 34%, transparent) 36%,
+      color-mix(in srgb, var(--lueur-chaude) 0%, transparent) 68%
     ),
     radial-gradient(
       70% 52% at 98% 104%,
-      rgba(154, 58, 34, 0.07) 0%,
-      rgba(107, 29, 56, 0) 60%
+      color-mix(in srgb, var(--vintoria-vin) 7%, transparent) 0%,
+      color-mix(in srgb, var(--vintoria-bordeaux-700) 0%, transparent) 60%
     );
 }
 
@@ -1035,7 +1087,7 @@ body:has(.lumiere) .lueur-pied {
   display: none;
 }
 body:has(.lumiere) footer .logo-clair {
-  display: block;
+  display: inline-block;
 }
 body:has(.lumiere) footer .logo-fonce {
   display: none;

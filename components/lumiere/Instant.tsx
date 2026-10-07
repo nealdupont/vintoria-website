@@ -160,7 +160,7 @@ export function Instant() {
                 qu'aplat — l'écran est TENU DEVANT la scène. */}
             <div
               aria-hidden
-              className="absolute inset-x-[-1.5rem] -top-6 bottom-0 bg-[#f4efe4]/72 backdrop-blur-lg [mask-image:linear-gradient(to_bottom,black_74%,transparent)] sm:inset-x-[-2rem] lg:hidden"
+              className="absolute inset-x-[-1.5rem] -top-6 bottom-0 bg-[color-mix(in_srgb,var(--vintoria-creme-fond)_72%,transparent)] backdrop-blur-lg [mask-image:linear-gradient(to_bottom,black_74%,transparent)] sm:inset-x-[-2rem] lg:hidden"
             />
 
             <div className="relative flex flex-col items-center pt-5 pb-6 lg:sticky lg:top-0 lg:h-screen lg:justify-center lg:pt-0 lg:pb-0">

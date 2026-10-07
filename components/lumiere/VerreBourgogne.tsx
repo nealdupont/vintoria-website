@@ -8,7 +8,7 @@ import { motion, useReducedMotion } from "motion/react";
  * Jusqu'ici la page montrait ce que la lumière FAIT (le jet, le virage au
  * bordeaux, la flaque) sans jamais montrer ce qu'elle TRAVERSE. L'œil
  * complétait. Maintenant que le verre est là, la chaîne est entière :
- * ivoire → lumière → verre → bordeaux → matière.
+ * crème → lumière → verre → vin → matière.
  *
  * DESSINÉ, PAS PHOTOGRAPHIÉ. Une photo de verre derrière un titre fait un
  * site de caviste ; et une image de stock aurait apporté sa propre lumière,
@@ -110,21 +110,23 @@ export function VerreBourgogne({ className = "", retard = 0 }: Props) {
         </clipPath>
 
         {/* Le vin n'est pas un aplat : il est profond au fond, et traversé
-            au-dessus. C'est là que la lumière devient couleur. */}
+            au-dessus. C'est là que la lumière devient couleur. Sa couleur
+            est le `vin` de la marque (#8F2D46, le rouge du symbole) :
+            une illustration, jamais un texte ni un bouton. */}
         <linearGradient id="vb-vin" x1="0" y1="0" x2="0" y2="1">
           <stop
             offset="0%"
-            stopColor="var(--color-accent)"
+            stopColor="var(--vintoria-vin)"
             stopOpacity="0.17"
           />
           <stop
             offset="46%"
-            stopColor="var(--color-accent)"
+            stopColor="var(--vintoria-vin)"
             stopOpacity="0.3"
           />
           <stop
             offset="100%"
-            stopColor="var(--color-accent)"
+            stopColor="var(--vintoria-vin)"
             stopOpacity="0.46"
           />
         </linearGradient>
@@ -157,7 +159,7 @@ export function VerreBourgogne({ className = "", retard = 0 }: Props) {
             rx="240"
             ry="30"
             fill="none"
-            stroke="var(--color-accent)"
+            stroke="var(--vintoria-vin)"
             strokeOpacity="0.22"
             strokeWidth="1.4"
           />
@@ -195,7 +197,7 @@ export function VerreBourgogne({ className = "", retard = 0 }: Props) {
       <motion.path
         d="M74,150 C62,206 70,284 108,342"
         pathLength={1}
-        stroke="#ffffff"
+        stroke="var(--lueur)"
         strokeOpacity="0.72"
         strokeWidth="2.4"
         strokeLinecap="round"

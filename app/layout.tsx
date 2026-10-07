@@ -106,7 +106,11 @@ export default function RootLayout({
        * défilement doux à l'intérieur d'une page.
        */
       data-scroll-behavior="smooth"
-      /* Le site est sombre : les rôles `v-*` de la marque suivent le thème nuit. */
+      /*
+       * Thème par défaut : `nuit`, celui des routes du soir (formules,
+       * démonstration, film). L'accueil pose `creme` sur son enveloppe et son
+       * en-tête, et la feuille de style bascule le canevas (`html:has(.lumiere)`).
+       */
       data-vintoria-theme="nuit"
       className={`${bodoni.variable} ${schibsted.variable} antialiased`}
     >
@@ -122,7 +126,7 @@ export default function RootLayout({
       <body className="filmgrain min-h-screen">
         <a
           href="#contenu"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-[#1b1618] focus:px-4 focus:py-2 focus:text-sm focus:text-[#fcfaf5] focus:outline-2 focus:outline-offset-2 focus:outline-[#d4b96a]"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-fort focus:px-4 focus:py-2 focus:text-sm focus:text-fond focus:outline-2 focus:outline-offset-2 focus:outline-focus"
         >
           Aller au contenu
         </a>
