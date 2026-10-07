@@ -66,10 +66,20 @@ export const metadata: Metadata = {
     "Vos clients scannent, choisissent leur plat, et découvrent les vins de votre carte expliqués comme le ferait un sommelier. Plus de ventes sur le vin, une cave tenue sans effort.",
   alternates: { canonical: "/" },
   /*
-   * Image de partage, icônes et favicon : fichiers synchronisés depuis
-   * vintoria-brand (app/opengraph-image.png, icon.png, apple-icon.png,
-   * favicon.ico), servis par les conventions de fichiers de Next.
+   * Favicon, icônes et image de partage : les fichiers officiels synchronisés
+   * depuis vintoria-brand (app/favicon.ico, public/marque/, public/apple-touch-icon.png,
+   * app/opengraph-image.png), déclarés exactement comme sur vintoria.app :
+   * mêmes fichiers, mêmes empreintes, mêmes liens (vintoria-brand, docs/05-assets.md).
    */
+  icons: {
+    icon: [
+      { url: "/marque/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/marque/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/marque/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/marque/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/marque/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "Vintoria — Le vin à sa juste place",
     description:

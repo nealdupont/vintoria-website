@@ -2,7 +2,7 @@
   "$description": "Verrou de marque — écrit par vintoria-brand (scripts/sync.mjs). Ne pas modifier : changer la marque dans vintoria-brand puis resynchroniser.",
   "marque": "vintoria-brand",
   "version": "2026.1.0",
-  "commit": "6c8fd27",
+  "commit": "741fbc9",
   "cible": "website",
   "fichiers": [
     {
@@ -19,16 +19,6 @@
       "fichier": "app/favicon.ico",
       "source": "web/favicon.ico",
       "sha256": "2ae9d6935d19ddc6f80c4052bd2844a6efe410f77cdca0d5b099eeef491790ee"
-    },
-    {
-      "fichier": "app/icon.png",
-      "source": "web/icon-512.png",
-      "sha256": "f3932963b7a64f5806ba196a1751f25e76bf06c2642466b592494c77204bd7fa"
-    },
-    {
-      "fichier": "app/apple-icon.png",
-      "source": "web/apple-touch-icon.png",
-      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
     },
     {
       "fichier": "app/opengraph-image.png",
@@ -79,6 +69,26 @@
       "fichier": "public/marque/lockup-horizontal-clair.svg",
       "source": "logo/lockup/horizontal-clair.svg",
       "sha256": "15caebf991d013f8ce7a3dcf4570e96764ee8070971712c10bdbb01b3b58920d"
+    },
+    {
+      "fichier": "public/marque/favicon-16.png",
+      "source": "web/favicon-16.png",
+      "sha256": "a4a183d353faf3b5eb097198f9aa9c55fe9a10a3a1fef780e97aa5e76dc0ad06"
+    },
+    {
+      "fichier": "public/marque/favicon-32.png",
+      "source": "web/favicon-32.png",
+      "sha256": "699850f53983ddb45f988bc3525362c3557477a5fb4fce6794be7032e35ce4a3"
+    },
+    {
+      "fichier": "public/marque/apple-touch-icon.png",
+      "source": "web/apple-touch-icon.png",
+      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
+    },
+    {
+      "fichier": "public/apple-touch-icon.png",
+      "source": "web/apple-touch-icon.png",
+      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
     }
   ]
 }
