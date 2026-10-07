@@ -153,7 +153,7 @@ export function Systeme() {
                 className="relative h-20 w-20 shrink-0 rounded-full ring-1 ring-[color:var(--color-filet-fort)] sm:h-24 sm:w-24"
                 style={{
                   background:
-                    "radial-gradient(circle at 50% 50%, #8e2a3a 0%, #7a1528 38%, #6e1023 62%, #4a0c18 84%, rgba(200,169,97,.5) 93%, rgba(200,169,97,.18) 100%)",
+                    "radial-gradient(circle at 50% 50%, var(--vintoria-vin) 0%, #7a1528 38%, var(--vintoria-bordeaux-700) 62%, var(--vintoria-bordeaux-900) 84%, color-mix(in srgb, var(--vintoria-nuit-texte) 32%, transparent) 93%, color-mix(in srgb, var(--vintoria-nuit-texte) 10%, transparent) 100%)",
                 }}
               >
                 <span

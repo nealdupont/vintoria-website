@@ -78,7 +78,7 @@ export function PourQui() {
               }}
               transition={{ duration: reduit ? 0 : 0.9, ease: EASE }}
             >
-              <div className="filet-or h-px w-14" />
+              <div className="filet-marque h-px w-14" />
               <p className="t-chapeau mt-6 text-pretty text-[color:var(--color-texte)]">
                 {m}
               </p>

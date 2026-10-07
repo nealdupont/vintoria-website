@@ -124,7 +124,7 @@ export function Accord() {
             style={{
               opacity: reduit ? 1 : voile,
               background:
-                "linear-gradient(to top, rgba(252,250,245,0.97) 0%, rgba(252,250,245,0.9) 58%, rgba(252,250,245,0) 100%)",
+                "linear-gradient(to top, color-mix(in srgb, var(--vintoria-creme-surface) 97%, transparent) 0%, color-mix(in srgb, var(--vintoria-creme-surface) 90%, transparent) 58%, color-mix(in srgb, var(--vintoria-creme-surface) 0%, transparent) 100%)",
             }}
           >
             <p className="t-meta max-w-[62ch] text-[color:var(--color-texte)]">

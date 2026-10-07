@@ -7,7 +7,7 @@ import { ciel } from "@/lib/lumiere";
 /**
  * MOUVEMENT VIII — L'INVITATION.
  *
- * L'HEURE DORÉE, la dernière lumière du jour. Elle se prolonge dans le pied
+ * LA DERNIÈRE HEURE DU JOUR. Elle se prolonge dans le pied
  * de page, qui reprend exactement le fond où cette section s'arrête : la
  * traversée ne s'interrompt pas sur une arête, elle se pose.
  *
@@ -35,7 +35,7 @@ export function Invitation() {
         La lumière est basse et vient de la gauche : c'est la fin du jour.
         PAS DE FLAQUE ICI. Une flaque caustique est la TRACE d'un jet
         traversant un verre, reçue sur une surface. Sans jet au-dessus ni
-        chêne dessous, elle ne se lit plus comme de la lumière mais comme
+        table dessous, elle ne se lit plus comme de la lumière mais comme
         une tache — exactement ce que la direction proscrit. La lueur
         rasante, elle, a une cause.
       */}
@@ -44,7 +44,7 @@ export function Invitation() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(110% 80% at 6% 12%, rgba(255,246,224,0.9) 0%, rgba(255,238,200,0.3) 38%, rgba(255,238,200,0) 70%)",
+              "radial-gradient(110% 80% at 6% 12%, color-mix(in srgb, var(--lueur-chaude) 90%, transparent) 0%, color-mix(in srgb, var(--lueur-chaude) 30%, transparent) 38%, color-mix(in srgb, var(--lueur-chaude) 0%, transparent) 70%)",
           }}
         />
       </div>
@@ -62,7 +62,7 @@ export function Invitation() {
             <em>sur votre propre carte.</em>
           </h2>
 
-          <div className="filet-or mt-10 h-px w-44" />
+          <div className="filet-marque mt-10 h-px w-44" />
 
           <p className="t-chapeau mt-10 max-w-[46ch] text-pretty text-[color:var(--color-texte)]">
             Nous faisons entrer votre carte des vins devant vous, et vous voyez

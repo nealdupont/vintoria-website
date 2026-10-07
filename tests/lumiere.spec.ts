@@ -53,10 +53,12 @@ test.describe("La scène existe sans parler", () => {
         .getPropertyValue("--color-fond")
         .trim(),
     );
-    expect(fond).toBe("#f7f4ed");
+    // Le fond du thème `creme` de la marque (--vintoria-creme-fond).
+    expect(fond.toLowerCase()).toBe("#f8f1ea");
 
     /*
-      L'or (1,7:1) et la sauge (2,9:1) sont INTERDITS en texte sur l'ivoire.
+      L'or de l'ancienne identité et la sauge (décor seul) ne portent
+      JAMAIS de texte sur la crème.
       On ne vérifie pas la règle dans la feuille de style — on vérifie
       qu'AUCUN élément de texte rendu n'a fini par les porter.
     */
@@ -73,7 +75,11 @@ test.describe("La scène existe sans parler", () => {
         )
         .filter((e) => {
           const c = getComputedStyle(e).color;
-          return proches(c, [201, 169, 78]) || proches(c, [143, 165, 138]);
+          return (
+            proches(c, [201, 169, 78]) ||
+            proches(c, [212, 185, 106]) ||
+            proches(c, [143, 165, 138])
+          );
         })
         .map((e) => `${e.tagName}: ${(e.textContent ?? "").slice(0, 30)}`);
     });
@@ -282,11 +288,23 @@ test.describe("L’arc du jour", () => {
         `raccord ${HEURES[i].cle} → ${HEURES[i + 1].cle}`,
       ).toBe(HEURES[i + 1].haut);
     }
-    // Et jamais de noir : la lumière baisse, elle ne s'éteint pas.
+    /*
+      Et jamais de noir, ni de couleur hors marque : chaque fond est une
+      surface du thème `creme` (ou un mélange de deux), aucune valeur saisie.
+      Le rendu réel, lui, est vérifié plus bas (« rien n'est peint en encre »).
+    */
+    const surfaces =
+      /^var\(--vintoria-creme-(eleve|surface|fond|tuile|filet)\)$/;
     for (const h of HEURES) {
       for (const c of [h.haut, h.bas]) {
-        const l = Number.parseInt(c.slice(1, 3), 16);
-        expect(l, `${h.cle} tire vers le noir (${c})`).toBeGreaterThan(0xc0);
+        const parts = c.startsWith("color-mix(")
+          ? [...c.matchAll(/var\(--vintoria-[a-z-]+\)/g)].map((m) => m[0])
+          : [c];
+        expect(parts.length, `${h.cle} : ${c}`).toBeGreaterThan(0);
+        for (const v of parts) {
+          expect(v, `${h.cle} sort du thème crème (${c})`).toMatch(surfaces);
+        }
+        expect(c, `${h.cle} porte une valeur saisie`).not.toMatch(/#|rgb/);
       }
     }
   });
@@ -499,7 +517,7 @@ test.describe("Aucun reste de l’ère sombre", () => {
       grain: getComputedStyle(document.body, "::after").display,
     }));
     // Le canevas, c'est ce qu'on voit dans le rebond élastique : pas du noir.
-    expect(v.html).toBe("rgb(247, 244, 237)");
+    expect(v.html).toBe("rgb(248, 241, 234)"); // --vintoria-creme-fond
     // Sinon l'ascenseur du navigateur reste sombre le long d'une page claire.
     expect(v.schema).toBe("light");
     // Le grain de pellicule du soir est invisible sur l'ivoire : il ne doit
@@ -520,9 +538,10 @@ test.describe("Aucun reste de l’ère sombre", () => {
         grain: getComputedStyle(document.body, "::after").display,
         lumiere: document.querySelector(".lumiere") !== null,
       }));
-      expect(v.html, `${r} a basculé en lumière`).toBe("rgb(11, 10, 12)");
+      // Le fond du thème `nuit` de la marque (--vintoria-nuit-fond).
+      expect(v.html, `${r} a basculé en lumière`).toBe("rgb(15, 13, 14)");
       expect(v.schema, `${r} a changé de schéma`).toBe("dark");
-      expect(v.pied, `${r} : le pied a changé`).toBe("rgb(11, 10, 12)");
+      expect(v.pied, `${r} : le pied a changé`).toBe("rgb(15, 13, 14)");
       expect(v.grain, `${r} : le grain du soir a disparu`).not.toBe("none");
       expect(v.lumiere, `${r} porte l’enveloppe claire`).toBe(false);
     }

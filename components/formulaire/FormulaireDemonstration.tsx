@@ -54,7 +54,7 @@ function Champ({
       "w-full rounded-xl border bg-transparent px-4 text-fort",
       "placeholder:text-faible/70",
       "transition-colors duration-[120ms]",
-      erreur ? "border-braise-vive" : "border-filet hover:border-filet-fort",
+      erreur ? "border-erreur" : "border-filet hover:border-filet-fort",
       zone ? "min-h-[7rem] py-3 leading-relaxed" : "min-h-[48px] py-3",
     ].join(" "),
   };
@@ -80,7 +80,7 @@ function Champ({
         </span>
       ) : null}
       {erreur ? (
-        <span id={idErreur} className="t-meta text-braise-vive">
+        <span id={idErreur} className="t-meta text-erreur">
           {erreur}
         </span>
       ) : null}
@@ -240,7 +240,7 @@ export function FormulaireDemonstration() {
         ref={resume}
         tabIndex={-1}
         aria-live="polite"
-        className={`t-meta ${etat.phase === "erreur" ? "text-braise-vive" : "sr-only"}`}
+        className={`t-meta ${etat.phase === "erreur" ? "text-erreur" : "sr-only"}`}
       >
         {etat.phase === "erreur" ? etat.message : ""}
       </p>

@@ -1,0 +1,94 @@
+{
+  "$description": "Verrou de marque — écrit par vintoria-brand (scripts/sync.mjs). Ne pas modifier : changer la marque dans vintoria-brand puis resynchroniser.",
+  "marque": "vintoria-brand",
+  "version": "2026.1.0",
+  "commit": "741fbc9",
+  "cible": "website",
+  "fichiers": [
+    {
+      "fichier": "app/marque/vintoria.css",
+      "source": "tokens/vintoria.css",
+      "sha256": "7bdbad401ccd2bf454cd18321a9d855bce160faafaa787b7e6d6cbca24e415fb"
+    },
+    {
+      "fichier": "app/marque/tailwind.css",
+      "source": "tokens/tailwind.css",
+      "sha256": "915736fe7f04ef4b76de6af363f3844ec65596be4f43de2763cb7a38b5c6c793"
+    },
+    {
+      "fichier": "app/favicon.ico",
+      "source": "web/favicon.ico",
+      "sha256": "2ae9d6935d19ddc6f80c4052bd2844a6efe410f77cdca0d5b099eeef491790ee"
+    },
+    {
+      "fichier": "app/opengraph-image.png",
+      "source": "web/og.png",
+      "sha256": "1fbaa8bee06798f6a6a518ffe1cff098cdb163e4f98d3873d718901c00adea58"
+    },
+    {
+      "fichier": "public/marque/icon-192.png",
+      "source": "web/icon-192.png",
+      "sha256": "2acf82fd4478e357c4a093909b0377b1cada1d145f3b455a56fefc22a526210a"
+    },
+    {
+      "fichier": "public/marque/icon-512.png",
+      "source": "web/icon-512.png",
+      "sha256": "f3932963b7a64f5806ba196a1751f25e76bf06c2642466b592494c77204bd7fa"
+    },
+    {
+      "fichier": "public/marque/icon-maskable-512.png",
+      "source": "web/icon-maskable-512.png",
+      "sha256": "89b006df6fbfd73b2ecc0636b35a4ac1dfad2c1bfe392b5d8fc5f65fe9d06e06"
+    },
+    {
+      "fichier": "public/marque/symbole.png",
+      "source": "logo/symbole/symbole.png",
+      "sha256": "5ed97b7329c508fc1bca46214c1c253eba149e7781a5bccc6989aa0ddf7e6390"
+    },
+    {
+      "fichier": "public/marque/symbole-tonal-creme.png",
+      "source": "logo/symbole/symbole-tonal-creme.png",
+      "sha256": "853bab06c0b9ec61ade32dfe289f89cb44e96476646781080880b535f8e364da"
+    },
+    {
+      "fichier": "public/marque/wordmark-creme.svg",
+      "source": "logo/wordmark/wordmark-creme.svg",
+      "sha256": "8af5ef7ed1b5d1fedd1ca3947ecb512922ced49e522b7efd441735aae5ec4b32"
+    },
+    {
+      "fichier": "public/marque/wordmark-bordeaux.svg",
+      "source": "logo/wordmark/wordmark-bordeaux.svg",
+      "sha256": "3d3a65d682177f1723c8271ac3f4ebd4b67d3229c90acfe3f23f81a6ed22a9ab"
+    },
+    {
+      "fichier": "public/marque/lockup-horizontal-fonce.svg",
+      "source": "logo/lockup/horizontal-fonce.svg",
+      "sha256": "7baa1095d84219538088033fad7f334157d40edab520644616a3db03b25e9b6c"
+    },
+    {
+      "fichier": "public/marque/lockup-horizontal-clair.svg",
+      "source": "logo/lockup/horizontal-clair.svg",
+      "sha256": "15caebf991d013f8ce7a3dcf4570e96764ee8070971712c10bdbb01b3b58920d"
+    },
+    {
+      "fichier": "public/marque/favicon-16.png",
+      "source": "web/favicon-16.png",
+      "sha256": "a4a183d353faf3b5eb097198f9aa9c55fe9a10a3a1fef780e97aa5e76dc0ad06"
+    },
+    {
+      "fichier": "public/marque/favicon-32.png",
+      "source": "web/favicon-32.png",
+      "sha256": "699850f53983ddb45f988bc3525362c3557477a5fb4fce6794be7032e35ce4a3"
+    },
+    {
+      "fichier": "public/marque/apple-touch-icon.png",
+      "source": "web/apple-touch-icon.png",
+      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
+    },
+    {
+      "fichier": "public/apple-touch-icon.png",
+      "source": "web/apple-touch-icon.png",
+      "sha256": "8af65b37b0b40741ae503ba3be82e168bd320ff1a08f9d43d318af4e9d30b64a"
+    }
+  ]
+}

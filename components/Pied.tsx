@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LockupHorizontal } from "@/components/marque/Marque";
 
 /**
  * LE PIED — il vit dans le layout, donc sur les trois routes.
@@ -9,7 +10,7 @@ import Link from "next/link";
  * arrivé par le milieu.
  *
  * IL SUIT LA LUMIÈRE SANS DEVENIR UN COMPOSANT CLIENT.
- * L'accueil se termine dans l'heure dorée ; finir sur une dalle noire
+ * L'accueil se termine dans la dernière heure du jour ; finir sur une dalle noire
  * annulerait toute la traversée. Mais ce composant sert aussi /tarifs et
  * /demonstration, restées au jeu du soir, et il est rendu côté serveur :
  * il ne peut pas lire la route.
@@ -36,11 +37,18 @@ export function Pied() {
       <div className="relative z-10 mx-auto max-w-[1180px]">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="voix text-[1.05rem] tracking-[0.3em] text-fort">
-              VINTORIA
-            </p>
+            {/*
+              Le lockup horizontal de la marque, en composition officielle
+              (components/marque/Marque.tsx). Le pied ne connaît pas la
+              route : les deux variantes sont posées, la feuille de style
+              montre `fonce` sur les routes du soir et `clair` sur l'accueil
+              (voir `.logo-clair` dans app/globals.css). Les images cachées
+              sont paresseuses : la variante masquée n'est jamais chargée.
+            */}
+            <LockupHorizontal hauteur={36} variante="fonce" className="logo-fonce" />
+            <LockupHorizontal hauteur={36} variante="clair" className="logo-clair" />
             <p className="t-meta mt-3 max-w-[34ch] text-faible">
-              L’expertise du sommelier, à chaque table.
+              Le vin à sa juste place.
             </p>
           </div>
 
@@ -64,7 +72,7 @@ export function Pied() {
               </li>
               <li>
                 <a
-                  href="https://vintoria.app"
+                  href="https://www.vintoria.app"
                   className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
                 >
                   Accéder à Vintoria

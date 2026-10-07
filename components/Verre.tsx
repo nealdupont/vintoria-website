@@ -22,6 +22,11 @@ import { motion, useReducedMotion } from "motion/react";
  *     projette une flaque colorée sur le sol.
  *  5. PROFONDEUR DE CHAMP — la netteté décroît du buvant vers le pied.
  *
+ * COULEURS : les reflets du cristal reprennent le texte nuit (#EDE8E5) et le
+ * crème élevé (#FFFDFA) de la marque, écrits en clair parce que les attributs
+ * SVG ne lisent pas les variables CSS. Le vin garde ses rouges : c'est une
+ * robe peinte, pas l'identité.
+ *
  * CRITÈRE DE RÉUSSITE : le cristal reste lisible même sans le vin.
  */
 
@@ -76,29 +81,29 @@ export function Verre({ className = "" }: { className?: string }) {
 
           {/* L'ARÊTE : le cristal ne brille qu'aux extrêmes */}
           <linearGradient id="arete" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fffdf7" stopOpacity="0.66" />
-            <stop offset="0.045" stopColor="#fffdf7" stopOpacity="0.3" />
-            <stop offset="0.18" stopColor="#ece5d8" stopOpacity="0.045" />
-            <stop offset="0.5" stopColor="#ece5d8" stopOpacity="0.014" />
-            <stop offset="0.82" stopColor="#ece5d8" stopOpacity="0.06" />
-            <stop offset="0.955" stopColor="#fffdf7" stopOpacity="0.36" />
-            <stop offset="1" stopColor="#fffdf7" stopOpacity="0.74" />
+            <stop offset="0" stopColor="#FFFDFA" stopOpacity="0.66" />
+            <stop offset="0.045" stopColor="#FFFDFA" stopOpacity="0.3" />
+            <stop offset="0.18" stopColor="#EDE8E5" stopOpacity="0.045" />
+            <stop offset="0.5" stopColor="#EDE8E5" stopOpacity="0.014" />
+            <stop offset="0.82" stopColor="#EDE8E5" stopOpacity="0.06" />
+            <stop offset="0.955" stopColor="#FFFDFA" stopOpacity="0.36" />
+            <stop offset="1" stopColor="#FFFDFA" stopOpacity="0.74" />
           </linearGradient>
 
           <linearGradient id="arete-arriere" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#ece5d8" stopOpacity="0.22" />
-            <stop offset="0.14" stopColor="#ece5d8" stopOpacity="0.04" />
-            <stop offset="0.5" stopColor="#ece5d8" stopOpacity="0.008" />
-            <stop offset="0.86" stopColor="#ece5d8" stopOpacity="0.05" />
-            <stop offset="1" stopColor="#ece5d8" stopOpacity="0.26" />
+            <stop offset="0" stopColor="#EDE8E5" stopOpacity="0.22" />
+            <stop offset="0.14" stopColor="#EDE8E5" stopOpacity="0.04" />
+            <stop offset="0.5" stopColor="#EDE8E5" stopOpacity="0.008" />
+            <stop offset="0.86" stopColor="#EDE8E5" stopOpacity="0.05" />
+            <stop offset="1" stopColor="#EDE8E5" stopOpacity="0.26" />
           </linearGradient>
 
           <linearGradient id="cristal" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#ece5d8" stopOpacity="0.07" />
-            <stop offset="0.12" stopColor="#ece5d8" stopOpacity="0.016" />
-            <stop offset="0.5" stopColor="#ece5d8" stopOpacity="0.005" />
-            <stop offset="0.88" stopColor="#ece5d8" stopOpacity="0.02" />
-            <stop offset="1" stopColor="#ece5d8" stopOpacity="0.08" />
+            <stop offset="0" stopColor="#EDE8E5" stopOpacity="0.07" />
+            <stop offset="0.12" stopColor="#EDE8E5" stopOpacity="0.016" />
+            <stop offset="0.5" stopColor="#EDE8E5" stopOpacity="0.005" />
+            <stop offset="0.88" stopColor="#EDE8E5" stopOpacity="0.02" />
+            <stop offset="1" stopColor="#EDE8E5" stopOpacity="0.08" />
           </linearGradient>
 
           {/*
@@ -123,7 +128,7 @@ export function Verre({ className = "" }: { className?: string }) {
             <stop offset="1" stopColor="#6b1c28" stopOpacity="0.2" />
           </linearGradient>
 
-          {/* Le foyer : la braise au creux de la panse */}
+          {/* Le foyer : le cœur du vin, au creux de la panse */}
           <radialGradient id="vin-foyer" cx="0.38" cy="0.58" r="0.42">
             <stop offset="0" stopColor="#8e2f40" stopOpacity="0.07" />
             <stop offset="1" stopColor="#8e2f40" stopOpacity="0" />
@@ -144,11 +149,11 @@ export function Verre({ className = "" }: { className?: string }) {
 
           {/* LA JAMBE : deux arêtes vives, un cœur sombre */}
           <linearGradient id="jambe" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fffdf7" stopOpacity="0.44" />
-            <stop offset="0.26" stopColor="#ece5d8" stopOpacity="0.04" />
-            <stop offset="0.5" stopColor="#ece5d8" stopOpacity="0.015" />
-            <stop offset="0.76" stopColor="#ece5d8" stopOpacity="0.06" />
-            <stop offset="1" stopColor="#fffdf7" stopOpacity="0.36" />
+            <stop offset="0" stopColor="#FFFDFA" stopOpacity="0.44" />
+            <stop offset="0.26" stopColor="#EDE8E5" stopOpacity="0.04" />
+            <stop offset="0.5" stopColor="#EDE8E5" stopOpacity="0.015" />
+            <stop offset="0.76" stopColor="#EDE8E5" stopOpacity="0.06" />
+            <stop offset="1" stopColor="#FFFDFA" stopOpacity="0.36" />
           </linearGradient>
           <linearGradient id="jambe-robe" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#340c15" stopOpacity="0.4" />
@@ -157,10 +162,10 @@ export function Verre({ className = "" }: { className?: string }) {
           </linearGradient>
 
           <linearGradient id="pied" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fffdf7" stopOpacity="0.28" />
-            <stop offset="0.2" stopColor="#ece5d8" stopOpacity="0.03" />
-            <stop offset="0.8" stopColor="#ece5d8" stopOpacity="0.04" />
-            <stop offset="1" stopColor="#fffdf7" stopOpacity="0.24" />
+            <stop offset="0" stopColor="#FFFDFA" stopOpacity="0.28" />
+            <stop offset="0.2" stopColor="#EDE8E5" stopOpacity="0.03" />
+            <stop offset="0.8" stopColor="#EDE8E5" stopOpacity="0.04" />
+            <stop offset="1" stopColor="#FFFDFA" stopOpacity="0.24" />
           </linearGradient>
 
           <clipPath id="clip-calice">
@@ -179,7 +184,7 @@ export function Verre({ className = "" }: { className?: string }) {
           <path
             d="M170 906 A140 24 0 0 0 450 906"
             fill="none"
-            stroke="#fffdf7"
+            stroke="#FFFDFA"
             strokeOpacity="0.14"
             strokeWidth="1.4"
           />
@@ -197,7 +202,7 @@ export function Verre({ className = "" }: { className?: string }) {
             fill="url(#jambe-robe)"
           />
           {/* le nœud : le cristal s'épaissit au raccord et capte la lumière */}
-          <ellipse cx="310" cy="590" rx="22" ry="7" fill="#fffdf7" opacity="0.1" />
+          <ellipse cx="310" cy="590" rx="22" ry="7" fill="#FFFDFA" opacity="0.1" />
         </g>
 
         {/* ── LE CALICE ──────────────────────────────────────────── */}
@@ -257,7 +262,7 @@ export function Verre({ className = "" }: { className?: string }) {
           <path
             d="M162 246 C128 320 122 396 142 470"
             fill="none"
-            stroke="#fffdf7"
+            stroke="#FFFDFA"
             strokeOpacity="0.17"
             strokeWidth="5.5"
             strokeLinecap="round"
@@ -267,7 +272,7 @@ export function Verre({ className = "" }: { className?: string }) {
           <path
             d="M462 282 C490 356 486 428 464 490"
             fill="none"
-            stroke="#ece5d8"
+            stroke="#EDE8E5"
             strokeOpacity="0.06"
             strokeWidth="18"
             strokeLinecap="round"
@@ -301,7 +306,7 @@ export function Verre({ className = "" }: { className?: string }) {
           <path
             d="M178 150 A132 24 0 0 0 442 150"
             fill="none"
-            stroke="#fffdf7"
+            stroke="#FFFDFA"
             strokeOpacity="0.38"
             strokeWidth="0.9"
           />

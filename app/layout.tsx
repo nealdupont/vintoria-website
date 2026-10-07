@@ -1,36 +1,37 @@
 import type { Metadata, Viewport } from "next";
-import { Spectral, Archivo } from "next/font/google";
+import { Bodoni_Moda, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Chrome } from "@/components/Chrome";
 import { Pied } from "@/components/Pied";
 
 /**
  * Deux voix, une règle : la MARQUE parle en sérif, l'INTERFACE en grotesque.
+ * Ce sont les deux polices du Brand System Vintoria 2026.
  *
- * Spectral (Production Type) — sérif taillé, lisible de 12 à 100 px. C'est la
- * voix de Vintoria : le titre, la citation, les mots du sommelier.
- * Archivo (Omnibus-Type) — grotesque neutre et précise. C'est la voix de
- * l'outil : labels, métadonnées, navigation, boutons.
+ * Bodoni Moda — la voix de Vintoria : le titre, la citation, les mots du
+ * sommelier. Fonte variable, avec l'axe de taille optique : le contraste des
+ * déliés s'ajuste de 12 à 100 px.
+ * Schibsted Grotesk — la voix de l'outil : labels, métadonnées, navigation,
+ * boutons.
  *
  * Aucun monospace : il annonce la technologie, alors que nous la voulons
  * invisible — et c'est la signature la plus datable de la décennie.
  *
- * Cinq fontes, pas neuf. Chaque graisse chargée ici est employée quelque
- * part ; aucune ne dort. Le poids des polices était le premier poste de
- * la page, devant le JavaScript.
+ * Deux fichiers variables, pas une graisse par fichier. Les noms hachés de
+ * next/font sont rattachés aux rôles de la marque (--vintoria-police-*) dans
+ * app/globals.css.
  */
-const spectral = Spectral({
-  variable: "--font-voix-src",
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni-moda",
   subsets: ["latin"],
-  weight: ["300", "400"],
   style: ["normal", "italic"],
+  axes: ["opsz"],
   display: "swap",
 });
 
-const archivo = Archivo({
-  variable: "--font-structure-src",
+const schibsted = Schibsted_Grotesk({
+  variable: "--font-schibsted-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -47,25 +48,53 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  /* Le fond nuit de la marque : la barre du navigateur se fond dans la page. */
+  themeColor: "#0F0D0E",
 };
+
+/** Décrit l'image de partage : app/opengraph-image.png (alt dans opengraph-image.alt.txt). */
+const TEXTE_IMAGE_PARTAGE =
+  "Logo Vintoria : le symbole V bordeaux, le nom VINTORIA et la signature « Le vin à sa juste place », sur fond crème.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vintoria.com"),
   title: {
-    default: "Vintoria · L’expertise du sommelier, à chaque table",
+    default: "Vintoria — Le vin à sa juste place",
     template: "%s · Vintoria",
   },
   description:
     "Vos clients scannent, choisissent leur plat, et découvrent les vins de votre carte expliqués comme le ferait un sommelier. Plus de ventes sur le vin, une cave tenue sans effort.",
   alternates: { canonical: "/" },
+  /*
+   * Favicon, icônes et image de partage : les fichiers officiels synchronisés
+   * depuis vintoria-brand (app/favicon.ico, public/marque/, public/apple-touch-icon.png,
+   * app/opengraph-image.png), déclarés exactement comme sur vintoria.app :
+   * mêmes fichiers, mêmes empreintes, mêmes liens (vintoria-brand, docs/05-assets.md).
+   */
+  icons: {
+    icon: [
+      { url: "/marque/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/marque/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/marque/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/marque/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/marque/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
-    title: "Vintoria · L’expertise du sommelier, à chaque table",
+    title: "Vintoria — Le vin à sa juste place",
     description:
       "Le conseil d’un sommelier à chaque table, et une cave qui se tient toute seule.",
     url: "https://vintoria.com",
     siteName: "Vintoria",
     type: "website",
     locale: "fr_FR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vintoria — Le vin à sa juste place",
+    description:
+      "Le conseil d’un sommelier à chaque table, et une cave qui se tient toute seule.",
+    images: [{ url: "/opengraph-image.png", alt: TEXTE_IMAGE_PARTAGE }],
   },
   robots: { index: true, follow: true },
 };
@@ -87,7 +116,13 @@ export default function RootLayout({
        * défilement doux à l'intérieur d'une page.
        */
       data-scroll-behavior="smooth"
-      className={`${spectral.variable} ${archivo.variable} antialiased`}
+      /*
+       * Thème par défaut : `nuit`, celui des routes du soir (formules,
+       * démonstration, film). L'accueil pose `creme` sur son enveloppe et son
+       * en-tête, et la feuille de style bascule le canevas (`html:has(.lumiere)`).
+       */
+      data-vintoria-theme="nuit"
+      className={`${bodoni.variable} ${schibsted.variable} antialiased`}
     >
       {/*
           Le fond et la couleur du corps viennent de `globals.css` (règle
@@ -101,7 +136,7 @@ export default function RootLayout({
       <body className="filmgrain min-h-screen">
         <a
           href="#contenu"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-[#1b1618] focus:px-4 focus:py-2 focus:text-sm focus:text-[#fcfaf5] focus:outline-2 focus:outline-offset-2 focus:outline-[#d4b96a]"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-fort focus:px-4 focus:py-2 focus:text-sm focus:text-fond focus:outline-2 focus:outline-offset-2 focus:outline-focus"
         >
           Aller au contenu
         </a>

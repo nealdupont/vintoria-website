@@ -84,15 +84,21 @@ export async function demanderDemonstration(
   }
 
   // --- Envoi ------------------------------------------------------------
+  /*
+   * Courriel interne, aux couleurs du thème crème de la marque (vintoria-brand) :
+   * fond crème #F8F1EA, texte encre #241A1D, discret #6A5F62, filet #E6DACF,
+   * bordeaux #722340. Écrites en clair : un client de messagerie ne lit pas
+   * les variables CSS.
+   */
   const ligne = (etiquette: string, v: string) =>
-    v ? `<tr><td style="padding:4px 16px 4px 0;color:#837d73">${etiquette}</td><td style="padding:4px 0"><strong>${echapperHtml(v)}</strong></td></tr>` : "";
+    v ? `<tr><td style="padding:4px 16px 4px 0;color:#6A5F62">${etiquette}</td><td style="padding:4px 0"><strong>${echapperHtml(v)}</strong></td></tr>` : "";
 
   const resultat = await ecrireAuContact({
     sujet: `Démonstration — ${valeurs.etablissement}`,
     repondreA: valeurs.courriel,
     html: `
-      <div style="font-family:system-ui,sans-serif;color:#0b0a0c;line-height:1.6">
-        <p style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#837d73;margin:0 0 4px">Demande de démonstration</p>
+      <div style="font-family:system-ui,sans-serif;background:#F8F1EA;color:#241A1D;line-height:1.6;padding:24px">
+        <p style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#722340;margin:0 0 4px">Demande de démonstration</p>
         <h1 style="font-size:22px;margin:0 0 20px">${echapperHtml(valeurs.etablissement)}</h1>
         <table style="border-collapse:collapse;font-size:15px">
           ${ligne("Contact", valeurs.nom)}
@@ -104,7 +110,7 @@ export async function demanderDemonstration(
         </table>
         ${
           texte(donnees, "message")
-            ? `<p style="margin:22px 0 0;padding-top:16px;border-top:1px solid #e3dacb;white-space:pre-wrap">${echapperHtml(texte(donnees, "message"))}</p>`
+            ? `<p style="margin:22px 0 0;padding-top:16px;border-top:1px solid #E6DACF;white-space:pre-wrap">${echapperHtml(texte(donnees, "message"))}</p>`
             : ""
         }
       </div>
