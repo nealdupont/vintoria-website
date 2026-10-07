@@ -1,45 +1,97 @@
 @import "tailwindcss";
 
 /* ============================================================
-   VINTORIA — « SERVICE »
-   Un film gastronomique. Le noir, la lumière, la braise du vin.
+   VINTORIA — SYSTÈME
 
-   Système : contrastes mesurés, échelle typographique fermée,
-   rythme vertical à deux respirations. Rien d'arbitraire.
+   Un restaurant a deux temps. LE SERVICE, le soir, à l'encre.
+   LE TRAVAIL DE LA CAVE, le matin, sur le crème.
+
+   D'où la règle qui gouverne tout ce fichier : les couleurs ne sont
+   pas nommées par ce qu'elles SONT mais par ce qu'elles FONT. Un même
+   composant écrit `text-fort` et se lit correctement sur les deux
+   surfaces, sans condition et sans variante. La bascule se fait en un
+   seul endroit : la classe `jour`.
    ============================================================ */
 
 @theme {
   /* --- Matière ------------------------------------------------ */
   --color-encre: #0b0a0c; /* la salle avant le service */
   --color-encre-2: #121013; /* surface posée sur l'encre */
+  --color-jour: #ece5d8; /* le matin, la cave, le carnet */
+  --color-jour-2: #e3dacb; /* surface posée sur le crème */
 
-  /* --- Échelle de texte, contrastes vérifiés sur --encre ------- */
-  --color-os: #ece5d8; /* 15.8:1 — titres, texte fort */
-  --color-cendre: #a8a298; /* 7.8:1 — texte courant */
-  --color-cendre-2: #837d73; /* 4.8:1 — métadonnées, labels */
+  /* --- Échelle de texte, contrastes vérifiés sur l'encre -------- */
+  /* Couche BRUTE : la matière, nommée par ce qu'elle est. Elle sert aux
+     composants qui vivent toujours du même côté — la démonstration, le
+     verre. Les mouvements, eux, emploient la couche sémantique. */
+  --color-os: #ece5d8; /* 15,8:1 — titres, texte fort */
+  --color-cendre: #a8a298; /* 7,8:1 — texte courant */
+  --color-cendre-2: #837d73; /* 4,8:1 — métadonnées, labels */
 
   /* --- Accents ------------------------------------------------ */
-  --color-braise: #6e1023; /* la robe du vin, rare */
+  --color-braise: #6e1023; /* la robe du vin */
   --color-braise-vive: #8e2a3a;
-  --color-laiton: #b08a4a; /* 6.2:1 — le métal */
-  --color-tungstene: #e8c88c; /* 12.3:1 — la lampe de salle */
-
-  /* --- Filets -------------------------------------------------- */
-  --color-filet: rgba(236, 229, 216, 0.14);
-  --color-filet-fort: rgba(236, 229, 216, 0.24);
+  --color-laiton: #d4b96a; /* l'or de Vintoria Pro — 10,30:1 sur l'encre */
+  --color-tungstene: #e8c88c; /* la lampe de salle — 12,30:1 */
 
   /* --- Voix ---------------------------------------------------- */
   /* La marque parle en sérif. L'interface parle en grotesque. */
   --font-voix: var(--font-voix-src); /* Spectral — Vintoria parle */
   --font-structure: var(--font-structure-src); /* Archivo — l'outil affiche */
 
-  --ease-film: cubic-bezier(0.16, 1, 0.3, 1);
+  /* --- Mouvement ----------------------------------------------- */
+  /* Quatre durées, pas une de plus. Chacune a un emploi. */
+  --duree-tactile: 120ms; /* ce que le doigt déclenche */
+  --duree-etat: 240ms; /* ce qui change d'état */
+  --duree-entree: 560ms; /* ce qui entre dans le champ */
+  --duree-robe: 1200ms; /* ce que le vin dépose */
+
+  --ease-film: cubic-bezier(0.16, 1, 0.3, 1); /* entrées */
+  --ease-sortie: cubic-bezier(0.4, 0, 1, 1); /* sorties, plus sèches */
+
+  /* ============================================================
+     JETONS SÉMANTIQUES — la valeur par défaut est celle du SOIR.
+     Voir la classe `jour` plus bas pour le jeu du matin.
+     Contrastes mesurés sur l'encre #0b0a0c :
+       fort 15,8:1 · texte 7,8:1 · faible 4,8:1 · accent 10,3:1
+     ============================================================ */
+  --color-fond: #0b0a0c;
+  --color-surface: #121013;
+  --color-fort: #ece5d8; /* titres, texte appuyé */
+  --color-texte: #a8a298; /* texte courant */
+  --color-faible: #837d73; /* métadonnées, étiquettes */
+  --color-accent: #d4b96a; /* le métal qui signale */
+  --color-filet: rgba(236, 229, 216, 0.14);
+  --color-filet-fort: rgba(236, 229, 216, 0.24);
+}
+
+/* ============================================================
+   LE JOUR — la cave, le matin.
+
+   Contrastes mesurés sur le crème #ece5d8 :
+     fort 15,8:1 · texte 7,7:1 · faible 4,7:1 · accent (braise) 9,5:1
+
+   L'OR EST INTERDIT ICI : #d4b96a ne donne que 1,53:1 sur le crème.
+   C'est la braise qui prend le relais de l'accent. Cette substitution
+   est la raison d'être des jetons sémantiques — aucun composant n'a
+   à connaître la règle, il écrit `text-accent` et elle s'applique.
+   ============================================================ */
+.jour {
+  --color-fond: #ece5d8;
+  --color-surface: #e3dacb;
+  --color-fort: #0b0a0c;
+  --color-texte: #4a443c;
+  --color-faible: #6b6459;
+  --color-accent: #6e1023;
+  --color-filet: rgba(11, 10, 12, 0.14);
+  --color-filet-fort: rgba(11, 10, 12, 0.26);
+
+  background-color: var(--color-fond);
+  color: var(--color-texte);
+  color-scheme: light;
 }
 
 :root {
-  --background: var(--color-encre);
-  --foreground: var(--color-os);
-
   /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
   --robe-profond: #4a3a22;
   --robe-lumiere: #e8c88c;
@@ -60,25 +112,19 @@
 */
 .robe-teinte {
   color: var(--robe-lumiere);
-  transition: color 1200ms var(--ease-film);
+  transition: color var(--duree-robe) var(--ease-film);
 }
 .robe-pastille {
   background-color: var(--robe-lumiere);
-  transition: background-color 1200ms var(--ease-film);
+  transition: background-color var(--duree-robe) var(--ease-film);
 }
+
 /*
   LA TRACE — ce que le vin choisi laisse dans le reste de l'expérience.
-
-  La démonstration allume une lumière ; les actes suivants n'en reçoivent
-  qu'un reste, réglé acte par acte via --trace-force et de plus en plus
-  faible à mesure qu'on s'éloigne de la source (0.10 → 0.05).
 
   Elle ne colore rien : elle éclaire du noir, très peu, et seulement lui.
   Aucun fond, aucun texte, aucun filet — donc aucun contraste touché.
   Et jamais --robe-lumiere, qui appartient au texte.
-
-  --trace-retard fait descendre la lumière d'acte en acte plutôt que de
-  faire basculer la page d'un bloc.
 */
 .robe-trace {
   background: radial-gradient(
@@ -100,7 +146,7 @@
     color-mix(in srgb, var(--robe-profond) 18%, transparent) 42%,
     transparent 70%
   );
-  transition: background 1200ms var(--ease-film);
+  transition: background var(--duree-robe) var(--ease-film);
 }
 
 html {
@@ -117,7 +163,7 @@ html {
 
 body {
   background: var(--color-encre);
-  color: var(--color-os);
+  color: var(--color-fort);
   font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
   font-synthesis-weight: none;
@@ -125,25 +171,30 @@ body {
 
 ::selection {
   background: var(--color-braise);
-  color: var(--color-os);
+  color: #ece5d8;
+}
+.jour ::selection {
+  background: var(--color-braise);
+  color: #ece5d8;
 }
 
 :focus-visible {
-  outline: 1px solid var(--color-laiton);
-  outline-offset: 4px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ============================================================
    HIÉRARCHIE — 7 degrés, pas un de plus.
    Chaque degré a une fonction. Aucun n'existe pour « faire joli ».
 
-   .t-display   Sérif · l'affirmation qui ouvre un acte. Une par écran.
-   .t-titre     Sérif · le titre d'acte. Il annonce l'objection levée.
-   .t-citation  Sérif · la voix humaine — conviction, fondateur.
+   .t-display   Sérif · l'affirmation qui ouvre. Une par écran.
+   .t-titre     Sérif · le titre de mouvement.
+   .t-citation  Sérif · la voix humaine.
    .t-tete      Sérif · l'entrée d'une liste. Nomme, ne développe pas.
-   .t-chapeau   Grotesque · le paragraphe d'entrée. Explique en une fois.
+   .t-chapeau   Grotesque · le paragraphe d'entrée.
    .t-corps     Grotesque · le texte courant. Le plus lu du site.
-   .t-meta      Grotesque · la mention de service (délai, réserve).
+   .t-meta      Grotesque · la mention de service.
    .eyebrow     Grotesque capitales · l'étiquette. Situe, ne dit rien.
    ============================================================ */
 
@@ -193,27 +244,106 @@ body {
   letter-spacing: 0.06em;
 }
 
-/* L'étiquette — 12 px, capitales espacées, 4.8:1 */
+/* L'étiquette — 12 px, capitales espacées */
 .eyebrow {
   font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-cendre-2);
+  color: var(--color-faible);
+}
+
+/* ============================================================
+   BOUTONS — trois rangs, une seule logique.
+
+   Un écran n'a qu'une action principale. Le rang dit lequel :
+     primaire   l'action commerciale. Un par mouvement, jamais deux.
+     second     l'alternative, pour qui n'est pas prêt à décider.
+     fantome    la navigation, qui n'engage rien.
+
+   La hauteur minimale de 48 px n'est pas négociable : c'est la cible
+   tactile. Elle s'applique AUSSI au rang fantôme, le plus petit.
+   ============================================================ */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding-inline: 1.6rem;
+  border-radius: 999px;
+  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--duree-tactile) var(--ease-film),
+    border-color var(--duree-tactile) var(--ease-film),
+    color var(--duree-tactile) var(--ease-film),
+    transform var(--duree-tactile) var(--ease-film),
+    opacity var(--duree-tactile) var(--ease-film);
+}
+.bouton:active {
+  transform: translateY(1px);
+}
+.bouton:disabled,
+.bouton[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* L'action commerciale — la seule qui porte la pleine surface claire. */
+.bouton-primaire {
+  background: var(--color-fort);
+  color: var(--color-fond);
+}
+.bouton-primaire:hover:not(:disabled) {
+  background: var(--color-tungstene);
+}
+.jour .bouton-primaire:hover:not(:disabled) {
+  background: var(--color-braise);
+  color: #ece5d8;
+}
+
+/* L'alternative — dessinée, pas remplie. */
+.bouton-second {
+  background: transparent;
+  color: var(--color-fort);
+  border-color: var(--color-filet-fort);
+}
+.bouton-second:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* La navigation — aucune surface, aucun trait. */
+.bouton-fantome {
+  background: transparent;
+  color: var(--color-texte);
+  padding-inline: 0.9rem;
+}
+.bouton-fantome:hover {
+  color: var(--color-fort);
 }
 
 /* ============================================================
    Rythme vertical — deux respirations, choisies.
-   `rythme`       : les actes qui expliquent
-   `rythme-ample` : les actes qui laissent respirer
+   `rythme`       : les mouvements qui expliquent
+   `rythme-ample` : les mouvements qui laissent respirer
    ============================================================ */
 
 .rythme {
-  padding-block: clamp(6.5rem, 12vw, 10.5rem);
+  padding-block: clamp(4rem, 7.5vw, 6.5rem);
 }
 .rythme-ample {
-  padding-block: clamp(8.5rem, 15.5vw, 13.5rem);
+  padding-block: clamp(5rem, 9.5vw, 8.5rem);
 }
 
 /*
@@ -227,11 +357,24 @@ body {
 }
 
 /* L'en-tête est fixe : les ancres ne doivent jamais atterrir dessous. */
-section[id] {
+section[id],
+:target {
   scroll-margin-top: calc(6rem + env(safe-area-inset-top));
 }
 
-/* Grain de pellicule — la matière du noir */
+/* Grain de pellicule — la matière du noir. Le jour n'en a pas besoin. */
+/*
+   Sur l'accueil, il ne sert plus à rien. Mesuré : en `overlay` sur un fond de
+   luminance 0,906, l'écart de rendu est de l'ordre du MILLIÈME — invisible.
+   Mais le calque reste : `position: fixed`, plein écran, en mode de fusion,
+   à z-60, donc recomposé à chaque image du défilement piloté. On paie une
+   composition permanente pour rien, et par-dessus le `.grain-clair` des
+   sections claires, qui lui se voit.
+   Les routes du soir le gardent : là, il fait son travail. */
+body:has(.lumiere).filmgrain::after {
+  display: none;
+}
+
 .filmgrain::after {
   content: "";
   position: fixed;
@@ -244,7 +387,62 @@ section[id] {
   background-size: 180px;
 }
 
+/* ============================================================
+   ENTRÉE AU DÉFILEMENT — en CSS pur, sans JavaScript.
+
+   `animation-timeline: view()` fait porter l'animation par la position
+   de l'élément dans le champ, pas par une horloge. Rien à hydrater,
+   rien à observer : zéro octet de JavaScript pour tout le site.
+   Là où la propriété manque, l'élément est simplement déjà visible —
+   c'est le repli, et il est correct.
+   ============================================================ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parait {
+      animation: parait linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+  }
+}
+
+@keyframes parait {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Le header à l'arrivée, et le panneau du sommaire : un fondu simple. */
+@keyframes entree {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Les entrées du sommaire, décalées l'une après l'autre. */
+@keyframes monte {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {
@@ -252,4 +450,573 @@ section[id] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ==============================================================
+   L'ACCUEIL — LA LUMIÈRE TRAVERSÉE
+
+   Le vin est le seul produit de bouche qu'on regarde À TRAVERS.
+   Le geste du métier, c'est le verre levé vers la fenêtre : il exige
+   de la clarté DERRIÈRE. D'où l'ivoire — non par mode, par physique.
+
+   Conséquence : la couleur est MÉRITÉE. Le bordeaux et la braise ne
+   sont pas des accents posés sur un fond, ce sont ce que la lumière
+   DEVIENT après avoir traversé le verre. Ils arrivent donc en
+   `multiply` — le mode de la matière translucide — et jamais en aplat.
+
+   Quatre des jetons de texte sont ceux de Vintoria Pro 2.0.2
+   (encre, ardoise, discret, lie). Le site adopte la palette du
+   produit : la marque et l'outil cessent d'être deux mondes.
+   ============================================================== */
+
+.lumiere {
+  /* --- Jetons sémantiques ---------------------------------------
+     MESURÉS SUR LE FOND RÉELLEMENT PEINT, et non sur le jeton de fond.
+     La sonde rend tout le texte transparent, photographie la page et
+     échantillonne les pixels sous chaque nœud : elle voit donc les
+     dégradés, le grain, et surtout les flaques en `multiply` qui
+     assombrissent le fond bien au-delà de ce qu'annonce `--color-fond`.
+
+     Elle a trouvé la ligne « pour qui » du héros à 4,46:1 sur un chêne
+     peint à #e3d9cc — sous le seuil AA, alors que le calcul sur jetons
+     seuls ne l'aurait pas signalée au bon endroit.
+
+     L'ardoise et le discret du produit sont donc ASSOMBRIS : ils gardent
+     leur teinte, mais tiennent 4,8:1 sur le point le plus sombre de tout
+     l'arc de lumière. La hiérarchie y gagne aussi — 4,8 % et 4,0 % de
+     séparation de luminance, contre 3,6 % auparavant.
+
+     contrastes · fond le plus sombre de l'arc → ivoire
+       fort 12,07 → 16,28 · texte 6,65 → 8,96 · faible 4,82 → 6,50
+       accent 7,63 → 10,29 · feuille 5,17 → 6,98                     */
+  --color-fond: #f7f4ed;
+  --color-surface: #fcfaf5; /* la craie de l'Atelier, telle quelle */
+  --color-fort: #1b1618; /* l'encre du produit, telle quelle */
+  --color-texte: #474245; /* l'ardoise du produit, assombrie */
+  --color-faible: #5d5659; /* le discret du produit, assombri */
+  --color-accent: #6b1d38; /* la lie du produit */
+  --color-filet: rgba(27, 22, 24, 0.1);
+  --color-filet-fort: rgba(27, 22, 24, 0.2);
+
+  /* --- La matière de la scène ----------------------------------
+     INTERDITS ÉTABLIS PAR LA MESURE : la sauge (2,9:1) et l'or
+     (1,7:1) ne portent JAMAIS de texte sur l'ivoire. Décor seul. */
+  --sol: #ede7da;
+  --chene: #c8a478; /* 4,5:1 — grands titres et matière */
+  --sauge: #8fa58a; /* décor seul */
+  --feuille: #3d5a42; /* 6,9:1 — le vert, en texte */
+  --lie: #6b1d38;
+  --braise: #9a3a22;
+  --or: #c9a94e; /* filets et marques seuls */
+
+  /* Repli : la navigation souligne en `--robe-lumiere`, que posaient les
+     robes de vin de la Salle. L'accueil n'en a plus — sans ceci, le trait
+     serait transparent et le survol muet. */
+  --robe-lumiere: var(--color-accent);
+
+  /* AUCUNE peinture ici : l'en-tête porte aussi cette classe pour hériter
+     des jetons, et un fond l'empêcherait d'être transparent en haut de
+     page. C'est l'enveloppe de l'accueil qui applique `bg-fond`. */
+}
+
+/*
+   LE CORPS DE PAGE SUIT L'ENVELOPPE.
+   `.lumiere` est posée sur une enveloppe, pas sur `body` — la mise en page
+   racine est un composant serveur, elle ne connaît pas la route. Le fond
+   d'ivoire ne couvrait donc QUE l'enveloppe : au rebond de défilement
+   (trackpad macOS, élastique iOS) l'encre réapparaissait au-dessus et
+   au-dessous de la page.
+   `:has()` règle cela sans JavaScript et sans clignotement au premier
+   rendu, là où une bascule de classe après coup en aurait produit un. */
+body:has(.lumiere) {
+  background-color: #f7f4ed;
+}
+
+/* ET LE CANEVAS AVEC. Corriger `body` seul ne traitait que la moitié du
+   défaut : au-delà des bords de la page, c'est `html` qu'on voit — dans le
+   rebond élastique du trackpad macOS comme de Safari iOS. Une bande d'encre
+   réapparaissait donc au-dessus et au-dessous de l'ivoire.
+   `color-scheme` va avec : laissé à `dark`, il faisait rendre l'ascenseur et
+   les contrôles du navigateur en sombre tout le long d'une page claire — un
+   rail presque noir sur toute la hauteur droite. */
+html:has(.lumiere) {
+  background: #f7f4ed;
+  color-scheme: light;
+}
+
+.lumiere ::selection {
+  background: rgba(107, 29, 56, 0.16);
+  color: var(--color-fort);
+}
+
+/* --- LA SCÈNE ------------------------------------------------
+   Un volume, pas un fond. Tout est en `absolute` dans un parent
+   `relative isolate` : `isolate` est indispensable, car les modes
+   de fusion doivent se résoudre DANS la scène et non contre la
+   page entière. */
+
+/* Le jet de lumière. Il descend à 11°, flou, blanc sur l'ivoire. */
+.jet {
+  position: absolute;
+  top: -24%;
+  height: 112%;
+  width: clamp(170px, 22vw, 380px);
+  transform: translateX(-50%) rotate(11deg);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 253, 247, 0.78) 32%,
+    rgba(255, 250, 240, 0.36) 60%,
+    rgba(255, 248, 236, 0) 86%
+  );
+  filter: blur(44px);
+  pointer-events: none;
+}
+
+/* Là où le jet traverse le vin, il CHANGE DE COULEUR.
+   `multiply` parce que c'est exactement ce que fait un liquide
+   coloré traversé : il soustrait. Un aplat l'aurait posé par-dessus. */
+.jet-vin {
+  position: absolute;
+  height: 48%;
+  width: clamp(140px, 18vw, 310px);
+  transform: translateX(-50%) rotate(11deg);
+  background: linear-gradient(
+    to bottom,
+    rgba(107, 29, 56, 0) 0%,
+    rgba(107, 29, 56, 0.44) 24%,
+    rgba(154, 58, 34, 0.5) 62%,
+    rgba(154, 58, 34, 0.12) 100%
+  );
+  mix-blend-mode: multiply;
+  filter: blur(36px);
+  pointer-events: none;
+}
+
+/* La flaque caustique, au pied. Elle est DÉCALÉE du jet : la
+   lumière réfractée ne retombe jamais à l'aplomb de sa source,
+   et c'est ce décalage qui fait croire au verre absent. */
+.flaque {
+  position: absolute;
+  aspect-ratio: 2.5 / 1;
+  width: clamp(210px, 26vw, 450px);
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(154, 58, 34, 0.64) 0%,
+    rgba(107, 29, 56, 0.4) 34%,
+    rgba(107, 29, 56, 0) 68%
+  );
+  mix-blend-mode: multiply;
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+/* Le cœur chaud du caustique. Pas de `screen` : sur un fond clair
+   il ne ferait rien. Un ambre quasi blanc, en fusion normale. */
+.flaque-coeur {
+  position: absolute;
+  aspect-ratio: 3 / 1;
+  width: clamp(96px, 11vw, 190px);
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(255, 247, 226, 0.96) 0%,
+    rgba(255, 238, 200, 0.46) 42%,
+    rgba(255, 238, 200, 0) 70%
+  );
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+/* Le chêne. Il se devine : le fil est à 5 % au plus fort. */
+.sol {
+  position: absolute;
+  inset: auto 0 0 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(237, 231, 218, 0) 0%,
+    rgba(237, 231, 218, 0.8) 12%,
+    #e9e1d1 44%,
+    #ded3bf 100%
+  );
+}
+
+.sol::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    1deg,
+    rgba(138, 106, 69, 0.032) 0px,
+    rgba(138, 106, 69, 0) 3px,
+    rgba(138, 106, 69, 0) 13px,
+    rgba(138, 106, 69, 0.022) 16px,
+    rgba(138, 106, 69, 0) 24px
+  );
+}
+
+/* L'arête de la table : le seul trait franc de la scène, et donc
+   le repère qui donne sa profondeur à tout le reste. */
+.arete {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(138, 106, 69, 0) 0%,
+    rgba(138, 106, 69, 0.3) 22%,
+    rgba(138, 106, 69, 0.42) 54%,
+    rgba(138, 106, 69, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Le grain. Il n'est pas là pour « faire photo » : sans lui, les
+   dégradés de la scène bandent visiblement sur un écran 8 bits. */
+.grain-clair::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.17'/%3E%3C/svg%3E");
+}
+
+/* --- L'OBJET POSÉ -------------------------------------------
+   Un écran produit n'est pas une capture encadrée : c'est un
+   objet sur une table. Donc un filet d'un demi-pixel, une ombre
+   portée réelle à deux étages, et aucun rayon généreux. */
+.objet {
+  border: 1px solid rgba(27, 22, 24, 0.09);
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow:
+    0 1px 1px rgba(27, 22, 24, 0.04),
+    0 10px 24px -10px rgba(27, 22, 24, 0.16),
+    0 36px 70px -32px rgba(107, 29, 56, 0.22);
+}
+
+.objet-leve {
+  box-shadow:
+    0 1px 1px rgba(27, 22, 24, 0.05),
+    0 18px 36px -12px rgba(27, 22, 24, 0.2),
+    0 60px 110px -40px rgba(107, 29, 56, 0.3);
+}
+
+/* --- LA STROPHE ---------------------------------------------
+   Le titre est une strophe, pas un paragraphe : les retours sont
+   posés à la main. Sérif MAIGRE à grande taille — l'inverse du
+   sérif gras devenu réflexe. C'est fragile, et c'est le propos. */
+.strophe {
+  font-family: var(--font-voix);
+  font-weight: 300;
+  letter-spacing: -0.022em;
+  line-height: 1.02;
+  color: var(--color-fort);
+  text-wrap: balance;
+}
+
+.strophe em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--color-accent);
+}
+
+/* Le filet d'or : la seule place où l'or est permis. */
+.filet-or {
+  background: linear-gradient(
+    to right,
+    rgba(201, 169, 78, 0) 0%,
+    rgba(201, 169, 78, 0.55) 30%,
+    rgba(201, 169, 78, 0.55) 70%,
+    rgba(201, 169, 78, 0) 100%
+  );
+}
+
+/* --- BOUTONS EN LUMIÈRE ------------------------------------- */
+.lumiere .bouton-primaire {
+  background: var(--lie);
+  color: #fcfaf5;
+  border-color: transparent;
+}
+
+.lumiere .bouton-primaire:hover:not(:disabled) {
+  background: #571730;
+  color: #fcfaf5;
+}
+
+.lumiere .bouton-fantome {
+  color: var(--color-fort);
+  border-color: rgba(27, 22, 24, 0.22);
+}
+
+.lumiere .bouton-fantome:hover {
+  border-color: rgba(107, 29, 56, 0.5);
+  background: rgba(107, 29, 56, 0.045);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* La scène RESTE COMPOSÉE : on retire le mouvement, pas la lumière. */
+  .jet,
+  .jet-vin,
+  .flaque,
+  .flaque-coeur {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==============================================================
+   LE BALAYAGE QUI RÉVÈLE
+
+   « Les interfaces qui se révèlent » : la lumière ne se contente pas
+   d'éclairer l'écran, elle le DESSINE. Le masque est un dégradé dont
+   le front avance ; l'interface apparaît dans son sillage.
+
+   Une seule section l'emploie. C'est un geste, pas un effet : s'il
+   revenait à chaque section il ne voudrait plus rien dire.
+
+   `@property` est indispensable : sans l'enregistrement, `--balaye`
+   est une simple chaîne et rien n'interpole — ni CSS, ni le moteur.
+   ============================================================== */
+
+@property --balaye {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 130%;
+}
+
+.revele {
+  /* Par défaut TOUT EST VISIBLE. Le masque ne cache que si quelque chose
+     pose explicitement `--balaye` : un composant qui oublierait de
+     l'animer montre son écran, il ne l'escamote pas. */
+  --balaye: 130%;
+  -webkit-mask-image: linear-gradient(
+    104deg,
+    #000 calc(var(--balaye) - 28%),
+    rgba(0, 0, 0, 0.4) calc(var(--balaye) - 11%),
+    transparent var(--balaye)
+  );
+  mask-image: linear-gradient(
+    104deg,
+    #000 calc(var(--balaye) - 28%),
+    rgba(0, 0, 0, 0.4) calc(var(--balaye) - 11%),
+    transparent var(--balaye)
+  );
+}
+
+/* Le front lumineux lui-même : ce qu'on voit passer. Il suit le même
+   angle que le masque, sinon la lumière et la révélation divergent. */
+.front {
+  position: absolute;
+  inset: -12% -40%;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 253, 246, 0.72) 48%,
+    rgba(255, 246, 228, 0.34) 54%,
+    rgba(255, 255, 255, 0) 64%
+  );
+  filter: blur(14px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Mouvement réduit : l'écran est LÀ, entier, d'emblée. */
+  .revele {
+    --balaye: 130% !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+  .front {
+    display: none !important;
+  }
+}
+
+@supports not (mask-image: linear-gradient(#000, #000)) {
+  .revele {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+/* ==============================================================
+   LA SAUGE — le vert, et son sens
+
+   Le vert n'est pas un aplat décoratif : c'est la lumière passée par
+   une feuille. Il arrive donc comme les autres couleurs de ce site —
+   en `multiply`, posé sur le fond, jamais à la place du fond.
+   ============================================================== */
+
+/* Le vin du verre à Bourgogne : dilué sous 640 px, où le bloc de texte
+   occupe presque toute la hauteur de la fenêtre et où la masse passe
+   derrière du texte courant. Mesuré sur le rendu, pas estimé. */
+@media (max-width: 640px) {
+  .lumiere {
+    --vb-densite: 0.46;
+  }
+}
+
+.voile-sauge {
+  position: absolute;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(109, 134, 104, 0.3) 0%,
+    rgba(143, 165, 138, 0.16) 42%,
+    rgba(143, 165, 138, 0) 72%
+  );
+  mix-blend-mode: multiply;
+  filter: blur(46px);
+}
+
+/* ==============================================================
+   MICRO-INTERACTIONS
+
+   Règle : chacune répond à un GESTE de l'utilisateur et dit ce que le
+   geste va produire. Aucune ne tourne toute seule.
+   ============================================================== */
+
+/* Le lien qui se souligne depuis la gauche — le trait part de là où le
+   regard est déjà, et file vers la suite. */
+.lien-vif {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  gap: 0.5rem;
+  color: var(--color-fort);
+  transition: color var(--duree-etat) var(--ease-film);
+}
+
+.lien-vif::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms var(--ease-film);
+}
+
+.lien-vif:hover,
+.lien-vif:focus-visible {
+  color: var(--color-accent);
+}
+
+.lien-vif:hover::after,
+.lien-vif:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* L'objet qu'on peut prendre se soulève. Uniquement s'il est CLIQUABLE :
+   une carte qui bouge sans mener nulle part est un mensonge tactile. */
+.objet-pris {
+  transition:
+    transform 520ms var(--ease-film),
+    box-shadow 520ms var(--ease-film);
+}
+
+.objet-pris:hover,
+.objet-pris:focus-within {
+  transform: translateY(-4px);
+  box-shadow:
+    0 1px 1px rgba(27, 22, 24, 0.05),
+    0 20px 40px -14px rgba(27, 22, 24, 0.2),
+    0 64px 110px -44px rgba(107, 29, 56, 0.3);
+}
+
+/* Le bouton principal : la braise s'allume sous le doigt. */
+.lumiere .bouton-primaire {
+  transition:
+    background-color var(--duree-etat) var(--ease-film),
+    box-shadow var(--duree-etat) var(--ease-film),
+    transform var(--duree-tactile) var(--ease-film);
+  box-shadow: 0 10px 26px -14px rgba(107, 29, 56, 0.6);
+}
+
+.lumiere .bouton-primaire:hover:not(:disabled) {
+  box-shadow: 0 16px 34px -14px rgba(107, 29, 56, 0.72);
+}
+
+.lumiere .bouton-primaire:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px -12px rgba(107, 29, 56, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lien-vif::after,
+  .objet-pris,
+  .lumiere .bouton-primaire {
+    transition: none !important;
+  }
+  .objet-pris:hover,
+  .objet-pris:focus-within {
+    transform: none !important;
+  }
+}
+
+/* ==============================================================
+   LE PIED, EN LUMIÈRE
+
+   Il vit dans la mise en page racine et sert les trois routes. Sur les
+   routes du soir il ne change pas d'un pixel : les jetons sémantiques
+   y valent exactement les jetons bruts qu'il employait avant
+   (fond=encre, fort=os, texte=cendre, faible=cendre-2).
+
+   `:has()` suffit ici, là où l'en-tête réclamait une classe explicite :
+   le pied est le DERNIER élément du document, donc l'enveloppe `.lumiere`
+   est déjà analysée quand il se peint. Aucun clignotement possible.
+   ============================================================== */
+
+body:has(.lumiere) footer {
+  --color-fond: #e9dcc4;
+  --color-surface: #efe4d0;
+  --color-fort: #1b1618;
+  --color-texte: #474245;
+  --color-faible: #5d5659;
+  --color-accent: #6b1d38;
+  --color-filet: rgba(27, 22, 24, 0.12);
+  --color-filet-fort: rgba(27, 22, 24, 0.22);
+  --robe-lumiere: #6b1d38;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #e9dcc4 0%, #e3d4b8 100%);
+}
+
+body:has(.lumiere) footer ::selection {
+  background: rgba(107, 29, 56, 0.16);
+  color: var(--color-fort);
+}
+
+/* La dernière lumière du jour : rasante, chaude, elle vient de la
+   gauche et s'éteint sans jamais devenir noire. */
+.lueur-pied {
+  display: none;
+}
+
+body:has(.lumiere) .lueur-pied {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 90% at 8% 0%,
+      rgba(255, 246, 226, 0.9) 0%,
+      rgba(255, 240, 208, 0.34) 36%,
+      rgba(255, 240, 208, 0) 68%
+    ),
+    radial-gradient(
+      70% 52% at 98% 104%,
+      rgba(154, 58, 34, 0.07) 0%,
+      rgba(107, 29, 56, 0) 60%
+    );
 }

@@ -1,0 +1,91 @@
+import Link from "next/link";
+
+/**
+ * LE PIED — il vit dans le layout, donc sur les trois routes.
+ *
+ * Il ne répète pas le site : il offre les trois sorties qui restent quand on
+ * a tout lu — demander une démonstration, lire les formules, entrer dans le
+ * produit. Et il redit en une ligne ce que fait Vintoria, pour le lecteur
+ * arrivé par le milieu.
+ *
+ * IL SUIT LA LUMIÈRE SANS DEVENIR UN COMPOSANT CLIENT.
+ * L'accueil se termine dans l'heure dorée ; finir sur une dalle noire
+ * annulerait toute la traversée. Mais ce composant sert aussi /tarifs et
+ * /demonstration, restées au jeu du soir, et il est rendu côté serveur :
+ * il ne peut pas lire la route.
+ *
+ * D'où deux décisions :
+ *   · il n'emploie plus que des jetons SÉMANTIQUES. Sur les routes du soir
+ *     c'est un changement NUL — fond=encre, fort=os, texte=cendre et
+ *     faible=cendre-2 ont exactement les mêmes valeurs que les jetons
+ *     bruts qu'il employait ;
+ *   · c'est la feuille de style qui le fait basculer, via
+ *     `body:has(.lumiere) footer`. Le pied est le DERNIER élément du
+ *     document : l'enveloppe est déjà analysée quand il se peint, donc
+ *     aucun clignotement — là où l'en-tête, lui, réclamait une classe
+ *     explicite parce qu'il se peint AVANT elle.
+ */
+export function Pied() {
+  const annee = new Date().getFullYear();
+
+  return (
+    <footer className="px relative border-t border-filet bg-fond pb-[calc(3rem_+_env(safe-area-inset-bottom))] pt-20">
+      {/* La dernière lumière du jour. Invisible hors de l'accueil. */}
+      <div aria-hidden className="lueur-pied" />
+
+      <div className="relative z-10 mx-auto max-w-[1180px]">
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="voix text-[1.05rem] tracking-[0.3em] text-fort">
+              VINTORIA
+            </p>
+            <p className="t-meta mt-3 max-w-[34ch] text-faible">
+              L’expertise du sommelier, à chaque table.
+            </p>
+          </div>
+
+          <nav aria-label="Pied de page">
+            <ul className="flex flex-col gap-3 sm:text-right">
+              <li>
+                <Link
+                  href="/demonstration"
+                  className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
+                >
+                  Demander une démonstration
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tarifs"
+                  className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
+                >
+                  Les formules
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://vintoria.app"
+                  className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
+                >
+                  Accéder à Vintoria
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:contact@vintoria.com"
+                  className="t-corps inline-flex min-h-11 items-center text-texte transition-colors duration-300 hover:text-fort"
+                >
+                  contact@vintoria.com
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <p className="t-meta mt-14 border-t border-filet pt-6 text-faible">
+          © {annee} Vintoria
+        </p>
+      </div>
+    </footer>
+  );
+}
