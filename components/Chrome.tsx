@@ -172,6 +172,7 @@ export function Chrome() {
   return (
     <>
       <header
+        data-vintoria-theme={eclairee ? "creme" : "nuit"}
         className={`${eclairee ? "lumiere" : ""} fixed inset-x-0 top-0 z-50 animate-[entree_1.2s_cubic-bezier(0.16,1,0.3,1)_0.15s_both] pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           pose || ouvert
             ? "border-b border-[color:var(--color-filet)] bg-fond/72 backdrop-blur-xl"
@@ -194,20 +195,18 @@ export function Chrome() {
             className="flex min-h-11 min-w-11 shrink-0 items-center pr-1"
           >
             {/*
-              LE LOGOTYPE VIENT DÉSORMAIS DE `vintoria-brand`.
-              Ce qu'il y avait ici enfreignait deux règles de la charte : le
-              V doré sur anneau appartient à l'ancienne identité, et le mot
-              « VINTORIA » était COMPOSÉ EN TEXTE, en Spectral interlettré —
-              or le wordmark ne se compose jamais, il a ses tracés.
-              Le lockup horizontal est reconstitué aux proportions exactes
-              du fichier officiel (voir components/marque/Marque.tsx), et
-              il n'apparaît qu'à partir de `sm` : en dessous, le wordmark
-              passerait sous sa largeur minimale de 80 px, donc le symbole
-              reste seul.
+              LE LOGOTYPE VIENT DE `vintoria-brand`. Le lockup horizontal est
+              la composition HTML officielle, à la géométrie publiée dans les
+              jetons (voir components/marque/Marque.tsx). Variante `clair`
+              sur l'accueil crème, `fonce` (symbole tonal crème, wordmark
+              crème) sur les routes du soir : jamais le symbole couleur sur
+              la nuit. Il n'apparaît qu'à partir de `sm` : en dessous, le
+              wordmark passerait sous sa largeur minimale de 80 px, donc le
+              symbole reste seul.
             */}
             {/*
               LA BASCULE SE FAIT SUR UNE ENVELOPPE, pas sur le lockup.
-              `LockupHorizontal` pose lui-même `inline-flex` ; une classe
+              `LockupHorizontal` pose lui-même `inline-block` ; une classe
               `hidden` passée en prop tombait dans la même couche Tailwind,
               et c'est l'ordre de la FEUILLE — non celui des classes — qui
               tranchait. Le lockup s'affichait donc à 320 px, où l'en-tête
@@ -220,16 +219,27 @@ export function Chrome() {
               symbole reste donc seul.
             */}
             <span className="sm:hidden lg:block xl:hidden">
-              <Symbole hauteur={28} priority />
+              <Symbole
+                hauteur={28}
+                variante={eclairee ? "clair" : "fonce"}
+                priority
+              />
             </span>
             <span className="hidden sm:block lg:hidden xl:block">
-              <LockupHorizontal hauteur={32} priority />
+              <LockupHorizontal
+                hauteur={32}
+                variante={eclairee ? "clair" : "fonce"}
+                priority
+              />
             </span>
           </Link>
 
           {/* Les liens — grand écran, très espacés */}
           <nav className="hidden lg:block" aria-label="Navigation principale">
-            <ul className="flex items-center gap-5 xl:gap-12">
+            {/* `whitespace-nowrap` : Schibsted Grotesk est plus large que
+                l'ancienne grotesque, et « La cave » passait sur deux lignes à
+                1280 px. L'écart se resserre d'autant entre xl et 2xl. */}
+            <ul className="flex items-center gap-5 xl:gap-8 2xl:gap-12">
               {(surAccueil ? [...MOUVEMENTS, FORMULES] : [FORMULES]).map(
                 (l) => (
                   <li key={l.href}>
@@ -238,7 +248,7 @@ export function Chrome() {
                       aria-current={
                         l.id && actifCourant === l.id ? "true" : undefined
                       }
-                      className={`relative inline-flex min-h-11 items-center text-[0.9rem] transition-colors duration-300 after:absolute after:bottom-3 after:left-0 after:h-px after:bg-[color:var(--robe-lumiere)] after:transition-all after:duration-500 hover:text-fort hover:after:w-full ${
+                      className={`relative inline-flex min-h-11 items-center whitespace-nowrap text-[0.9rem] transition-colors duration-300 after:absolute after:bottom-3 after:left-0 after:h-px after:bg-[color:var(--robe-lumiere)] after:transition-all after:duration-500 hover:text-fort hover:after:w-full ${
                         l.id && actifCourant === l.id
                           ? "text-fort after:w-full"
                           : "text-texte after:w-0"
@@ -310,6 +320,7 @@ export function Chrome() {
           id="sommaire"
           ref={panneau}
           role="dialog"
+          data-vintoria-theme={eclairee ? "creme" : "nuit"}
           aria-modal="true"
           aria-label="Sommaire"
           className={`${eclairee ? "lumiere" : ""} fixed inset-x-0 bottom-0 top-[calc(4.5rem_+_env(safe-area-inset-top))] z-40 animate-[entree_0.32s_cubic-bezier(0.16,1,0.3,1)_both] overflow-y-auto bg-fond lg:hidden`}

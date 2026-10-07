@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { LockupHorizontal } from "@/components/marque/Marque";
 
 /**
  * LE PIED — il vit dans le layout, donc sur les trois routes.
@@ -10,7 +10,7 @@ import Link from "next/link";
  * arrivé par le milieu.
  *
  * IL SUIT LA LUMIÈRE SANS DEVENIR UN COMPOSANT CLIENT.
- * L'accueil se termine dans l'heure dorée ; finir sur une dalle noire
+ * L'accueil se termine dans la dernière heure du jour ; finir sur une dalle noire
  * annulerait toute la traversée. Mais ce composant sert aussi /tarifs et
  * /demonstration, restées au jeu du soir, et il est rendu côté serveur :
  * il ne peut pas lire la route.
@@ -38,25 +38,15 @@ export function Pied() {
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
             {/*
-              Le lockup horizontal de la marque. Le pied ne connaît pas la
+              Le lockup horizontal de la marque, en composition officielle
+              (components/marque/Marque.tsx). Le pied ne connaît pas la
               route : les deux variantes sont posées, la feuille de style
               montre `fonce` sur les routes du soir et `clair` sur l'accueil
-              (voir `.logo-clair` dans app/globals.css).
+              (voir `.logo-clair` dans app/globals.css). Les images cachées
+              sont paresseuses : la variante masquée n'est jamais chargée.
             */}
-            <Image
-              src="/marque/lockup-horizontal-fonce.svg"
-              alt="Vintoria"
-              width={1606}
-              height={400}
-              className="logo-fonce h-9 w-auto"
-            />
-            <Image
-              src="/marque/lockup-horizontal-clair.svg"
-              alt="Vintoria"
-              width={1606}
-              height={400}
-              className="logo-clair h-9 w-auto"
-            />
+            <LockupHorizontal hauteur={36} variante="fonce" className="logo-fonce" />
+            <LockupHorizontal hauteur={36} variante="clair" className="logo-clair" />
             <p className="t-meta mt-3 max-w-[34ch] text-faible">
               Le vin à sa juste place.
             </p>
