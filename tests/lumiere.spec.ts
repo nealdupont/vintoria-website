@@ -325,15 +325,90 @@ test.describe("L’arc du jour", () => {
 });
 
 test.describe("Chaque geste arrive à son terme", () => {
-  test("le balayage révèle l’écran EN ENTIER", async ({ page }) => {
+  test("le choix recommandé domine réellement les deux autres", async ({
+    page,
+  }) => {
+    /*
+      LA HIÉRARCHIE EST L'ARGUMENT DE CETTE SECTION.
+      Trois manières présentées à poids égal font lire une LISTE DE
+      FONCTIONNALITÉS, et obligent le visiteur à arbitrer entre des options
+      qu'il ne connaît pas. Ici 01 est recommandé — c'est le seul des trois
+      qui traite toute la carte d'un coup — et c'est la PLACE VERTICALE qui
+      le dit, pas un encadré.
+
+      Si quelqu'un égalise un jour les trois, le build passera, la page se
+      rendra, et l'argument sera perdu sans bruit. D'où cette mesure.
+    */
     await page.goto("/");
     await parcourir(page);
-    const e = await page.evaluate(() => {
-      const el = document.querySelector("#geste .revele")!;
-      return getComputedStyle(el).getPropertyValue("--balaye").trim();
+    const h = await page.evaluate(() =>
+      [...document.querySelectorAll("#geste .grid")]
+        .filter((e) =>
+          /^0[123]$/.test((e.querySelector("p")?.textContent ?? "").trim()),
+        )
+        .map((e) => Math.round(e.getBoundingClientRect().height)),
+    );
+    expect(h.length, "les trois manières ne se rendent pas").toBe(3);
+    const [principal, ...recours] = h;
+    const plusGrand = Math.max(...recours);
+    expect(
+      principal / plusGrand,
+      `01 fait ${principal}px contre ${plusGrand}px — il ne domine plus`,
+    ).toBeGreaterThan(1.8);
+  });
+
+  test("l’accent reste rare : deux emplois au plus", async ({ page }) => {
+    /*
+      Un bordeaux posé sur chaque élément ne signale plus rien. Il n'a droit
+      qu'à l'italique du titre et au numéro du choix recommandé.
+    */
+    await page.goto("/");
+    await parcourir(page);
+    const n = await page.evaluate(() => {
+      const accent = getComputedStyle(document.querySelector("#geste")!)
+        .getPropertyValue("--color-accent")
+        .trim();
+      const toile = document.createElement("canvas");
+      toile.width = toile.height = 1;
+      const c = toile.getContext("2d")!;
+      const rgb = (v: string) => {
+        c.fillStyle = v;
+        c.fillRect(0, 0, 1, 1);
+        return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3).join(",");
+      };
+      const cible = rgb(accent);
+      return [...document.querySelectorAll("#geste *")].filter(
+        (e) =>
+          e.children.length === 0 &&
+          (e.textContent ?? "").trim().length > 0 &&
+          rgb(getComputedStyle(e).color) === cible,
+      ).length;
     });
-    // 130 % : le front du masque est sorti par la droite, rien n'est caché.
-    expect(e, "le balayage s’est arrêté en route").toBe("130%");
+    expect(
+      n,
+      `l’accent est employé ${n} fois dans le mouvement II`,
+    ).toBeLessThanOrEqual(2);
+  });
+
+  test("rien n’y promet une interaction qui n’existe pas", async ({ page }) => {
+    /*
+      Cette section DÉCRIT ce que le produit sait faire ; elle ne le fait
+      pas. Une flèche, un lien ou un bouton y seraient une promesse que rien
+      ne tient — le seul chemin de conversion de la page est en VIII.
+    */
+    await page.goto("/");
+    const faux = await page.evaluate(() =>
+      [
+        ...document.querySelectorAll(
+          "#geste a, #geste button, #geste [role='button']",
+        ),
+      ].map(
+        (e) => `${e.tagName} « ${(e.textContent ?? "").trim().slice(0, 24)} »`,
+      ),
+    );
+    expect(faux, `affordance sans destination : ${faux.join(", ")}`).toEqual(
+      [],
+    );
   });
 
   test("le rapprochement entre bien dans l’écran", async ({ page }) => {
@@ -396,8 +471,7 @@ test.describe("Mouvement réduit : la page se tient, entière", () => {
         )
           .getAnimations({ subtree: true })
           .filter((a) => a.playState === "running").length,
-        masque: getComputedStyle(g("#geste .revele")).maskImage,
-        front: document.querySelector("#geste .front") !== null,
+        filet: getComputedStyle(g("#geste .origin-left")).transform,
         carre: getComputedStyle(g('#table [class*="rounded-[6%]"]')).transform,
         piece: Number(
           getComputedStyle(g('#table .objet [class*="rounded-[2%]"]')).opacity,
@@ -409,8 +483,10 @@ test.describe("Mouvement réduit : la page se tient, entière", () => {
       r.enCours,
       "des animations tournent malgré prefers-reduced-motion",
     ).toBe(0);
-    expect(r.masque, "l’écran reste masqué sans le balayage").toBe("none");
-    expect(r.front, "le front lumineux subsiste").toBe(false);
+    // Le filet du choix principal est ENTIER : on retire le tracé, pas le trait.
+    expect(r.filet, "le filet reste à moitié tracé sans le mouvement").toBe(
+      "none",
+    );
     /*
       LE CARRÉ NE SE DÉTACHE PAS. On ne montre pas l'état final d'un geste
       dont on a retiré le geste : ce serait un écran amputé de son QR, avec

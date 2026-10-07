@@ -52,3 +52,5 @@ next-env.d.ts
 # l'historique ni en production.
 /hero-*.png
 /planche-*.png
+# ... et, plus simplement, tout ce qui sert à montrer un rendu.
+/revue/

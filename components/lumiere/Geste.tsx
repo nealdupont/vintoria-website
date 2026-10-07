@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { ciel } from "@/lib/lumiere";
 
@@ -8,173 +7,213 @@ import { ciel } from "@/lib/lumiere";
  * MOUVEMENT II — LE GESTE.
  *
  * L'objection qu'il tue : « ça va me prendre des semaines à paramétrer ».
- * C'est la première qui vient à un restaurateur devant un logiciel, et aucun
- * argument ne la dissout — seule la vue du chemin le fait.
+ * C'est la première qui vient à un restaurateur devant un logiciel.
  *
- * LE BALAYAGE QUI RÉVÈLE. C'est ici, et NULLE PART AILLEURS, que la lumière
- * dessine l'interface au lieu de l'éclairer : le front du masque avance,
- * l'écran apparaît dans son sillage. Le geste dit exactement ce que dit la
- * section — ça n'est pas un chantier, c'est un passage.
- * Répété à chaque section, il ne voudrait plus rien dire. Une fois, il parle.
+ * CE QUI A CHANGÉ, ET POURQUOI.
+ * La version précédente alignait les trois entrées au même poids, à côté
+ * d'une capture de 880 px. Deux défauts : on lisait une LISTE DE
+ * FONCTIONNALITÉS — « voici trois choses que le produit sait faire » — et le
+ * visiteur devait arbitrer entre trois options équivalentes. Or il n'a pas à
+ * choisir : il a déjà sa carte sous une forme précise, et c'est Vintoria qui
+ * s'y adapte.
  *
- * Les trois entrées listées ne sont pas inventées : ce sont les trois que
- * l'écran propose réellement, dans ses propres mots.
+ * D'où la hiérarchie : 01 domine, 02 et 03 sont des recours. L'import d'une
+ * carte est le seul des trois qui traite TOUT d'un coup — c'est donc le
+ * chemin recommandé, et le dire est plus honnête que de les présenter à
+ * égalité.
+ *
+ * ET LA CAPTURE EST PARTIE. Une page éditoriale ne porte pas une dalle de
+ * capture d'écran ; la preuve arrive juste après, et les mouvements III à VI
+ * en sont pleins. Ce mouvement-ci n'a pas à prouver, il a à inviter.
+ *
+ * LE BALAYAGE N'EST PAS PERDU : son principe — la lumière qui DESSINE au
+ * lieu d'éclairer — passe sur le filet du choix principal, qui se trace de
+ * gauche à droite. Plus discret, et toujours le même geste.
+ *
+ * RIEN N'EST CLIQUABLE ICI, et c'est délibéré. Cette section décrit ce que
+ * le produit sait faire ; elle ne le fait pas. Une flèche, un survol ou un
+ * état pressé sur du texte inerte seraient une promesse d'interaction que
+ * rien ne tient. Le seul appel à l'action de la page est en VIII.
+ *
+ * L'ACCENT N'APPARAÎT QUE DEUX FOIS sur tout l'écran : l'italique du titre,
+ * et le numéro 01. Employé partout il ne signalerait plus rien.
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-/** Le balayage part vite et se pose : une lumière ne jaillit pas, elle passe. */
-const EASE_BALAI = [0.4, 0, 0.2, 1] as const;
 
-const ENTREES = [
+/**
+ * Les trois manières, dans l'ordre de ce qu'elles couvrent. Les libellés
+ * sont ceux de l'écran réel du produit — je ne les réécris pas.
+ *
+ * LEURS TROIS DESCRIPTIONS FORMENT UNE ÉCHELLE, et c'est elle qui porte la
+ * hiérarchie dans les mots comme la place verticale la porte dans l'espace :
+ *
+ *   01  « Pas une ligne à saisir. »   — rien
+ *   02  « Un vin par ligne. »         — une ligne par vin
+ *   03  « Bouteille par bouteille. »  — une opération par bouteille
+ *
+ * La première version disait « Toute votre carte en une fois. » : un écho
+ * mot pour mot du titre, dont le lecteur n'apprenait rien. « Tous les vins
+ * d'un coup » aurait répété la même chose autrement — « d'un coup » et « en
+ * une fois » disent le même fait. Ce qui manquait, c'était l'EFFORT : ce que
+ * chaque manière demande au restaurateur. C'est la seule information que le
+ * titre ne donne pas, et c'est celle qui fait choisir.
+ */
+const PRINCIPALE = {
+  rang: "01",
+  quoi: "Importer une carte des vins",
+  support: "PDF · Photo",
+  dit: "Pas une ligne à saisir.",
+};
+
+const RECOURS = [
+  { rang: "02", quoi: "Coller une liste", dit: "Un vin par ligne." },
   {
-    cle: "etiquette",
-    quoi: "Photographier l’étiquette",
-    dit: "Vintoria y lit le nom, le domaine et le millésime.",
-  },
-  {
-    cle: "carte",
-    quoi: "Importer une carte des vins",
-    dit: "Un PDF ou une photo : tous les vins d’un coup.",
-  },
-  {
-    cle: "liste",
-    quoi: "Coller une liste",
-    dit: "Un vin par ligne, prix compris.",
+    rang: "03",
+    quoi: "Photographier une étiquette",
+    dit: "Bouteille par bouteille.",
   },
 ] as const;
 
 export function Geste() {
   const reduit = useReducedMotion();
 
+  const pas = (delai: number, duree = 0.95) => ({
+    duration: reduit ? 0 : duree,
+    delay: reduit ? 0 : delai,
+    ease: EASE,
+  });
+  const monte = (y = 14) => ({ opacity: 0, y: reduit ? 0 : y });
+  const pose = { opacity: 1, y: 0 };
+
   return (
     <section
       id="geste"
-      className="grain-clair relative isolate overflow-x-clip pt-28 pb-32 sm:pt-36"
+      className="grain-clair relative isolate overflow-x-clip pt-28 pb-36 sm:pt-36 sm:pb-44"
       style={{ background: ciel("geste") }}
     >
-      {/* ── LA SCÈNE — le jour se lève, teinté de feuille ──────────
-          La sauge arrive en `multiply`, comme toutes les couleurs de ce
-          site : c'est de la lumière passée par une feuille, pas un aplat
-          vert posé sur un fond. */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="voile-sauge top-[34%] left-[-16%] h-[46%] w-[50%] opacity-70" />
-        <div className="jet top-[-16%] left-[72%] h-[66%] opacity-70" />
+        <div className="jet top-[-16%] left-[74%] h-[60%] opacity-60" />
       </div>
 
-      <div className="px relative z-10 mx-auto w-full max-w-[1420px]">
-        <div className="grid gap-y-16 lg:grid-cols-12 lg:gap-x-14">
-          {/* ── LE PROPOS ────────────────────────────────────────── */}
-          <motion.div
-            className="lg:col-span-5"
-            initial={{ opacity: 0, y: reduit ? 0 : 22 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: reduit ? 0 : 0.9, ease: EASE }}
-          >
-            <p className="eyebrow text-[color:var(--color-faible)]">
-              Pour commencer
-            </p>
-            <h2 className="strophe mt-5 text-[clamp(2rem,4.6vw,3.6rem)]">
-              Votre carte entre
-              <br />
-              <em>en une fois.</em>
-            </h2>
-            <p className="t-chapeau mt-7 max-w-[42ch] text-pretty text-[color:var(--color-texte)]">
-              Pas de saisie ligne à ligne, pas de tableur à préparer. Vous
-              donnez ce que vous avez déjà — Vintoria complète le reste.
-            </p>
-
-            <motion.ul
-              className="mt-12"
-              initial="repos"
-              whileInView="pose"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={{
-                pose: { transition: { staggerChildren: reduit ? 0 : 0.12 } },
-              }}
+      <motion.div
+        className="px relative z-10 mx-auto w-full max-w-[1420px]"
+        initial="repos"
+        whileInView="pose"
+        viewport={{ once: true, amount: 0.25 }}
+      >
+        {/* ══ 1 · LE PROPOS ════════════════════════════════════════
+            Asymétrie : le titre tient la gauche, la promesse se décale
+            vers la droite. Deux blocs qui ne s'alignent pas créent plus
+            de rythme qu'un empilement centré. */}
+        <div className="lg:grid lg:grid-cols-12 lg:gap-x-14">
+          <div className="lg:col-span-7">
+            <motion.p
+              className="eyebrow text-[color:var(--color-faible)]"
+              variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+              transition={pas(0, 0.8)}
             >
-              {ENTREES.map((e) => (
-                <motion.li
-                  key={e.cle}
-                  className="border-t border-[color:var(--color-filet)] py-5"
-                  variants={{
-                    repos: { opacity: 0, y: reduit ? 0 : 14 },
-                    pose: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: reduit ? 0 : 0.7, ease: EASE }}
-                >
-                  <p className="voix t-tete text-[color:var(--color-fort)]">
-                    {e.quoi}
-                  </p>
-                  <p className="t-meta mt-1.5 text-[color:var(--color-faible)]">
-                    {e.dit}
-                  </p>
-                </motion.li>
-              ))}
-            </motion.ul>
-          </motion.div>
+              Pour commencer
+            </motion.p>
 
-          {/* ── L'ÉCRAN QUE LA LUMIÈRE DESSINE ───────────────────────
-              Le conteneur porte l'orchestration ; il a TOUJOURS une
-              taille réelle, et c'est lui qu'observe `whileInView`. Un
-              observateur posé sur l'élément masqué aurait pu ne jamais
-              se déclencher — le masque ne change pas la géométrie, mais
-              une opacité nulle sur le même nœud, si. */}
-          <motion.div
-            className="relative lg:col-span-7"
-            initial="repos"
-            whileInView="revele"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <div className="objet relative w-[112%] overflow-hidden sm:w-[106%] lg:w-[124%]">
-              <motion.div
-                className="revele"
-                variants={{
-                  repos: { "--balaye": "0%" },
-                  revele: { "--balaye": "130%" },
-                }}
-                transition={{ duration: reduit ? 0 : 1.7, ease: EASE_BALAI }}
+            <h2 className="strophe mt-6 text-[clamp(2.2rem,5.4vw,4.2rem)]">
+              <motion.span
+                className="block"
+                variants={{ repos: monte(16), pose }}
+                transition={pas(0.12, 1.05)}
               >
-                <Image
-                  src="/demo/ajouter.webp"
-                  alt="Vintoria Pro, ajout d’un vin : « Sancerre, Domaine du Silex, 2023 » saisi comme on le dirait, et trois entrées possibles — photographier l’étiquette, importer une carte des vins, coller une liste."
-                  width={1500}
-                  height={940}
-                  sizes="(min-width: 1024px) 880px, 112vw"
-                  loading="lazy"
-                  className="block h-auto w-full"
-                />
-              </motion.div>
+                Votre carte,
+              </motion.span>
+              <motion.span
+                className="block"
+                variants={{ repos: monte(16), pose }}
+                transition={pas(0.26, 1.05)}
+              >
+                <em>en une fois.</em>
+              </motion.span>
+            </h2>
+          </div>
 
-              {/* Le front lumineux : ce qu'on voit passer. Même angle que
-                  le masque — sinon la lumière et la révélation divergent. */}
-              {!reduit && (
-                <motion.div
-                  className="front"
-                  variants={{
-                    repos: { x: "-80%", opacity: 0 },
-                    revele: { x: "125%", opacity: [0, 0.95, 0.95, 0] },
-                  }}
-                  transition={{
-                    x: { duration: 1.7, ease: EASE_BALAI },
-                    opacity: {
-                      duration: 1.7,
-                      times: [0, 0.1, 0.76, 1],
-                      ease: "linear",
-                    },
-                  }}
-                />
-              )}
-            </div>
-
-            <p className="t-meta mt-6 max-w-[48ch] text-[color:var(--color-faible)]">
-              Écran réel de Vintoria Pro 2.0.2. Une lecture de document compte
-              comme un import du mois — le produit le dit lui-même, en bas du
-              panneau.
-            </p>
-          </motion.div>
+          <motion.p
+            className="t-chapeau mt-10 max-w-[30ch] text-pretty text-[color:var(--color-texte)] lg:col-span-4 lg:col-start-8 lg:mt-0 lg:self-center lg:pt-6"
+            variants={{ repos: monte(12), pose }}
+            transition={pas(0.46, 1)}
+          >
+            Vous donnez à Vintoria ce que vous avez déjà.
+            <br />
+            Elle s’occupe du reste.
+          </motion.p>
         </div>
-      </div>
+
+        {/* ══ 2 · LES TROIS MANIÈRES ═══════════════════════════════
+            Pas une liste : une hiérarchie. 01 reçoit deux fois et demie
+            la place verticale des deux autres, et c'est cette place —
+            pas un encadré, pas une ombre — qui dit qu'il est recommandé. */}
+        {/* Les trois manières vivent dans la MÊME colonne que le titre :
+            le filet borde ce qu'il sépare, au lieu de traverser la page. */}
+        <div className="mt-24 sm:mt-32 lg:mt-28 lg:w-[58.5%]">
+          {/* Le filet du choix principal SE TRACE, de gauche à droite.
+              C'est le balayage du mouvement précédent, ramené à un trait. */}
+          <motion.div
+            className="h-px origin-left bg-[color:var(--color-filet-fort)]"
+            variants={{
+              repos: { scaleX: reduit ? 1 : 0 },
+              pose: { scaleX: 1 },
+            }}
+            transition={pas(0.86, 1.3)}
+          />
+
+          <motion.div
+            className="grid grid-cols-[2.25rem_1fr] gap-x-5 pt-9 pb-14 sm:grid-cols-[5rem_1fr] sm:gap-x-8 sm:pt-12 sm:pb-20 lg:grid-cols-[7rem_1fr]"
+            variants={{ repos: monte(16), pose }}
+            transition={pas(0.68, 1.05)}
+          >
+            <p className="data pt-1.5 text-[0.78rem] tracking-[0.16em] text-[color:var(--color-accent)] tabular-nums">
+              {PRINCIPALE.rang}
+            </p>
+            <div>
+              <h3 className="voix max-w-[15ch] text-[clamp(1.35rem,3.1vw,2.4rem)] leading-[1.14] sm:max-w-none text-[color:var(--color-fort)]">
+                {PRINCIPALE.quoi}
+              </h3>
+              <p className="data mt-3 text-[0.72rem] tracking-[0.18em] text-[color:var(--color-faible)] uppercase">
+                {PRINCIPALE.support}
+              </p>
+              <p className="t-chapeau mt-6 max-w-[28ch] text-[color:var(--color-texte)]">
+                {PRINCIPALE.dit}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Les recours. Compacts, scannables, une ligne chacun. */}
+          {RECOURS.map((r, i) => (
+            <motion.div
+              key={r.rang}
+              className="grid grid-cols-[2.25rem_1fr] items-baseline gap-x-5 border-t border-[color:var(--color-filet)] py-6 sm:grid-cols-[5rem_1fr] sm:gap-x-8 sm:py-7 lg:grid-cols-[7rem_1fr]"
+              variants={{ repos: monte(12), pose }}
+              transition={pas(1 + i * 0.12, 0.9)}
+            >
+              <p className="data text-[0.78rem] tracking-[0.16em] text-[color:var(--color-faible)] tabular-nums">
+                {r.rang}
+              </p>
+              <div className="flex flex-col gap-y-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-x-8">
+                <h3 className="voix text-[clamp(1.1rem,1.9vw,1.4rem)] text-[color:var(--color-fort)]">
+                  {r.quoi}
+                </h3>
+                <p className="t-meta shrink-0 text-[color:var(--color-faible)]">
+                  {r.dit}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+
+          <motion.div
+            className="h-px bg-[color:var(--color-filet)]"
+            variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+            transition={pas(1.3, 0.8)}
+          />
+        </div>
+      </motion.div>
     </section>
   );
 }
