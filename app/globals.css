@@ -159,6 +159,17 @@ html {
   text-rendering: optimizeLegibility;
   color-scheme: dark;
   scroll-behavior: smooth;
+  /*
+    LA GOUTTIÈRE EST RÉSERVÉE EN PERMANENCE, et c'est le sommaire qui
+    l'exige. Ouvert, il bloque le défilement du corps ; sans gouttière
+    réservée, la barre de défilement disparaîtrait et toute la page —
+    l'en-tête fixe excepté — sauterait de sa largeur, à l'ouverture
+    puis à la fermeture. Les pages de ce site défilent toutes : la
+    gouttière était déjà occupée, rien ne se déplace aujourd'hui.
+    (Sur les barres en superposition, macOS par défaut, elle ne coûte
+    rien : il n'y a pas de gouttière à réserver.)
+  */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -252,6 +263,23 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-faible);
+}
+
+/*
+  L'ÉTIQUETTE POSÉE SUR LE VERRE.
+  `.eyebrow` fixe sa couleur HORS COUCHE : aucune classe utilitaire ne
+  peut la reprendre — le `text-fort` de l'ancien bouton « Sommaire »
+  était mort pour cette raison exacte, et personne ne l'avait vu.
+  Or le discret n'a pas la marge nécessaire sur une surface translucide :
+  mesuré à 3,48:1 sur /demonstration, le sommaire ouvert. Il prend donc
+  la voix du texte courant. Une variante plutôt qu'un déplacement de
+  `.eyebrow` dans une couche, qui rejouerait tout le site.
+*/
+.eyebrow-verre {
+  color: var(--color-texte);
+}
+.eyebrow-verre:hover {
+  color: var(--color-fort);
 }
 
 /* ============================================================
@@ -354,6 +382,188 @@ body {
 .px {
   padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
   padding-right: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-right));
+}
+
+/* ==============================================================
+   LE VERRE — la barre et le sommaire sont la MÊME vitre.
+
+   UNE SEULE SURFACE, et c'est une contrainte, pas un parti pris :
+   deux panneaux `backdrop-filter` posés bout à bout échantillonnent
+   chacun l'arrière-plan de SA propre boîte, avec serrage des bords.
+   La jointure se voit, en clair, sur toute la largeur. La barre ne se
+   superpose donc pas à un panneau : elle EST le haut d'une vitre
+   unique, dont la hauteur s'ouvre.
+
+   LE FLOU N'ATTEND PAS LE CLIC. Au repos aussi, la barre diffuse ce
+   qui passe dessous. Sur un aplat d'ivoire il n'y a rien à diffuser et
+   la vitre ne se distingue pas — c'est de la physique, pas un défaut :
+   elle se révèle dès qu'un contenu passe derrière. `saturate` et une
+   pointe de `brightness` lui donnent sa matière même sur l'aplat, sans
+   qu'aucun dégradé décoratif ne soit peint.
+
+   L'OPACITÉ EST UN SEUIL DE LISIBILITÉ, pas un réglage esthétique : le
+   texte posé sur la vitre doit tenir AA quoi qu'il y ait derrière.
+   D'où 66 % au repos, et 74 % ouvert, où les mots sont grands et
+   nombreux. Mesuré sur le fond réellement peint, pas sur le jeton.
+   ============================================================== */
+.verre {
+  background-color: color-mix(in srgb, var(--color-fond) 64%, transparent);
+  /*
+    LE SOIR, LE VERRE EST FUMÉ : il assombrit. Première version, il
+    éclaircissait des deux côtés — `brightness(1.03)` — et la mesure a
+    immédiatement sanctionné : sur /tarifs, « Accéder à Vintoria »
+    tombait de 4,81:1 à 4,40:1, sous le seuil. Un verre teinté ne rend
+    pas un noir plus clair ; il l'enfonce. La règle suit donc la
+    matière, et le contraste y gagne au lieu d'y perdre.
+  */
+  -webkit-backdrop-filter: blur(18px) saturate(1.5) brightness(0.86);
+  backdrop-filter: blur(18px) saturate(1.5) brightness(0.86);
+  /* La FERMETURE : plus courte, et d'une courbe plus sèche. */
+  transition:
+    height var(--duree-etat) var(--ease-sortie),
+    background-color var(--duree-etat) var(--ease-sortie),
+    backdrop-filter var(--duree-etat) var(--ease-sortie),
+    border-color var(--duree-entree) var(--ease-film);
+}
+
+/* LE MATIN, IL CAPTE LA LUMIÈRE : une pointe de clarté suffit à faire
+   lire la bande comme une plaque posée sur la page, même là où il n'y a
+   qu'un aplat d'ivoire à diffuser. */
+.verre.lumiere {
+  -webkit-backdrop-filter: blur(18px) saturate(1.5) brightness(1.03);
+  backdrop-filter: blur(18px) saturate(1.5) brightness(1.03);
+}
+
+.verre[data-ouvert="true"] {
+  background-color: color-mix(in srgb, var(--color-fond) 60%, transparent);
+  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(0.72);
+  backdrop-filter: blur(26px) saturate(1.6) brightness(0.72);
+  /* L'OUVERTURE : la vitre descend, et le flou s'épaissit avec elle. */
+  transition:
+    height var(--duree-entree) var(--ease-film),
+    background-color var(--duree-entree) var(--ease-film),
+    backdrop-filter var(--duree-entree) var(--ease-film),
+    border-color var(--duree-etat) var(--ease-film);
+}
+
+.verre.lumiere[data-ouvert="true"] {
+  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(1.04);
+  backdrop-filter: blur(26px) saturate(1.6) brightness(1.04);
+}
+
+/*
+  SANS `backdrop-filter`, LA TRANSPARENCE NE DIFFUSE RIEN : elle ne fait
+  que baisser le contraste du texte posé dessus. La vitre devient alors
+  presque opaque — on perd la matière, jamais la lisibilité.
+*/
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .verre {
+    background-color: color-mix(in srgb, var(--color-fond) 96%, transparent);
+  }
+  .verre[data-ouvert="true"] {
+    background-color: var(--color-fond);
+  }
+}
+
+/* ==============================================================
+   LE CISEAU — deux filets, jamais une icône.
+
+   Ouverture : ils se rejoignent sur une seule ligne, PUIS pivotent.
+   Fermeture : ils se redressent, PUIS s'écartent.
+   Les deux temps se recouvrent par leurs retards, donc le geste ne
+   s'interrompt jamais — et aucun glyphe n'est échangé contre un autre.
+
+   LA ROTATION EST DE 15°, PAS DE 45°. À 45° les filets deviennent une
+   croix, c'est-à-dire un symbole d'interface ; à 15° ils restent deux
+   traits de même longueur, simplement croisés. Toute la différence
+   entre un hamburger et un geste tient dans cet écart.
+
+   `translate` ET `rotate` SONT LES PROPRIÉTÉS INDIVIDUELLES, et il le
+   faut : une déclaration `transform` unique ne sait pas retarder ses
+   composantes séparément, et le mouvement redeviendrait d'un bloc.
+   ============================================================== */
+.ciseau {
+  position: relative;
+  display: block;
+  width: 2.25rem;
+  height: 0.625rem;
+}
+
+.ciseau span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background-color: currentColor;
+  transform-origin: 50% 50%;
+  transition:
+    translate var(--duree-etat) var(--ease-sortie) 300ms,
+    rotate 340ms var(--ease-film);
+}
+
+.ciseau span:first-child {
+  translate: 0 -4px;
+}
+.ciseau span:last-child {
+  translate: 0 4px;
+}
+
+[data-ouvert="true"] .ciseau span {
+  translate: 0 0;
+  transition:
+    translate var(--duree-etat) var(--ease-film),
+    rotate 420ms var(--ease-film) 180ms;
+}
+[data-ouvert="true"] .ciseau span:first-child {
+  rotate: 15deg;
+}
+[data-ouvert="true"] .ciseau span:last-child {
+  rotate: -15deg;
+}
+
+/*
+  FERMÉ, LE SOMMAIRE N'EST PAS SEULEMENT HORS DU CHAMP : il n'a plus de
+  boîte. Son remplissage bas lui laissait 36 px de hauteur même replié —
+  assez pour que ses liens comptent comme des cibles tactiles trop
+  petites, et pour qu'un outil le tienne pour visible alors qu'il est
+  rogné. `visibility` ne se retire qu'à la FIN de la remontée de la
+  vitre, sinon les mots disparaîtraient avant elle.
+*/
+.sommaire {
+  visibility: hidden;
+  transition: visibility 0s linear var(--duree-etat);
+}
+[data-ouvert="true"] .sommaire {
+  visibility: visible;
+  transition: visibility 0s linear 0s;
+}
+
+/* ==============================================================
+   LES ENTRÉES DU SOMMAIRE.
+   Elles arrivent APRÈS la vitre — `--rang` donne l'échelonnement — et
+   repartent ENSEMBLE, vite. Une sortie échelonnée ferait traîner une
+   fermeture qui doit être nette.
+   ============================================================== */
+.entree-sommaire {
+  opacity: 0;
+  translate: 0 14px;
+  transition:
+    opacity var(--duree-tactile) var(--ease-sortie),
+    translate var(--duree-tactile) var(--ease-sortie);
+}
+
+[data-ouvert="true"] .entree-sommaire {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity var(--duree-entree) var(--ease-film)
+      calc(140ms + var(--rang) * 55ms),
+    translate var(--duree-entree) var(--ease-film)
+      calc(140ms + var(--rang) * 55ms);
 }
 
 /* L'en-tête est fixe : les ancres ne doivent jamais atterrir dessous. */

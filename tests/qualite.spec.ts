@@ -66,6 +66,13 @@ test.describe("Accessibilité et structure", () => {
           .filter((e) => {
             const b = e.getBoundingClientRect();
             if (b.width === 0 || b.height === 0) return false;
+            /*
+             * ET CE QUI N'EST PAS VISIBLE N'EST PAS UNE CIBLE. Le sommaire
+             * reste monté, replié derrière la vitre, pour que sa fermeture
+             * ait une chorégraphie : ses liens ont donc une boîte sans être
+             * atteignables. On mesure ce que le doigt peut toucher.
+             */
+            if (!e.checkVisibility({ visibilityProperty: true })) return false;
             // Hors mesure : le lien d'évitement (caché jusqu'au focus) et le
             // leurre anti-robot (hors cadre, hors tabulation).
             if (e.closest("[aria-hidden='true']")) return false;
@@ -107,28 +114,104 @@ test.describe("Référencement", () => {
 });
 
 test.describe("Navigation", () => {
-  test("le sommaire mobile s’ouvre, piège le focus et se ferme avec Échap", async ({
+  /*
+   * LE SOMMAIRE EXISTE DÉSORMAIS À TOUTES LES LARGEURS : la liste en ligne
+   * du grand écran a disparu, le ciseau ouvre les mêmes destinations
+   * partout. Ce test ne se saute donc plus sous `lg` — il attend seulement
+   * une ouverture plus ample sur petit écran, où la vitre prend toute la
+   * fenêtre, que sur grand écran, où elle se déploie dans le haut.
+   */
+  test("le sommaire s’ouvre, piège le focus et se ferme avec Échap", async ({
     page,
   }, info) => {
-    test.skip(
-      info.project.name !== "mobile",
-      "Le sommaire n’existe que sous lg.",
-    );
     await page.goto("/tarifs");
 
     const declencheur = page.getByRole("button", { name: "Sommaire" });
-    await declencheur.click();
-
     const panneau = page.getByRole("dialog", { name: "Sommaire" });
+    // Fermé, il est rogné par la vitre : aucune hauteur, donc hors de vue.
+    await expect(panneau).toBeHidden();
+
+    await declencheur.click();
     await expect(panneau).toBeVisible();
-    // Le panneau doit vraiment occuper l'écran, pas la hauteur du header.
-    const boite = await panneau.boundingBox();
-    expect(boite!.height).toBeGreaterThan(400);
+    /*
+     * Le panneau doit vraiment s'ouvrir, pas rester à la hauteur de la barre.
+     * ON ATTEND LA FIN DE LA DESCENTE : `toBeVisible` passe dès la première
+     * image — la vitre met 560 ms à s'ouvrir, et mesurer tout de suite
+     * donnait 56 px pour un sommaire qui en fait 392.
+     */
+    await expect
+      .poll(async () => (await panneau.boundingBox())!.height, {
+        message: "le sommaire ne s’est pas déployé",
+      })
+      .toBeGreaterThan(info.project.name === "mobile" ? 400 : 280);
+
+    // La page derrière est RETIRÉE, pas seulement recouverte.
+    await expect(page.locator("#contenu")).toHaveAttribute("inert", "");
+    const bloque = await page.evaluate(
+      () => getComputedStyle(document.body).overflow,
+    );
+    expect(bloque, "le défilement n’est pas bloqué").toBe("hidden");
 
     await page.keyboard.press("Escape");
-    await expect(panneau).toHaveCount(0);
+    await expect(panneau).toBeHidden();
     await expect(declencheur).toBeFocused();
+    await expect(declencheur).toHaveAttribute("aria-expanded", "false");
+
+    /*
+     * AUCUN RÉSIDU. Un sommaire qui se referme en laissant le corps bloqué
+     * ou le contenu inerte rend la page muette sans rien casser de visible :
+     * le build passe, les autres tests passent, et le site ne défile plus.
+     */
+    await expect(page.locator("#contenu")).not.toHaveAttribute("inert", "");
+    const rendu = await page.evaluate(
+      () => getComputedStyle(document.body).overflow,
+    );
+    expect(rendu, "le défilement n’a pas été rendu").not.toBe("hidden");
   });
+
+  test("choisir une destination referme le sommaire", async ({ page }) => {
+    await page.goto("/tarifs");
+    await page.getByRole("button", { name: "Sommaire" }).click();
+    const panneau = page.getByRole("dialog", { name: "Sommaire" });
+    await panneau.getByRole("link", { name: "L’accueil" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(panneau).toBeHidden();
+  });
+
+  /*
+   * LE VERRE N'ATTEND PAS LE CLIC. C'est l'exigence centrale du chantier,
+   * et elle est invisible à la relecture : une barre qui ne diffuse qu'une
+   * fois ouverte se rend exactement comme une barre qui diffuse toujours,
+   * tant qu'on ne regarde pas le style calculé à l'état fermé.
+   */
+  for (const route of ROUTES) {
+    test(`${route} — la barre est en verre dès l’état fermé`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      const r = await page.evaluate(() => {
+        const s = getComputedStyle(document.querySelector("header")!);
+        const filtre =
+          s.backdropFilter || s.getPropertyValue("-webkit-backdrop-filter");
+        const flou = /blur\(([\d.]+)px\)/.exec(filtre);
+        return {
+          flou: flou ? Number(flou[1]) : 0,
+          fond: s.backgroundColor,
+          ouvert: document.querySelector("header")!.dataset.ouvert,
+        };
+      });
+      expect(
+        r.ouvert,
+        "la barre est ouverte alors qu’on ne l’a pas ouverte",
+      ).toBe("false");
+      expect(
+        r.flou,
+        "la barre ne diffuse rien au repos",
+      ).toBeGreaterThanOrEqual(12);
+      // Et une teinte, sinon le texte posé dessus n'a aucun fond garanti.
+      expect(r.fond, "la vitre n’a pas de teinte").not.toBe("rgba(0, 0, 0, 0)");
+    });
+  }
 
   /*
    * L'en-tête a débordé deux fois pendant la refonte : à 390 px le bouton
