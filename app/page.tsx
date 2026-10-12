@@ -1,3 +1,4 @@
+import { Bodoni_Moda } from "next/font/google";
 import { Ouverture } from "@/components/lumiere/Ouverture";
 import { Geste } from "@/components/lumiere/Geste";
 import { Cave } from "@/components/lumiere/Cave";
@@ -35,9 +36,31 @@ import { Invitation } from "@/components/lumiere/Invitation";
  * heure est le haut de la suivante. Les anciens mouvements sombres restent
  * INTACTS dans `components/mouvements/` — ils ne sont simplement plus montés.
  */
+/**
+ * LA TROISIÈME VOIX — LA GRAVURE, et elle ne sort pas d'ici.
+ *
+ * Spectral et Archivo portent tout le site. Le mouvement II demande
+ * autre chose : une silhouette taillée, à très fort contraste de plein et
+ * de délié, dont les capitales tiennent la moitié d'un écran. Spectral a
+ * été dessiné pour se lire de 12 à 100 px dans un traitement de texte —
+ * c'est sa qualité, et c'est pourquoi il ne sculpte pas.
+ *
+ * Bodoni Moda (SIL OFL) est un didone : né de la gravure au burin, donc
+ * exactement la matière cherchée. Il est DÉCLARÉ ICI, et non dans la mise
+ * en page racine : /tarifs et /demonstration ne le téléchargent jamais.
+ * Deux fichiers de plus sur l'accueil, pour la seule section qui s'en
+ * sert — et aucune autre règle typographique du site n'est touchée.
+ */
+const gravure = Bodoni_Moda({
+  variable: "--font-gravure-src",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export default function Page() {
   return (
-    <div className="lumiere bg-fond text-texte">
+    <div className={`${gravure.variable} lumiere bg-fond text-texte`}>
       <Ouverture />
       <Geste />
       <Cave />

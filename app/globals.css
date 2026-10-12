@@ -282,6 +282,309 @@ body {
   color: var(--color-fort);
 }
 
+/* ==============================================================
+   LA GRAVURE — la voix taillée du mouvement II.
+
+   Troisième et dernière fonte du site, chargée par la SEULE page qui
+   l'emploie (voir app/page.tsx). Un didone : plein très gras, délié très
+   fin, empattements réduits à un trait. À 60 px il ne se lit pas mieux
+   que Spectral ; à 150 px il devient un objet, ce que Spectral — dessiné
+   pour tenir de 12 à 100 px dans un traitement de texte — ne fait pas.
+
+   `font-optical-sizing: auto` est capital ici. Bodoni Moda porte un axe
+   opsz : sans cette ligne, le navigateur sert le dessin de petit corps —
+   déliés épaissis, contraste écrasé — au moment précis où l'on veut le
+   contraire.
+   ============================================================== */
+.gravure {
+  font-family:
+    var(--font-gravure-src), var(--font-voix), ui-serif, Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+}
+
+/* ==============================================================
+   LA MATIÈRE — une courbe de verre, jamais un décor.
+
+   Elle arrive en `multiply`, comme toute couleur de cet accueil : la lie
+   n'est pas un aplat posé sur l'ivoire, c'est ce que la lumière devient
+   en traversant le vin. UNE seule forme par composition, coupée par le
+   cadre. Deux en feraient une accumulation.
+   ============================================================== */
+.courbe {
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* ==============================================================
+   LA FEUILLE DE CIGARE — l'envers du mouvement II.
+
+   Ouvrir une porte doit se sentir comme entrer dans une autre pièce.
+   La page de sélection est en ivoire ; les trois détails basculent sur
+   un tabac chaud, séché, patiné — ni chocolat (qui tire au noir et
+   mange les captures), ni caramel (qui tire au roux et crie). Le brun
+   est la signature chromatique de ces trois expériences, et le seul
+   endroit du site où il apparaît.
+
+   LA BASCULE SE FAIT PAR LES JETONS, pas par des classes de couleur
+   réécrites partout : c'est l'idiome de ce dépôt depuis `.lumiere` et
+   `.jour`. Un composant écrit `text-fort` et se lit correctement des
+   deux côtés, sans condition.
+
+   contrastes mesurés sur le tabac #4a3326
+     fort 9,6:1 · texte 6,9:1 · faible 5,4:1 · accent 5,0:1
+   Le relief chaud du haut éclaircit le fond jusqu'à rgb(84,59,42) :
+   c'est LÀ que se mesure le pire cas, pas sur le jeton de fond.
+   ============================================================== */
+.tabac {
+  --color-fond: #4a3326;
+  --color-surface: #553c2d;
+  --color-fort: #f4ece0;
+  --color-texte: #d8c6b2;
+  --color-faible: #cdb9a5;
+  --color-accent: #eab09b; /* la cendre rose du cigare */
+  --color-filet: rgba(244, 236, 224, 0.16);
+  --color-filet-fort: rgba(244, 236, 224, 0.3);
+  --robe-lumiere: var(--color-accent);
+
+  /*
+    LA MATIÈRE EST DÉSORMAIS UNE PEAU, PAS UN CALCUL.
+
+    La version précédente fabriquait sa matière : deux champs de
+    turbulence additionnés, éclairés par deux lampes opposées. Elle
+    tenait, et sa géométrie est consignée dans l'historique — mais elle
+    restait une imitation, et son grain était isotrope là où un cuir a des
+    plis, des creux et des cicatrices qui racontent une pièce.
+
+    LES TROIS DÉGRADÉS ONT DISPARU AVEC ELLE. Ils donnaient au fond les
+    nuances que la turbulence ne savait pas produire ; le cuir les porte
+    lui-même, et les empiler aurait été peindre sur une photographie.
+
+    LA COULEUR DÉCLARÉE EST LA MOYENNE MESURÉE DE L'IMAGE, rgb(95, 56, 34).
+    Elle ne se voit jamais : elle n'existe que si le fichier manque, et
+    évite qu'un panneau de texte clair tombe alors sur du blanc.
+  */
+  background-color: #5f3822;
+  isolation: isolate;
+}
+
+/*
+  LE PAPIER MÂCHÉ — une matière, obtenue par la lumière et non par du bruit.
+
+  Un grain posé en surimpression donne du SABLE : des points, une texture
+  d'écran. Ce qu'on cherche est un RELIEF — une feuille pressée, dont les
+  creux et les bosses accrochent la lumière. D'où `feDiffuseLighting` : le
+  bruit n'est pas peint, il sert de carte de hauteur, et c'est l'éclairage
+  rasant (azimut 238°, élévation 52°) qui le rend visible. La même nuance
+  de brun, selon qu'elle est en creux ou en bosse, devient deux nuances.
+
+  `stitchTiles='stitch'` est indispensable : sans lui, la turbulence se
+  recoupe à chaque tuile et le motif se met à battre comme un papier
+  peint. Deux échelles, et pas une de plus : la grande pour le pressage
+  (640 px), la fine pour la fibre (180 px).
+
+  Deux images de données, aucune requête, et la matière suit n'importe
+  quelle largeur. Une photographie de feuille de tabac aurait pesé cent
+  fois plus pour un résultat moins tenu.
+*/
+.tabac::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  /*
+    LE CUIR, EN UNE SEULE IMAGE QUI COUVRE.
+
+    `cover` plutôt qu'une tuile répétée : une photographie ne se raccorde
+    pas, et toute répétition aurait laissé une couture. Le panneau fait au
+    plus 1920 × 1257 et au moins 390 × 1100 ; l'image, 1600 × 900, est
+    donc agrandie de 1,15 à 1,34 selon le format — jamais au point que le
+    grain se délite, jamais si peu qu'on voie le même pli deux fois.
+
+    ELLE EST RETOURNÉE VERTICALEMENT. La source porte sa lumière en haut à
+    gauche — précisément où se tiennent le bouton de retour et le rail,
+    douze pixels de texte clair. Retournée, la zone sombre passe en haut
+    et la zone claire tombe en bas, où la vignette de `::after` l'attend.
+
+    ET DÉSATURÉE DE 30 %. Brute, mesurée à rgb(104, 50, 19), elle bascule
+    dans l'orange caramel — la teinte explicitement écartée au premier
+    chantier. À 0,7 elle vaut rgb(95, 56, 34) : le cuir garde sa chaleur,
+    le cognac reste un cognac. Le traitement est cuit dans le fichier, pas
+    appliqué en `filter` : un filtre se recalcule à chaque composition.
+  */
+  background-image: url("/matiere/cuir-cognac.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Et la lumière qui tombe dessus : deux sources très douces, une chaude
+   en haut à droite, une froide en bas à gauche. Sans elles la matière
+   est uniforme, donc plate — un papier pressé n'est jamais éclairé
+   régulièrement. */
+.tabac::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  /*
+    CE QUI RESTE DE LA LUMIÈRE DE COMPOSITION : un seul coin assombri.
+    Le cuir apporte ses propres nuances, et la source chaude qui occupait
+    la droite n'a plus d'objet. Ne subsiste que l'ombre du bas à gauche,
+    là où la photographie retournée est la plus claire et où se posent la
+    pagination et les flèches — mesuré, pas supposé.
+  */
+  background-image: radial-gradient(
+    86% 62% at 6% 98%,
+    rgba(22, 13, 8, 0.34) 0%,
+    transparent 70%
+  );
+}
+
+/* Le contenu de la feuille passe au-dessus de sa matière. */
+.tabac > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==============================================================
+   LE PAPIER — la carte du volet 01.
+
+   PAS DE SILEX, ET C'EST UNE DÉCISION. Un gris minéral tiède serait plus
+   contemporain, mais il se bat contre le sujet : les trois gestes portent
+   tous sur du PAPIER — une carte imprimée, une étiquette collée sur du
+   verre, une liste tapée. Une feuille de pierre ne raconte rien. Et sur
+   un cognac chaud, un gris tiède se rapproche en valeur : moins de
+   séparation, et le bordeaux y perd son mordant.
+
+   Le défaut à corriger — « trois rectangles uniformes » — ne tient pas à
+   la teinte mais à la MATIÈRE : fibre, encre brune plutôt que noire,
+   formats inégaux, dessins qui débordent. D'où deux nuances de papier et
+   non une, pour que les trois cartes ne soient pas jumelles.
+
+   contrastes sur le naturel #efe7d6 : fort 15:1 · texte 7,6:1 ·
+   faible 5,2:1 · accent 8,9:1 — et sur le grège #e6ded0, faible 4,9:1.
+   ============================================================== */
+.carte-papier {
+  --color-fond: #efe7d6;
+  --color-surface: #f6f0e3;
+  --color-fort: #221b17; /* une encre brune : le noir pur n'existe pas sur du papier */
+  --color-texte: #4a4039;
+  --color-faible: #645850;
+  --color-accent: #6b1d38;
+  --color-filet: rgba(34, 27, 23, 0.13);
+  --color-filet-fort: rgba(34, 27, 23, 0.26);
+
+  position: relative;
+  background-color: var(--color-fond);
+  color: var(--color-texte);
+  box-shadow:
+    0 1px 0 rgba(255, 253, 246, 0.6) inset,
+    0 24px 48px -26px rgba(26, 15, 8, 0.92),
+    0 3px 9px -3px rgba(26, 15, 8, 0.45);
+}
+
+/* La fibre du papier, en `multiply` : elle creuse la teinte au lieu de la
+   poudrer. Très basse opacité — on doit la sentir à dix centimètres, pas
+   la voir à un mètre. */
+.carte-papier::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: multiply;
+  opacity: 0.22;
+}
+
+/* La seconde nuance : un grège plus sourd, plus froid d'un cheveu. */
+.papier-grege {
+  --color-fond: #e6ded0;
+  --color-surface: #eee7db;
+}
+
+/* ==============================================================
+   LA CARTE IVOIRE — une feuille posée sur le tabac.
+
+   Elle REMONTE les jetons du jour : ce qui est écrit dessus se lit sur
+   ivoire, et le composant n'a pas à le savoir. Sans cela, chaque texte
+   de carte devrait porter sa couleur en dur, et la première faute
+   serait un gris clair sur crème.
+   ============================================================== */
+.carte-ivoire {
+  --color-fond: #f7f2e8;
+  --color-surface: #fdfbf6;
+  --color-fort: #1b1618;
+  --color-texte: #474245;
+  --color-faible: #5d5659;
+  --color-accent: #6b1d38;
+  --color-filet: rgba(27, 22, 24, 0.1);
+  --color-filet-fort: rgba(27, 22, 24, 0.2);
+
+  background-color: var(--color-fond);
+  color: var(--color-texte);
+  /* Une ombre portée TEINTÉE : une ombre neutre sur un brun chaud vire
+     au gris et décolle la carte du décor au lieu de l'y poser. */
+  box-shadow:
+    0 1px 0 rgba(255, 252, 245, 0.5) inset,
+    0 18px 40px -22px rgba(29, 17, 10, 0.85),
+    0 2px 6px -2px rgba(29, 17, 10, 0.4);
+}
+
+/* ==============================================================
+   LE JEU DE CARTES — un défilement natif, pas un carrousel réécrit.
+
+   `scroll-snap` natif : le geste vertical de la page n'est jamais
+   capturé, l'inertie est celle du système, et le clavier fonctionne
+   sans une ligne de JavaScript. On n'ajoute que ce que le CSS ne sait
+   pas faire : savoir OÙ l'on est.
+   ============================================================== */
+.jeu {
+  /* LA GOUTTIÈRE EST DANS LA PISTE, pas dans son parent : les cartes
+     s'alignent sur la colonne de texte à gauche, et glissent hors de
+     l'écran à droite. Un parent à padding symétrique les aurait coupées
+     à la marge, et le jeu aurait eu l'air enfermé dans une boîte. */
+  padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
+  scroll-padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.jeu::-webkit-scrollbar {
+  display: none;
+}
+.jeu > * {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* L'INCLINAISON N'EST PAS UN EFFET : elle dit quelle carte on lit.
+   Celle qu'on regarde se redresse, les autres restent posées de biais,
+   comme un jeu étalé sur une table. */
+.carte-posee {
+  rotate: var(--incl, 0deg);
+  transition:
+    rotate var(--duree-entree) var(--ease-film),
+    scale var(--duree-entree) var(--ease-film),
+    filter var(--duree-entree) var(--ease-film);
+}
+.carte-posee[data-lue="true"] {
+  rotate: 0deg;
+  scale: 1;
+}
+.carte-posee[data-lue="false"] {
+  scale: 0.965;
+  filter: saturate(0.82) brightness(0.97);
+}
+
 /* ============================================================
    BOUTONS — trois rangs, une seule logique.
 

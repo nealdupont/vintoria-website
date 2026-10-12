@@ -257,6 +257,12 @@ test.describe("Rien ne déborde, à aucune largeur", () => {
    ══════════════════════════════════════════════════════════════ */
 
 import { HEURES } from "../lib/lumiere";
+import {
+  ADDITION,
+  COMPOSITION,
+  COMPTE,
+  VALEUR,
+} from "../lib/cave-demonstration";
 
 /** Amène la page à son état stable : images paresseuses chargées, gestes
  *  déclenchés, arrivées posées. Sans cela on mesure un état transitoire. */
@@ -325,42 +331,135 @@ test.describe("L’arc du jour", () => {
 });
 
 test.describe("Chaque geste arrive à son terme", () => {
-  test("le choix recommandé domine réellement les deux autres", async ({
-    page,
-  }) => {
-    /*
-      LA HIÉRARCHIE EST L'ARGUMENT DE CETTE SECTION.
-      Trois manières présentées à poids égal font lire une LISTE DE
-      FONCTIONNALITÉS, et obligent le visiteur à arbitrer entre des options
-      qu'il ne connaît pas. Ici 01 est recommandé — c'est le seul des trois
-      qui traite toute la carte d'un coup — et c'est la PLACE VERTICALE qui
-      le dit, pas un encadré.
+  /*
+   * LE MOUVEMENT II A CHANGÉ DE NATURE, et trois tests avec lui.
+   * Il décrivait ; il propose désormais un choix. Les trois gardes qui
+   * suivent remplacent celles qui gardaient l'ancienne décision —
+   * hiérarchie de 01 sur 02-03, accent réservé à deux emplois, aucune
+   * affordance — et qui seraient devenues fausses sans rien signaler.
+   */
 
-      Si quelqu'un égalise un jour les trois, le build passera, la page se
-      rendra, et l'argument sera perdu sans bruit. D'où cette mesure.
+  test("les trois portes mènent réellement quelque part", async ({ page }) => {
+    /*
+      Une porte qui ne s'ouvre pas est pire qu'une absence de porte : la
+      flèche, le survol et le curseur promettent, et rien ne tient. On
+      vérifie donc que chacune ouvre un détail DISTINCT, et que le détail
+      porte bien le titre de la porte dont on vient.
     */
     await page.goto("/");
     await parcourir(page);
-    const h = await page.evaluate(() =>
-      [...document.querySelectorAll("#geste .grid")]
-        .filter((e) =>
-          /^0[123]$/.test((e.querySelector("p")?.textContent ?? "").trim()),
-        )
-        .map((e) => Math.round(e.getBoundingClientRect().height)),
+    await page.evaluate(() =>
+      document.querySelector("#geste")!.scrollIntoView({ block: "start" }),
     );
-    expect(h.length, "les trois manières ne se rendent pas").toBe(3);
-    const [principal, ...recours] = h;
-    const plusGrand = Math.max(...recours);
+    await page.waitForTimeout(600);
+
+    const portes = page.locator("#geste button[aria-controls='geste-detail']");
+    await expect(portes).toHaveCount(3);
+
+    const vus: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      await portes.nth(i).click();
+      await page.waitForTimeout(900);
+      const r = await page.evaluate(() => {
+        const visible = [
+          ...document.querySelectorAll("#geste-detail > div:last-child > *"),
+        ].find((e) => Number(getComputedStyle(e).opacity) > 0.9);
+        return {
+          titre: (visible?.querySelector("h3")?.textContent ?? "").trim(),
+          ouvertes: [
+            ...document.querySelectorAll(
+              "#geste button[aria-controls='geste-detail'][aria-expanded='true']",
+            ),
+          ].length,
+        };
+      });
+      expect(r.ouvertes, "deux portes se disent ouvertes à la fois").toBe(1);
+      vus.push(r.titre);
+      await page
+        .locator("#geste-detail button", { hasText: "Les trois façons" })
+        .click();
+      await page.waitForTimeout(700);
+    }
     expect(
-      principal / plusGrand,
-      `01 fait ${principal}px contre ${plusGrand}px — il ne domine plus`,
-    ).toBeGreaterThan(1.8);
+      new Set(vus).size,
+      `les détails se répètent : ${vus.join(" / ")}`,
+    ).toBe(3);
   });
 
-  test("l’accent reste rare : deux emplois au plus", async ({ page }) => {
+  test("le balayement ne déplace ni la page ni le lecteur", async ({
+    page,
+  }) => {
     /*
-      Un bordeaux posé sur chaque élément ne signale plus rien. Il n'a droit
-      qu'à l'italique du titre et au numéro du choix recommandé.
+      C'EST LA GARDE LA PLUS UTILE DE LA SECTION. Un détail monté à la
+      demande allonge le document de mille pixels d'un coup, le navigateur
+      recale le défilement, et le lecteur se retrouve ailleurs — sans
+      qu'aucun test ne tombe. Les quatre états partagent donc une même
+      cellule de grille : la scène fait la hauteur du plus grand, une fois
+      pour toutes. Si quelqu'un démonte cette superposition, ceci tombe.
+    */
+    await page.goto("/");
+    await parcourir(page);
+    await page.evaluate(() => {
+      (window as unknown as { __n: number }).__n = 0;
+      document.querySelector("#geste ul li button")!.scrollIntoView({
+        block: "center",
+      });
+    });
+    // On attend que le défilement doux soit VRAIMENT fini avant de mesurer.
+    await page.waitForFunction(
+      () => {
+        const w = window as unknown as { __y?: number; __n?: number };
+        const y = Math.round(scrollY);
+        if (w.__y === y) w.__n = (w.__n ?? 0) + 1;
+        else {
+          w.__y = y;
+          w.__n = 0;
+        }
+        return (w.__n ?? 0) > 6;
+      },
+      null,
+      { polling: 60 },
+    );
+
+    const etat = () =>
+      page.evaluate(() => ({
+        y: Math.round(scrollY),
+        doc: document.documentElement.scrollHeight,
+      }));
+    const avant = await etat();
+
+    for (const geste of [
+      () =>
+        page.evaluate(() =>
+          document.querySelector<HTMLElement>("#geste ul li button")!.click(),
+        ),
+      () =>
+        page.evaluate(() =>
+          document
+            .querySelectorAll<HTMLElement>("#geste-detail button")[3]
+            .click(),
+        ),
+      () =>
+        page.evaluate(() =>
+          [...document.querySelectorAll<HTMLElement>("#geste-detail button")]
+            .find((b) => b.textContent!.includes("Les trois"))!
+            .click(),
+        ),
+    ]) {
+      await geste();
+      await page.waitForTimeout(1100);
+      const apres = await etat();
+      expect(apres.doc, "le document a changé de hauteur").toBe(avant.doc);
+      expect(apres.y, "la page a sauté sous le lecteur").toBe(avant.y);
+    }
+  });
+
+  test("l’accent ne porte que la structure", async ({ page }) => {
+    /*
+      L'ancienne règle — deux emplois au plus — appartenait à une section
+      sans numéros monumentaux. Ici le bordeaux EST la structure : le mot
+      « mieux. » et les trois rangs. Au-delà, il redeviendrait une couleur
+      d'ornement, et ne signalerait plus rien. Cinq est la limite.
     */
     await page.goto("/");
     await parcourir(page);
@@ -381,34 +480,103 @@ test.describe("Chaque geste arrive à son terme", () => {
         (e) =>
           e.children.length === 0 &&
           (e.textContent ?? "").trim().length > 0 &&
+          /*
+            LES TROIS DÉTAILS SONT MONTÉS EN PERMANENCE — c'est ce qui
+            immobilise la scène. Compter leurs rangs reviendrait à compter
+            trois bordeaux que personne ne voit : `offsetParent` ne les
+            écarte pas, la visibilité oui.
+          */
+          e.checkVisibility({
+            visibilityProperty: true,
+            opacityProperty: true,
+          }) &&
           rgb(getComputedStyle(e).color) === cible,
       ).length;
     });
     expect(
       n,
       `l’accent est employé ${n} fois dans le mouvement II`,
-    ).toBeLessThanOrEqual(2);
+    ).toBeLessThanOrEqual(5);
   });
 
-  test("rien n’y promet une interaction qui n’existe pas", async ({ page }) => {
+  test("les chiffres de la cave viennent de la donnée, pas de l’esquisse", async ({
+    page,
+  }) => {
     /*
-      Cette section DÉCRIT ce que le produit sait faire ; elle ne le fait
-      pas. Une flèche, un lien ou un bouton y seraient une promesse que rien
-      ne tient — le seul chemin de conversion de la page est en VIII.
+      L'esquisse de référence affichait « 24 680 € » et « 12 alertes ».
+      Ce sont des nombres de dessinateur. Ceux-ci sont recalculés depuis
+      les fixtures du produit (voir tests/chiffres.spec.ts) et doivent
+      arriver ici par lib/cave-demonstration.ts, pas par la frappe.
     */
     await page.goto("/");
-    const faux = await page.evaluate(() =>
-      [
-        ...document.querySelectorAll(
-          "#geste a, #geste button, #geste [role='button']",
+    await parcourir(page);
+    await page.evaluate(() =>
+      document.querySelector("#geste")!.scrollIntoView({ block: "start" }),
+    );
+    await page.waitForTimeout(500);
+    await page
+      .locator("#geste button[aria-controls='geste-detail']")
+      .nth(1)
+      .click();
+    await page.waitForTimeout(900);
+    const r = await page.evaluate(() => {
+      const vu = [
+        ...document.querySelectorAll("#geste-detail > div:last-child > *"),
+      ].find((e) => Number(getComputedStyle(e).opacity) > 0.9)!;
+      return {
+        /* Les trois chiffres posés en grand dans le jeu de cartes. */
+        chiffres: [...vu.querySelectorAll(".jeu .gravure")].map((e) =>
+          e.textContent!.trim(),
         ),
-      ].map(
-        (e) => `${e.tagName} « ${(e.textContent ?? "").trim().slice(0, 24)} »`,
-      ),
-    );
-    expect(faux, `affordance sans destination : ${faux.join(", ")}`).toEqual(
-      [],
-    );
+        /* Et tout ce que la vue écrit, pour y traquer l'esquisse. */
+        tout: vu.textContent ?? "",
+      };
+    });
+
+    /*
+      UN SEUL CHIFFRE EST GRAVÉ, LES AUTRES SONT DESSINÉS.
+
+      Les cartes de la cave portaient trois gravures : 15, 158 et le
+      montant. Depuis que le volet est dessiné, le sommaire porte lui-même
+      ses comptes et le bordereau porte son addition ; seule la valeur reste
+      gravée, parce qu'elle est la conclusion du bordereau et que la graver
+      DEUX fois aurait affaibli les deux.
+
+      Le garde-fou suit ce déplacement sans rien relâcher : il vérifie que
+      la gravure vaut le montant, ET que les deux autres chiffres sont bien
+      ÉCRITS par la vue — `textContent` traverse le SVG, donc un dessin qui
+      cesserait de lire `lib/cave-demonstration.ts` ferait échouer ici.
+    */
+    expect(
+      r.chiffres,
+      `la vue grave ${r.chiffres.length} chiffre(s) : ${r.chiffres.join(" · ")}`,
+    ).toEqual([VALEUR.montant]);
+
+    for (const [quoi, attendu] of [
+      ["les références", COMPTE[0].nombre],
+      ["les bouteilles", COMPTE[1].nombre],
+      ["la plus grosse famille", COMPOSITION[0].bouteilles],
+      ["la plus grosse ligne du bordereau", ADDITION.lignes[0].total],
+    ] as const) {
+      expect(
+        r.tout
+          .replace(/\u202f|\u00a0/g, " ")
+          .includes(String(attendu).replace(/\B(?=(\d{3})+(?!\d))/g, " ")),
+        `${quoi} : « ${attendu} » n'est écrit nulle part dans la vue`,
+      ).toBe(true);
+    }
+
+    /*
+      ET AUCUN CHIFFRE DE DESSINATEUR. Ces trois-là venaient de l'esquisse
+      de référence ; les reprendre aurait été indécelable à la relecture et
+      faux à la première question d'un restaurateur.
+    */
+    for (const invente of ["24 680", "24 680", "42 vins", "12 alertes"]) {
+      expect(
+        r.tout.includes(invente),
+        `« ${invente} » vient de l’esquisse, pas du produit`,
+      ).toBe(false);
+    }
   });
 
   test("le rapprochement entre bien dans l’écran", async ({ page }) => {
@@ -452,6 +620,68 @@ test.describe("Chaque geste arrive à son terme", () => {
       0.9,
     );
   });
+
+  test("les trois compteurs se verrouillent sur les chiffres du produit", async ({
+    page,
+  }) => {
+    /*
+      UN COMPTEUR PEUT RATER SANS RIEN CASSER, et c'est ce qui rend cette
+      mesure nécessaire. Une roue arrêtée entre deux crans laisse deux
+      moitiés de chiffre dans sa fenêtre ; une roue dont la course ne tombe
+      pas juste s'arrête sur le MAUVAIS chiffre. Dans les deux cas le build
+      passe, la page se rend — et le site publie un nombre que le produit
+      ne calcule pas.
+
+      On lit donc le GLYPHE RÉELLEMENT VISIBLE au centre de chaque fenêtre,
+      par elementFromPoint. Le textContent ne dirait rien : il contient les
+      quelques dizaines de crans de la roue.
+    */
+    await page.goto("/");
+    await parcourir(page);
+
+    const r = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("#cave .sr-only")]
+        .map((sr) => sr.parentElement!)
+        .map((n) => {
+          // Chaque nombre est ramené dans le champ avant d'être lu : après
+          // le parcours, la page est en bas et elementFromPoint ne voit rien.
+          n.scrollIntoView({ block: "center", behavior: "instant" });
+          return {
+            annonce: n.querySelector(".sr-only")!.textContent,
+            vu: [...n.children]
+              .filter((c) => !c.classList.contains("sr-only"))
+              .map((c) => {
+                const b = c.getBoundingClientRect();
+                const e = document.elementFromPoint(
+                  Math.round(b.left + b.width / 2),
+                  Math.round(b.top + b.height / 2),
+                );
+                return e && e.textContent!.length === 1 ? e.textContent! : "·";
+              })
+              .join(""),
+            crans: [...n.querySelectorAll("[data-cadran]")].map(
+              (c) => new DOMMatrixReadOnly(getComputedStyle(c).transform).f,
+            ),
+          };
+        }),
+    );
+
+    const attendu = [COMPTE[0].nombre, COMPTE[1].nombre, VALEUR.montant];
+    expect(
+      r.map((n) => n.vu),
+      "un compteur s’est arrêté sur un autre chiffre que celui de la donnée",
+    ).toEqual(attendu);
+    // Et la valeur annoncée à la voix reste la valeur, pas la suite des crans.
+    expect(
+      r.map((n) => n.annonce),
+      "la valeur lue ne suit plus la donnée",
+    ).toEqual(attendu);
+    for (const n of r) {
+      for (const f of n.crans) {
+        expect(f, "une roue s’est arrêtée entre deux crans").toBeCloseTo(0, 3);
+      }
+    }
+  });
 });
 
 test.describe("Mouvement réduit : la page se tient, entière", () => {
@@ -494,6 +724,34 @@ test.describe("Mouvement réduit : la page se tient, entière", () => {
     */
     expect(r.carre, "le carré s’est détaché sans le geste").toBe("none");
     expect(r.piece, "le trou est comblé alors que rien n’est parti").toBe(0);
+  });
+
+  test("les chiffres de la cave sont là, sans une seule roue", async ({
+    page,
+  }) => {
+    /*
+      Le compteur ne se contente pas de ne pas tourner : il n'est pas monté
+      du tout. Pas de fenêtre, pas de cran, pas de case vide le temps d'un
+      retard — le nombre est du texte, au même endroit exactement.
+    */
+    await page.goto("/");
+    await parcourir(page);
+    const r = await page.evaluate(() => ({
+      roues: document.querySelectorAll("#cave [data-cadran]").length,
+      lu: [
+        ...document.querySelectorAll(
+          "#cave .data.justify-end, #cave .voix.mt-4",
+        ),
+      ].map((n) => n.textContent),
+    }));
+    expect(r.roues, "des roues sont montées malgré le mouvement réduit").toBe(
+      0,
+    );
+    expect(r.lu, "les chiffres ne sont pas à leur valeur finale").toEqual([
+      COMPTE[0].nombre,
+      COMPTE[1].nombre,
+      VALEUR.montant,
+    ]);
   });
 });
 
@@ -542,6 +800,16 @@ test.describe("Aucun reste de l’ère sombre", () => {
         const { rgb, opaque } = resoudre(c);
         if (!opaque) return false;
         if (rgb.some((v) => v >= 60)) return false;
+        /*
+          L'ENCRE EST NEUTRE, un brun ne l'est pas. Le volet « importer »
+          pose une feuille de tabac — (57, 39, 29) — dont les trois canaux
+          passent sous 60 sans qu'elle soit pour autant un reste de l'ère
+          sombre : elle est franchement chromatique. L'encre du site, elle,
+          est à deux unités près neutre (#0b0a0c, #121013). L'écart entre
+          le canal le plus fort et le plus faible sépare donc les deux, là
+          où la seule luminance les confondait.
+        */
+        if (Math.max(...rgb) - Math.min(...rgb) >= 18) return false;
         const b = e.getBoundingClientRect();
         return b.width >= 24 && b.height >= 24;
       };
