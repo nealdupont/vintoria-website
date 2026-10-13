@@ -40,19 +40,20 @@ export default function Page() {
             Vingt minutes, sur votre carte.
           </h1>
           <p className="t-chapeau mt-7 max-w-[52ch] text-texte">
-            Nous chargeons vos vins et vos plats avant l’appel. Vous voyez Vintoria
-            travailler sur votre établissement, pas sur une démonstration préparée.
+            Nous chargeons vos vins et vos plats avant l’appel. Vous voyez
+            Vintoria travailler sur votre établissement, pas sur une
+            démonstration préparée.
           </p>
         </div>
       </section>
 
       <section className="px pb-24">
         <div className="mx-auto grid max-w-[1180px] gap-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
-          <div className="parait">
+          <div className="parait min-w-0">
             <FormulaireDemonstration />
           </div>
 
-          <aside className="parait">
+          <aside className="parait min-w-0">
             <h2 className="eyebrow mb-8">Comment ça se passe</h2>
             <ol className="flex flex-col gap-9">
               {ETAPES.map((e) => (

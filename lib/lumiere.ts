@@ -51,7 +51,10 @@ export const HEURES = [
   },
   {
     cle: "accord",
-    titre: "L’accord",
+    /* La clé reste « accord » : c'est la POSITION dans la progression de
+       lumière, et deux heures voisines doivent se raccorder exactement. La
+       section qui l'occupe, elle, a changé — voir CarteDesVins.tsx. */
+    titre: "La carte des vins",
     haut: "#faf6ec",
     bas: "#f7f0e2",
     lumiere: "début d’après-midi — la caméra entre dans l’écran",
@@ -77,6 +80,26 @@ export const HEURES = [
     haut: "#efe2cd",
     bas: "#f1e8da",
     lumiere: "une respiration — la lumière reprend un peu, teintée de sauge",
+  },
+  {
+    /*
+      UNE TENUE, PAS UNE MARCHE.
+
+      Les formules s'intercalent entre la respiration et l'heure dorée, et
+      elles sont le seul moment de la page où l'on demande au lecteur de
+      COMPARER. Toutes les autres heures montent ou descendent ; celle-ci
+      se tient. Un fond qui bouge sous trois cartes qu'on met côte à côte
+      ajoute une variable à une lecture qui en a déjà trois.
+
+      Haut et bas sont donc identiques — et identiques au bas de « pour
+      qui » comme au haut de « l'invitation » : la section s'insère sans
+      déplacer d'un seul degré la lumière de ses voisines.
+    */
+    cle: "formules",
+    titre: "Les formules",
+    haut: "#f1e8da",
+    bas: "#f1e8da",
+    lumiere: "la lumière se tient : on compare, elle ne bouge pas",
   },
   {
     cle: "invitation",

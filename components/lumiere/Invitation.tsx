@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { ciel } from "@/lib/lumiere";
+import { COMPTE } from "@/lib/cave-demonstration";
 
 /**
  * MOUVEMENT VIII — L'INVITATION.
@@ -18,6 +19,21 @@ import { ciel } from "@/lib/lumiere";
  * Ce qui est promis ici est VÉRIFIABLE et modeste : vingt minutes, sur la
  * carte du visiteur. Aucun chiffre de performance, aucune promesse de
  * chiffre d'affaires — nous n'en avons pas.
+ *
+ * ── CE QUE LA REFONTE A CHANGÉ ─────────────────────────────────────────
+ *
+ * LE NOMBRE DE BOUTEILLES ÉTAIT FAUX. La note finale annonçait « cent
+ * soixante-dix-neuf bouteilles » quand la section Cave en publie 158, lus
+ * dans la cave de démonstration du produit. Deux chiffres contradictoires
+ * sur la même page, dont l'un que le logiciel ne calcule pas. Le nombre
+ * vient maintenant de `lib/cave-demonstration.ts`, à la source — il ne
+ * peut plus diverger sans qu'un test le dise.
+ *
+ * ET L'ARRIVÉE EST SÉQUENCÉE. Tout le bloc fondait d'un seul tenant :
+ * titre, filet, promesse, actions et note apparaissaient ensemble, ce qui
+ * revient à n'avoir aucune hiérarchie à l'arrivée. Chaque pièce entre
+ * maintenant à son tour, dans l'ordre où on la lit, sur six dixièmes de
+ * seconde au total. Le filet d'or se tire au lieu de se révéler.
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -25,10 +41,18 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 export function Invitation() {
   const reduit = useReducedMotion();
 
+  /* La même entrée pour chaque pièce : elle monte de douze pixels et se
+     révèle. Seul le rang change, et c'est le `staggerChildren` du parent
+     qui le donne — rien n'est codé pièce par pièce. */
+  const monte = {
+    repos: { opacity: 0, y: reduit ? 0 : 12 },
+    pose: { opacity: 1, y: 0 },
+  };
+
   return (
     <section
       id="invitation"
-      className="grain-clair relative isolate overflow-x-clip py-36 sm:py-44"
+      className="mouvement grain-clair relative isolate overflow-x-clip"
       style={{ background: ciel("invitation") }}
     >
       {/*
@@ -51,26 +75,47 @@ export function Invitation() {
 
       <div className="px relative z-10 mx-auto w-full max-w-[1420px]">
         <motion.div
-          initial={{ opacity: 0, y: reduit ? 0 : 26 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="repos"
+          whileInView="pose"
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: reduit ? 0 : 1, ease: EASE }}
+          variants={{
+            pose: { transition: { staggerChildren: reduit ? 0 : 0.1 } },
+          }}
         >
-          <h2 className="strophe max-w-[18ch] text-[clamp(2.4rem,6vw,5rem)]">
+          <motion.h2
+            className="strophe max-w-[18ch] text-[clamp(2.4rem,6vw,5rem)]"
+            variants={monte}
+            transition={{ duration: reduit ? 0 : 0.8, ease: EASE }}
+          >
             Vingt minutes,
             <br />
             <em>sur votre propre carte.</em>
-          </h2>
+          </motion.h2>
 
-          <div className="filet-or mt-10 h-px w-44" />
+          <motion.div
+            className="filet-or mt-9 h-px w-44 origin-left"
+            variants={{
+              repos: { scaleX: reduit ? 1 : 0, opacity: 1 },
+              pose: { scaleX: 1, opacity: 1 },
+            }}
+            transition={{ duration: reduit ? 0 : 0.5, ease: EASE }}
+          />
 
-          <p className="t-chapeau mt-10 max-w-[46ch] text-pretty text-[color:var(--color-texte)]">
+          <motion.p
+            className="t-chapeau mt-9 max-w-[46ch] text-pretty text-[color:var(--color-texte)]"
+            variants={monte}
+            transition={{ duration: reduit ? 0 : 0.8, ease: EASE }}
+          >
             Nous faisons entrer votre carte des vins devant vous, et vous voyez
             l’écran que vos clients auraient ce soir. Pas de diaporama, pas de
             cave de démonstration : la vôtre.
-          </p>
+          </motion.p>
 
-          <div className="mt-12 flex flex-col flex-wrap items-stretch gap-x-10 gap-y-6 sm:flex-row sm:items-center">
+          <motion.div
+            className="mt-11 flex flex-col flex-wrap items-stretch gap-x-10 gap-y-6 sm:flex-row sm:items-center"
+            variants={monte}
+            transition={{ duration: reduit ? 0 : 0.8, ease: EASE }}
+          >
             <Link
               href="/demonstration"
               className="bouton bouton-primaire group"
@@ -99,14 +144,19 @@ export function Invitation() {
               </span>
               <span aria-hidden>→</span>
             </Link>
-          </div>
+          </motion.div>
 
-          <p className="t-meta relative z-10 mt-14 max-w-[52ch] text-[color:var(--color-faible)]">
+          <motion.p
+            className="t-meta relative z-10 mt-12 max-w-[52ch] text-[color:var(--color-faible)]"
+            variants={monte}
+            transition={{ duration: reduit ? 0 : 0.8, ease: EASE }}
+          >
             Tous les écrans de cette page sont de vraies captures de Vintoria
-            Pro 2.0.2, prises sur l’établissement de démonstration — quinze
-            références, cent soixante-dix-neuf bouteilles. Ce sont des données
-            de démonstration, jamais une moyenne ni une performance.
-          </p>
+            Pro 2.0.2, prises sur l’établissement de démonstration —{" "}
+            {COMPTE[0].nombre} références, {COMPTE[1].nombre} bouteilles. Ce
+            sont des données de démonstration, jamais une moyenne ni une
+            performance.
+          </motion.p>
         </motion.div>
       </div>
     </section>

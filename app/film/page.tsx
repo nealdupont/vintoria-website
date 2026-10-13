@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Film } from "@/components/film/Film";
+import { COMPTE } from "@/lib/cave-demonstration";
 
 /**
  * LA ROUTE DE VALIDATION DU FILM.
@@ -20,12 +21,36 @@ export const metadata: Metadata = {
 };
 
 const SEQUENCES = [
-  { t: "0 → 5,5 s", nom: "La carte", dit: "On colle une carte, on analyse, les références sont là." },
-  { t: "5,5 → 11 s", nom: "La cave", dit: "Valeur commerciale, valeur d’acquisition, marge, coefficient." },
-  { t: "11 → 15,5 s", nom: "Le stock", dit: "Une vente est journalisée, le stock passe de 10 à 9, l’alerte tombe." },
-  { t: "15,5 → 20,5 s", nom: "L’inventaire", dit: "Un vrai PDF de quatre pages, généré par le produit." },
-  { t: "20,5 → 27 s", nom: "Le client", dit: "Le plat, la couleur, puis la recommandation et sa raison." },
-  { t: "27 → 30 s", nom: "La boucle", dit: "Carte, cave, conseil, vente — ce que Vintoria relie." },
+  {
+    t: "0 → 5,5 s",
+    nom: "La carte",
+    dit: "On colle une carte, on analyse, les références sont là.",
+  },
+  {
+    t: "5,5 → 11 s",
+    nom: "La cave",
+    dit: "Valeur commerciale, valeur d’acquisition, marge, coefficient.",
+  },
+  {
+    t: "11 → 15,5 s",
+    nom: "Le stock",
+    dit: "Une vente est journalisée, le stock passe de 10 à 9, l’alerte tombe.",
+  },
+  {
+    t: "15,5 → 20,5 s",
+    nom: "L’inventaire",
+    dit: "Un vrai PDF de quatre pages, généré par le produit.",
+  },
+  {
+    t: "20,5 → 27 s",
+    nom: "Le client",
+    dit: "Le plat, la couleur, puis la recommandation et sa raison.",
+  },
+  {
+    t: "27 → 30 s",
+    nom: "La boucle",
+    dit: "Carte, cave, conseil, vente — ce que Vintoria relie.",
+  },
   { t: "30 → 32 s", nom: "Vintoria", dit: "La sortie." },
 ];
 
@@ -39,9 +64,9 @@ export default function Page() {
             La démonstration, isolée.
           </h1>
           <p className="t-chapeau mt-6 max-w-[54ch] text-texte">
-            Trente-deux secondes, sept séquences, un argument chacune. Cette page n’est
-            liée depuis aucune navigation et n’est pas indexée : elle sert à juger
-            la démonstration avant de décider de sa place.
+            Trente-deux secondes, sept séquences, un argument chacune. Cette
+            page n’est liée depuis aucune navigation et n’est pas indexée : elle
+            sert à juger la démonstration avant de décider de sa place.
           </p>
         </div>
       </section>
@@ -66,11 +91,12 @@ export default function Page() {
           </ol>
           <p className="t-meta mt-12 max-w-[64ch] text-faible">
             Tous les écrans sont de vraies captures de Vintoria Pro, prises sur
-            l’établissement de démonstration (15 références, 179 bouteilles). Le
-            PDF d’inventaire est réellement généré par le produit. Les montants
-            sont ceux que le logiciel calcule sur cette cave : ce sont des données
-            de démonstration, jamais une moyenne ni une performance. Aucun
-            pourcentage de chiffre d’affaires n’est avancé — nous n’en avons pas.
+            l’établissement de démonstration ({COMPTE[0].nombre} références,{" "}
+            {COMPTE[1].nombre} bouteilles). Le PDF d’inventaire est réellement
+            généré par le produit. Les montants sont ceux que le logiciel
+            calcule sur cette cave : ce sont des données de démonstration,
+            jamais une moyenne ni une performance. Aucun pourcentage de chiffre
+            d’affaires n’est avancé — nous n’en avons pas.
           </p>
         </div>
       </section>

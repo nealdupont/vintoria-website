@@ -47,6 +47,59 @@
   --duree-robe: 1200ms; /* ce que le vin dépose */
 
   --ease-film: cubic-bezier(0.16, 1, 0.3, 1); /* entrées */
+
+  /* --- LA PROFONDEUR ------------------------------------------
+     Le site savait composer des pages ; il ne savait pas poser
+     d'objets. Aucun jeton ne disait un rayon, une élévation ni un
+     halo : chaque carte inventait les siens, et le relief ne tenait
+     que par habitude. Ces valeurs-ci sont l'échelle commune.
+
+     TROIS RAYONS, pas davantage. Le petit pour ce qui se touche
+     (pastilles, boutons), le courant pour les cartes, le grand pour
+     les panneaux qui portent une composition entière. */
+  --radius-touche: 12px;
+  --radius-carte: 18px;
+  --radius-panneau: 26px;
+
+  /* TROIS ÉLÉVATIONS, et leurs ombres sont CHAUDES. Une ombre neutre
+     sur du cognac fait du gris : celles-ci tirent sur le brun de la
+     matière, comme une ombre portée sur du cuir. */
+  --ombre-posee:
+    0 1px 2px rgba(38, 22, 12, 0.08), 0 8px 20px -12px rgba(38, 22, 12, 0.3);
+  --ombre-levee:
+    0 2px 4px rgba(38, 22, 12, 0.1), 0 18px 38px -16px rgba(38, 22, 12, 0.42);
+  --ombre-ouverte:
+    0 3px 6px rgba(38, 22, 12, 0.12), 0 36px 70px -28px rgba(38, 22, 12, 0.5);
+
+  /* LE HALO — la lumière qui vient de la matière, jamais un néon. Sa
+     teinte est la lampe de salle.
+
+     SA FORCE EST UN JETON, PARCE QU'ELLE DÉPEND DU FOND. Un lavis chaud
+     posé sur du crème à 250 de luminance ne peut que l'assombrir ; posé
+     sur du cognac à 60, il l'éclaircit. La même opacité n'y produit donc
+     pas du tout la même lecture, et une valeur unique condamnait l'un
+     des deux. Les deux valeurs ci-dessous sont mesurées, pas estimées :
+     chacune porte l'écart PERÇU entre carte éteinte et carte allumée à
+     ΔE ≈ 7 — « franc » sur l'échelle CIE, deux fois l'ancien réglage qui
+     plafonnait à 3,7, et loin des 11+ où le halo cesse d'être une lumière
+     pour devenir une teinte. Balayage complet : 0,16 → ΔE 3,7 · 0,26 →
+     5,9 · 0,30 → 6,8 · 0,40 → 9,1 · 0,50 → 11,5 sur crème.
+
+     LES VALEURS DIFFÈRENT PARCE QUE LES FONDS DIFFÈRENT, pas par goût :
+     à force égale, le même lavis rend ΔE 6,8 sur le crème, 9,3 sur le
+     cuir, et bien davantage sur l'encre — plus un fond est sombre, plus
+     une lumière chaude y pèse. Trois valeurs, donc, une par jeu :
+       encre  0,09  (ici, le jeu du soir)       ΔE 7,2
+       cognac 0,26  (`.tabac`)                  ΔE 7,0
+       crème  0,30  (`.jour`, `.lumiere`)       ΔE 6,8
+     Le rapport entre la première et la dernière est de un à trois : c'est
+     la mesure de ce qu'une même lumière pèse différemment selon ce
+     qu'elle éclaire. Sur l'encre, 0,30 rendrait ΔE 24 — un néon.
+     Chacune est mesurée, pas estimée, et chacune porte l'écart perçu à
+     ΔE ≈ 7 — « franc » sur l'échelle CIE, loin des 11+ où le halo cesse
+     d'être une lumière pour devenir une teinte. */
+  --halo-chaud: 232, 200, 140;
+  --halo-force: 0.09;
   --ease-sortie: cubic-bezier(0.4, 0, 1, 1); /* sorties, plus sèches */
 
   /* ============================================================
@@ -77,6 +130,7 @@
    à connaître la règle, il écrit `text-accent` et elle s'applique.
    ============================================================ */
 .jour {
+  --halo-force: 0.3;
   --color-fond: #ece5d8;
   --color-surface: #e3dacb;
   --color-fort: #0b0a0c;
@@ -337,6 +391,11 @@ body {
    c'est LÀ que se mesure le pire cas, pas sur le jeton de fond.
    ============================================================== */
 .tabac {
+  /* Sur un fond sombre, le même lavis éclaircit au lieu d'assombrir, et
+     l'écart part plus vite : il en faut MOINS pour obtenir la même
+     lisibilité. Mesuré dans les mêmes conditions que le crème — ΔE 7,0
+     ici, 6,8 là-bas : la même lumière, obtenue autrement. */
+  --halo-force: 0.26;
   --color-fond: #4a3326;
   --color-surface: #553c2d;
   --color-fort: #f4ece0;
@@ -596,6 +655,30 @@ body {
    La hauteur minimale de 48 px n'est pas négociable : c'est la cible
    tactile. Elle s'applique AUSSI au rang fantôme, le plus petit.
    ============================================================ */
+
+/*
+  L'ÉTIQUETTE LA PLUS LONGUE DU SITE, DANS LA CELLULE LA PLUS ÉTROITE.
+
+  « Demander une démonstration », en capitales espacées de 0,11 em, mesure
+  313 px — plus qu'un iPhone SE n'en offre une fois les marges retirées.
+  Dans une cellule de formule, elle poussait la dalle à 369 px de large sur
+  un écran de 320 : cinquante-quatre pixels de débordement horizontal.
+
+  LA PORTÉE EST STRUCTURELLE, PAS ÉNUMÉRÉE. Premier essai : viser les
+  cellules de formule, puis les formulaires, puis… — à chaque fois un
+  bouton oublié ailleurs. La bonne frontière n'est pas une liste
+  d'emplacements, c'est l'EN-TÊTE : son bouton est validé, protégé, et il
+  tient déjà dans 320 px avec son libellé court. `main` et `footer`
+  l'excluent par construction, sans négation et sans énumération.
+*/
+@media (max-width: 400px) {
+  main .bouton,
+  footer .bouton {
+    white-space: normal;
+    padding-inline: 1rem;
+    text-align: center;
+  }
+}
 
 .bouton {
   display: inline-flex;
@@ -983,6 +1066,10 @@ body:has(.lumiere).filmgrain::after {
    ============================================================== */
 
 .lumiere {
+  /* La force du halo du jeu clair. Même valeur que `.jour`, et pour la
+     même raison : ces deux jeux posent leurs cartes sur du crème. */
+  --halo-force: 0.3;
+
   /* --- Jetons sémantiques ---------------------------------------
      MESURÉS SUR LE FOND RÉELLEMENT PEINT, et non sur le jeton de fond.
      La sonde rend tout le texte transparent, photographie la page et
@@ -1201,21 +1288,29 @@ html:has(.lumiere) {
    Un écran produit n'est pas une capture encadrée : c'est un
    objet sur une table. Donc un filet d'un demi-pixel, une ombre
    portée réelle à deux étages, et aucun rayon généreux. */
+/*
+  L'OBJET POSÉ — le cadre de toute capture produit du site.
+
+  IL NE DÉCLARE PLUS SES PROPRES VALEURS. Il avait son rayon (10 px), son
+  filet (une opacité écrite à la main) et ses trois ombres, teintées de
+  bordeaux. C'était cohérent avec lui-même et avec rien d'autre : les
+  cartes du site portent 18 px de rayon, le filet du thème, et des ombres
+  brunes. Deux grammaires d'élévation sur une même page se voient.
+
+  IL EMPRUNTE DONC AU SYSTÈME, et garde sa place dans la hiérarchie : une
+  capture n'est pas une carte au repos, c'est un objet LEVÉ — on l'a posé
+  là, il projette. `.objet-leve` monte d'un cran, pour celles qui passent
+  devant une autre.
+*/
 .objet {
-  border: 1px solid rgba(27, 22, 24, 0.09);
-  border-radius: 10px;
+  border: 1px solid var(--color-filet);
+  border-radius: var(--radius-touche);
   background: var(--color-surface);
-  box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.04),
-    0 10px 24px -10px rgba(27, 22, 24, 0.16),
-    0 36px 70px -32px rgba(107, 29, 56, 0.22);
+  box-shadow: var(--ombre-levee);
 }
 
 .objet-leve {
-  box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.05),
-    0 18px 36px -12px rgba(27, 22, 24, 0.2),
-    0 60px 110px -40px rgba(107, 29, 56, 0.3);
+  box-shadow: var(--ombre-ouverte);
 }
 
 /* --- LA STROPHE ---------------------------------------------
@@ -1458,4 +1553,169 @@ body:has(.lumiere) .lueur-pied {
       rgba(154, 58, 34, 0.07) 0%,
       rgba(107, 29, 56, 0) 60%
     );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LE RYTHME D'UN MOUVEMENT — la respiration verticale, en un seul endroit.
+
+   CHAQUE SECTION DÉCLARAIT LA SIENNE, et elles ne concordaient pas :
+   `pt-28 pb-32 sm:pt-36 sm:pb-40` ici, `pt-28 pb-36 sm:pt-36` là,
+   `py-36 sm:py-44` ailleurs. Soit, au palier `sm`, 144 px en haut pour
+   l'une et 112 pour sa voisine — une irrégularité qu'on ne nomme pas en
+   lisant mais qu'on sent, parce que l'œil mesure les blancs.
+
+   UNE SEULE RÈGLE, FLUIDE. Le `clamp` remplace les deux paliers : la
+   respiration suit la largeur au lieu de sauter à 640 px. Le bas est
+   toujours un cran plus large que le haut — c'est ce qui sépare deux
+   mouvements plutôt que de les coller.
+   ══════════════════════════════════════════════════════════════════ */
+.mouvement {
+  padding-top: clamp(4.75rem, 6.2vw, 6.75rem);
+  padding-bottom: clamp(5.25rem, 7vw, 7.5rem);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LA SURFACE — le système de cartes, commun à tout le site.
+
+   UNE SEULE CLASSE, TROIS ÉTATS. Avant, chaque section composait ses
+   propres cartes : rayons différents, ombres différentes, aucun langage
+   d'interaction partagé. « .surface » donne le repos, la levée et
+   l'ouverture, et les sections n'ont plus qu'à dire ce qu'elles portent.
+
+   LA LUMIÈRE EST UNE VARIABLE, PAS UN DÉGRADÉ POSÉ. « --jour » va de 0
+   à 1 ; le halo la suit. Une carte au repos vaut 0 — aucune lueur. Elle
+   monte à 1 au survol, au focus, ou quand la section la désigne. Le halo
+   vit sur un pseudo-élément : il ne touche donc ni au fond de la carte,
+   ni à son contenu, et son opacité seule s'anime — jamais sa taille.
+   ══════════════════════════════════════════════════════════════════ */
+.surface {
+  --jour: 0;
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-carte);
+  border: 1px solid var(--color-filet);
+  background-color: var(--color-surface);
+  box-shadow: var(--ombre-posee);
+  /* LE TRANSFORM N'EST PAS DANS CETTE LISTE, ET C'EST VOLONTAIRE. Les
+     cartes sont des éléments Motion : Motion écrit `transform` en style
+     en ligne, et un style en ligne bat toujours une classe. Une règle
+     CSS qui prétendait déplacer la carte ne s'appliquait donc jamais —
+     elle était écrasée par un `transform: none` posé par la librairie.
+     Le déplacement appartient maintenant à Motion, seul ; le CSS garde
+     ce que Motion ne touche pas : la lumière, le filet et l'ombre. */
+  transition:
+    box-shadow var(--duree-etat) var(--ease-film),
+    border-color var(--duree-etat) var(--ease-film);
+}
+
+/*
+  LA LUEUR — la lumière SANS le cadre.
+
+  « .surface » apporte deux choses qui n'ont pas à voyager ensemble : un
+  cadre (rayon, filet, fond, élévation) et une lumière. Certaines
+  compositions ont déjà leur cadre — les trois formules de /tarifs sont des
+  cellules d'une même dalle, séparées par un filet d'un pixel ; leur donner
+  une seconde bordure en ferait des cartes dans une carte.
+
+  « .lueur » n'apporte donc que la lumière, et elle obéit aux mêmes
+  commandes : `--jour` de 0 à 1, `data-jour` pour l'allumer sans survol,
+  `.lueur-prise` pour qu'elle réponde au geste.
+*/
+
+/* LE HALO, posé au-dessus du fond et SOUS le contenu. Il part du haut à
+   gauche — la même lumière que la matière de la feuille, pour qu'une
+   carte et son fond ne s'éclairent pas de deux côtés opposés. */
+.lueur {
+  --jour: 0;
+  position: relative;
+  isolation: isolate;
+}
+.lueur-prise:hover,
+.lueur:focus-within,
+.lueur[data-jour="true"] {
+  --jour: 1;
+}
+
+.surface::before,
+.lueur::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--jour);
+  transition: opacity var(--duree-etat) var(--ease-film);
+  /* TROIS ARRÊTS, PAS DEUX. Avec deux arrêts, le dégradé perdait presque
+     toute sa chaleur au premier tiers et ne laissait qu'un soupçon sur
+     la surface visible. L'arrêt intermédiaire tient un plateau le temps
+     que la lumière traverse la carte, puis la chute reprend. La forme
+     du halo est inchangée : même origine, même rayon, même nature. */
+  background: radial-gradient(
+    120% 90% at 18% 0%,
+    rgba(var(--halo-chaud), var(--halo-force)) 0%,
+    rgba(var(--halo-chaud), calc(var(--halo-force) * 0.46)) 36%,
+    transparent 70%
+  );
+}
+
+/*
+  LE CONTENU PASSE DEVANT LE HALO SANS AVOIR À LE DIRE — et sans qu'on
+  touche à sa position.
+
+  PREMIÈRE VERSION, FAUSSE : `.surface > * { position: relative }`, pour
+  que les enfants prennent un `z-index` et passent devant un halo posé à
+  zéro. Elle a tenu tant qu'aucune carte n'a eu d'enfant en absolu. Dès
+  qu'une en a eu un — l'étiquette « Conseillée » de /tarifs, posée en haut
+  à droite —, la règle l'a repositionné en relatif : l'étiquette est
+  retombée dans le flux et s'est écrite par-dessus le titre de la formule.
+  Une classe de lumière n'a aucune raison de déplacer quoi que ce soit.
+
+  LE HALO DESCEND DONC SOUS LE CONTENU AU LIEU DE LE POUSSER DEVANT.
+  `z-index: -1` le peint après le fond de la carte et avant tout ce qu'elle
+  contient ; `isolation: isolate` garantit qu'il ne descend pas plus bas que
+  la carte elle-même. Aucun enfant n'est touché, et les positions déclarées
+  par les composants sont respectées.
+*/
+
+/* CE QUI SE TOUCHE SE LÈVE — et seulement ce qui mène quelque part.
+   Une carte qui bouge sans être cliquable est un mensonge tactile ;
+   « .surface-prise » est donc la marque de l'interactivité, pas une
+   décoration. Le focus déclenche exactement la même chose que le
+   survol : au clavier, on voit ce que la souris voit. */
+.surface-prise {
+  cursor: pointer;
+}
+.surface-prise:hover,
+.surface-prise:focus-visible,
+.surface-prise:focus-within {
+  --jour: 1;
+  border-color: var(--color-filet-fort);
+  box-shadow: var(--ombre-levee);
+}
+
+/* L'ÉTAT OUVERT — plus haut, plus éclairé, et il le reste. */
+.surface[data-ouverte="true"] {
+  --jour: 1;
+  border-color: var(--color-filet-fort);
+  box-shadow: var(--ombre-ouverte);
+}
+
+/* LA SECTION PEUT DÉSIGNER UNE CARTE à l'entrée dans le champ, sans
+   survol : « data-jour » allume le halo seul, sans lever la carte. */
+.surface[data-jour="true"] {
+  --jour: 1;
+}
+
+/* Le mouvement réduit garde les états — ils PORTENT l'information —
+   mais supprime le déplacement, qui n'en porte aucune. */
+/* Le mouvement réduit coupe les durées. Il n'a plus de déplacement à
+   annuler ici : la levée appartient à Motion, qui lit la préférence du
+   système par `useReducedMotion()` et ne la joue pas. */
+@media (prefers-reduced-motion: reduce) {
+  .surface,
+  .surface::before,
+  .lueur::before {
+    transition-duration: 1ms;
+  }
 }

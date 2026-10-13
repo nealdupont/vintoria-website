@@ -2,10 +2,11 @@ import { Bodoni_Moda } from "next/font/google";
 import { Ouverture } from "@/components/lumiere/Ouverture";
 import { Geste } from "@/components/lumiere/Geste";
 import { Cave } from "@/components/lumiere/Cave";
-import { Accord } from "@/components/lumiere/Accord";
+import { CarteDesVins } from "@/components/lumiere/CarteDesVins";
 import { Table } from "@/components/lumiere/Table";
 import { Instant } from "@/components/lumiere/Instant";
 import { PourQui } from "@/components/lumiere/PourQui";
+import { Formules } from "@/components/lumiere/Formules";
 import { Invitation } from "@/components/lumiere/Invitation";
 
 /**
@@ -22,7 +23,15 @@ import { Invitation } from "@/components/lumiere/Invitation";
  *  V    La table      le passage        · l'après-midi s'allonge
  *  VI   L'instant     le convive        · le service, lumière basse et chaude
  *  VII  Pour qui      la respiration    · un calme, teinté de sauge
- *  VIII L'invitation  l'appel           · l'heure dorée — puis le pied
+ *  VIII Les formules  le prix           · la lumière se tient : on compare
+ *  IX   L'invitation  l'appel           · l'heure dorée — puis le pied
+
+ * POURQUOI LES FORMULES EN VIII ET NON PLUS TÔT. Un prix lu avant qu'on
+ * ait montré ce qu'il achète est un chiffre nu ; lu après l'appel à
+ * l'action, il arrive trop tard. Entre la respiration et l'heure dorée,
+ * le lecteur s'est reconnu, il a vu l'outil, et il n'a pas encore été
+ * sollicité : c'est le seul endroit où « combien ? » est une question
+ * qu'il se pose déjà.
  *
  * POURQUOI L'INSTANT EST EN VI ET NON EN II. Les écrans du parcours convive
  * sont SOMBRES — le client choisit son vin le soir, à table. Les placer tôt
@@ -64,10 +73,11 @@ export default function Page() {
       <Ouverture />
       <Geste />
       <Cave />
-      <Accord />
+      <CarteDesVins />
       <Table />
       <Instant />
       <PourQui />
+      <Formules />
       <Invitation />
     </div>
   );

@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import { COMPTE } from "../lib/cave-demonstration";
 
 /**
  * LE SOCLE — ce qui doit rester vrai sur les trois routes, à toute largeur.
@@ -237,10 +238,72 @@ test.describe("Navigation", () => {
     });
   }
 
-  test("la marque ramène à l’accueil", async ({ page }) => {
+  /**
+   * LA MARQUE RAMÈNE À L'ACCUEIL — DE PARTOUT, Y COMPRIS DE L'ACCUEIL.
+   *
+   * La première version ne vérifiait que le trajet facile, /tarifs → /,
+   * celui où la route change et où Next fait tout le travail. Les trois
+   * cas qui comptaient ne l'étaient pas, et ils étaient cassés : depuis
+   * l'accueil défilé, cliquer la marque ne produisait RIEN ; depuis une
+   * ancre, l'URL gardait son `#geste` ; le sommaire ouvert le restait.
+   * Sur mobile, où le sommaire occupe tout l'écran, cela donnait un V qui
+   * ne répond pas.
+   */
+  const marque = (page: Page) =>
+    page.getByRole("link", { name: "Vintoria — Accueil" });
+
+  test("la marque ramène à l’accueil depuis une autre page", async ({
+    page,
+  }) => {
     await page.goto("/tarifs");
-    await page.getByRole("link", { name: "Vintoria, accueil" }).click();
+    await marque(page).click();
     await expect(page).toHaveURL(/\/$/);
+  });
+
+  test("la marque remonte, même quand on est déjà sur l’accueil", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.evaluate(() =>
+      document.querySelector("#geste")!.scrollIntoView({ block: "start" }),
+    );
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(200);
+    await marque(page).click();
+    /* Le défilement est doux : on attend qu'il se pose, on ne le mesure
+       pas à l'instant du clic. */
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 })
+      .toBe(0);
+  });
+
+  test("la marque efface l’ancre de l’URL", async ({ page }) => {
+    await page.goto("/#geste");
+    await page.waitForTimeout(400);
+    await marque(page).click();
+    await expect
+      .poll(() => page.evaluate(() => location.hash), { timeout: 5000 })
+      .toBe("");
+    await expect(page).toHaveURL(/\/$/);
+  });
+
+  test("la marque referme le sommaire ouvert", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() =>
+      document.querySelector("#geste")!.scrollIntoView({ block: "start" }),
+    );
+    await page.locator("header button").first().click();
+    await expect
+      .poll(() => page.getAttribute("header", "data-ouvert"))
+      .toBe("true");
+    await marque(page).click();
+    await expect
+      .poll(() => page.getAttribute("header", "data-ouvert"), { timeout: 5000 })
+      .toBe("false");
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 })
+      .toBe(0);
   });
 });
 
@@ -271,4 +334,84 @@ test.describe("Les formules", () => {
     await page.goto("/tarifs");
     await expect(page.locator('[data-test="avis-tarifs"]')).toHaveCount(0);
   });
+});
+
+test.describe("Aucune route ne déborde, même sur le plus petit écran", () => {
+  /**
+   * LE DÉBORDEMENT HORIZONTAL EST LE DÉFAUT LE PLUS SILENCIEUX DU
+   * RESPONSIVE : rien ne casse, rien ne s'affiche en rouge, la page se
+   * rend — elle glisse simplement de côté sous le doigt, et chaque
+   * section paraît mal calée sans qu'on sache pourquoi.
+   *
+   * TROIS CAUSES ONT ÉTÉ TROUVÉES ET CORRIGÉES à la refonte, et toutes
+   * les trois étaient invisibles pour la suite :
+   *   · « Demander une démonstration », en capitales espacées et en
+   *     `white-space: nowrap`, mesure 313 px — plus qu'un iPhone SE
+   *     n'en offre une fois les marges retirées. Trois boutons du site
+   *     portaient cette étiquette hors de l'en-tête ;
+   *   · les colonnes de /demonstration ne descendaient pas sous la
+   *     largeur minimale de leur contenu, faute de `min-w-0` ;
+   *   · les cellules de formule gardaient 28 px de rembourrage à 320 px.
+   *
+   * LE GARDE-FOU MESURE LE DOCUMENT, pas les éléments : peu importe
+   * lequel dépasse, la page ne doit pas pouvoir glisser.
+   */
+  for (const route of ["/", "/tarifs", "/demonstration", "/film"]) {
+    for (const largeur of [320, 360, 390]) {
+      test(`${route} tient dans ${largeur} px`, async ({ page }) => {
+        await page.setViewportSize({ width: largeur, height: 844 });
+        await page.goto(route);
+        /* On parcourt : une section révélée au défilement peut déborder
+           alors que la page immobile ne débordait pas. */
+        await page.evaluate(async () => {
+          for (let y = 0; y < document.body.scrollHeight; y += 700) {
+            window.scrollTo(0, y);
+            await new Promise((r) => setTimeout(r, 60));
+          }
+        });
+        await page.waitForTimeout(400);
+        const trop = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        );
+        expect(trop, `la page glisse de ${trop} px sur le côté`).toBe(0);
+      });
+    }
+  }
+});
+
+test.describe("Le nombre de bouteilles ne peut plus diverger", () => {
+  /**
+   * LA PAGE PUBLIAIT DEUX CHIFFRES CONTRADICTOIRES. La section Cave
+   * annonçait 158 bouteilles — lues dans la cave de démonstration du
+   * produit — et la note finale de l'invitation « cent soixante-dix-neuf »,
+   * un reliquat d'une version antérieure du module de stock. La route de
+   * validation du film portait la même erreur.
+   *
+   * LES TROIS ENDROITS LISENT MAINTENANT `lib/cave-demonstration.ts`. Ce
+   * test ne vérifie donc pas une valeur : il vérifie qu'aucune page ne
+   * réécrit à la main un nombre que la donnée détient déjà.
+   */
+  for (const route of ["/", "/film"]) {
+    test(`${route} ne publie aucun chiffre de cave écrit à la main`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      const texte = (await page.locator("body").innerText()).replace(
+        /\s+/g,
+        " ",
+      );
+      for (const faux of ["179", "cent soixante-dix-neuf"]) {
+        expect(
+          texte.includes(faux),
+          `« ${faux} » est publié alors que le produit en compte ${COMPTE[1].nombre}`,
+        ).toBe(false);
+      }
+      expect(
+        texte,
+        "le nombre réel de bouteilles n’apparaît nulle part",
+      ).toContain(COMPTE[1].nombre);
+    });
+  }
 });

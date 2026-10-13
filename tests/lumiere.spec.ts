@@ -104,37 +104,49 @@ test.describe("Les ancres de navigation mènent quelque part", () => {
 });
 
 test.describe("L’écran convive avance au défilement", () => {
-  test("il reste à l’écran pendant toute la section", async ({ page }) => {
-    /*
-      LE PIÈGE. `overflow: hidden` sur la section fait d'elle le plus proche
-      ancêtre défilant, ce qui désactive `position: sticky` à l'intérieur.
-      Le build passe, la page se rend, et l'écran décroche simplement au
-      deuxième temps. C'est arrivé. On mesure donc le comportement, pas la
-      règle CSS qui le produit.
-    */
+  /**
+   * LES TROIS TEMPS SONT DES CARTES, ET ELLES S'OUVRENT VRAIMENT.
+   *
+   * Ce test remplace celui qui surveillait le mécanisme collant. La
+   * section ne colle plus rien : elle coûtait 3,2 écrans de défilement
+   * pour cent six mots, et trois blocs pleine hauteur y défilaient le
+   * long d'une capture permanente. Le garde-fou précédent aurait
+   * continué de passer — il mesurait un élément replié, de hauteur
+   * nulle — sans plus rien vérifier. Il est donc remplacé, pas gardé.
+   */
+  test("les trois temps s’ouvrent, et disent leur état", async ({ page }) => {
     await page.goto("/");
-    const section = page.locator("#instant");
-    const boite = (await section.boundingBox())!;
+    const cartes = page.locator("#instant button[aria-expanded]");
+    await expect(cartes).toHaveCount(3);
 
-    const vus: boolean[] = [];
-    for (const part of [0.15, 0.45, 0.8]) {
-      await page.evaluate(
-        (y) => window.scrollTo(0, y),
-        boite.y + boite.height * part,
-      );
-      await page.waitForTimeout(350);
-      const tel = (await page
-        .locator("#instant .objet")
-        .first()
-        .boundingBox())!;
-      const h = await page.evaluate(() => window.innerHeight);
-      // visible à l'écran : ni au-dessus, ni au-dessous du cadre
-      vus.push(tel.y + tel.height > 0 && tel.y < h);
-    }
-    expect(
-      vus,
-      "l’écran décroche en cours de section — sticky est neutralisé",
-    ).toEqual([true, true, true]);
+    const premiere = cartes.first();
+    await expect(premiere).toHaveAttribute("aria-expanded", "false");
+
+    /* Le panneau que la carte commande existe, et il est bien le sien. */
+    const idPanneau = await premiere.getAttribute("aria-controls");
+    expect(idPanneau, "la carte ne commande aucun panneau").toBeTruthy();
+
+    await premiere.click();
+    await expect(premiere).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator(`#${idPanneau} img`)).toBeVisible();
+
+    /* Une seule à la fois : ouvrir la deuxième referme la première. */
+    await cartes.nth(1).click();
+    await expect(premiere).toHaveAttribute("aria-expanded", "false");
+    await expect(cartes.nth(1)).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("la section ne mange plus le défilement", async ({ page }) => {
+    await page.goto("/");
+    const h = await page.evaluate(() => {
+      const s = document.querySelector("#instant")!;
+      return s.getBoundingClientRect().height / window.innerHeight;
+    });
+    /*
+      Elle valait 3,2 écrans sur desktop. Le plafond est posé à 1,8 : de
+      quoi respirer, pas de quoi reconstruire un tunnel.
+    */
+    expect(h, `la section occupe ${h.toFixed(1)} écrans`).toBeLessThan(1.8);
   });
 
   test("les trois temps sont de vraies captures, et toutes nommées", async ({
@@ -155,30 +167,606 @@ test.describe("L’écran convive avance au défilement", () => {
     expect(sansNom, "une capture sans alternative textuelle").toBe(0);
   });
 
-  test("le dernier temps finit bien en place", async ({ page }) => {
+  test("la carte se gouverne aussi au clavier", async ({ page }) => {
     await page.goto("/");
-    const boite = (await page.locator("#instant").boundingBox())!;
-    await page.evaluate(
-      (y) => window.scrollTo(0, y),
-      boite.y + boite.height - 50,
+    const premiere = page.locator("#instant button[aria-expanded]").first();
+    await premiere.focus();
+    await expect(premiere).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(premiere).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Enter");
+    await expect(premiere).toHaveAttribute("aria-expanded", "false");
+  });
+
+  /**
+   * CE QUI SUIT GARDE TROIS DÉFAUTS QUI ONT VÉCU SANS ÊTRE VUS.
+   *
+   * Les trois passaient la suite entière. Le premier creusait 864 px de
+   * blanc dans deux cartes sur trois dès qu'on en ouvrait une ; le
+   * deuxième laissait une règle CSS sans aucun effet ; le troisième
+   * posait une lumière qu'on ne distinguait pas de son absence. Aucun
+   * n'était une erreur de logique : tous les trois étaient des erreurs de
+   * RENDU, et seul le rendu pouvait les dire. Ces garde-fous mesurent
+   * donc des pixels, pas des attributs.
+   */
+  test("ouvrir une carte ne gonfle pas ses voisines", async ({
+    page,
+  }, info) => {
+    test.skip(
+      info.project.name !== "bureau",
+      "Le défaut n’existe qu’en rangée : mobile n’a qu’une colonne.",
     );
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    /*
+      ON MESURE DEUX CHOSES, PARCE QU'IL Y A DEUX FAÇONS DE RETOMBER.
+
+      La CARTE est ce que le lecteur voit. La CASE est l'élément que la
+      grille dispose — aujourd'hui l'enveloppe qui porte l'animation
+      d'entrée, demain peut-être la carte elle-même. Ne surveiller que la
+      carte laissait passer le retrait d'`items-start` : l'enveloppe
+      encaissait l'étirement et la carte ne bronchait pas. Ne surveiller
+      que la case laisserait passer l'inverse. Les deux, donc.
+    */
+    const mesurer = () =>
+      page.evaluate(() => {
+        const cartes = [...document.querySelectorAll("#instant article")];
+        let grille = cartes[0].parentElement!;
+        while (grille && getComputedStyle(grille).display !== "grid") {
+          grille = grille.parentElement!;
+        }
+        const casDe = (c: Element) => {
+          let e: Element = c;
+          while (e.parentElement && e.parentElement !== grille) {
+            e = e.parentElement;
+          }
+          return e;
+        };
+        const h = (e: Element) => Math.round(e.getBoundingClientRect().height);
+        return {
+          cartes: cartes.map(h),
+          cases: cartes.map((c) => h(casDe(c))),
+        };
+      });
+
+    const fermees = await mesurer();
+    expect(
+      fermees.cartes,
+      "les trois cartes fermées ne font pas la même hauteur",
+    ).toEqual([fermees.cartes[0], fermees.cartes[0], fermees.cartes[0]]);
+
+    await page.locator("#instant button[aria-expanded]").nth(1).click();
+    await page.waitForTimeout(800);
+    const ouvertes = await mesurer();
+
+    /* La carte ouverte grandit — sans quoi ce test ne mesurerait rien. */
+    expect(
+      ouvertes.cartes[1],
+      "la carte ouverte n’a pas grandi : le test ne prouve rien",
+    ).toBeGreaterThan(fermees.cartes[1] * 2);
+
+    /* Et ses deux voisines n’ont bougé ni de carte, ni de case. */
+    expect(
+      [ouvertes.cartes[0], ouvertes.cartes[2]],
+      `les cartes voisines ont gonflé de ${ouvertes.cartes[0] - fermees.cartes[0]} et ${ouvertes.cartes[2] - fermees.cartes[2]} px`,
+    ).toEqual([fermees.cartes[0], fermees.cartes[2]]);
+    expect(
+      [ouvertes.cases[0], ouvertes.cases[2]],
+      `les cases voisines se sont étirées de ${ouvertes.cases[0] - fermees.cases[0]} et ${ouvertes.cases[2] - fermees.cases[2]} px : la grille étire encore sa rangée`,
+    ).toEqual([fermees.cases[0], fermees.cases[2]]);
+  });
+
+  test("la carte se lève vraiment, à la souris comme au clavier", async ({
+    page,
+  }, info) => {
+    test.skip(
+      info.project.name !== "bureau",
+      "La levée répond au survol : elle n’a pas de sens au doigt.",
+    );
+    await page.goto("/");
+    const carte = page.locator("#instant article").first();
+    const bouton = page.locator("#instant button[aria-expanded]").first();
+    await carte.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(900);
+    const y = async () => (await carte.boundingBox())!.y;
+
+    const repos = await y();
+    await bouton.hover();
     await page.waitForTimeout(500);
-    const etat = await page.evaluate(() => {
-      const d = document.querySelector(
-        '#instant img[src*="resultat"]',
-      )!.parentElement!;
-      const t = getComputedStyle(d);
-      return { opacite: Number(t.opacity), transform: t.transform };
-    });
-    expect(etat.opacite).toBeGreaterThan(0.95);
-    // matrix(...) : la translation en X doit être revenue à zéro
-    const tx = Number(
-      (etat.transform.match(/-?[\d.]+/g) ?? ["0", "0", "0", "0", "0", "0"])[4],
+    const survol = await y();
+    expect(
+      survol - repos,
+      `la carte ne se lève pas au survol (${(survol - repos).toFixed(2)} px)`,
+    ).toBeLessThan(-2);
+
+    /* Au clavier, exactement la même chose : le focus vaut le survol. */
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(500);
+    await bouton.focus();
+    await page.waitForTimeout(500);
+    const clavier = await y();
+    expect(
+      clavier - repos,
+      `la carte ne se lève pas au focus (${(clavier - repos).toFixed(2)} px)`,
+    ).toBeLessThan(-2);
+  });
+
+  test("le halo se voit — il ne suffit pas qu’il soit déclaré", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    await page.goto("/");
+    const carte = page.locator("#instant article").first();
+    await carte.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(900);
+
+    const r = (await carte.boundingBox())!;
+    /* Le cœur du dégradé : l’angle haut-gauche, d’où part la lumière. */
+    const coin = {
+      x: Math.round(r.x + 8),
+      y: Math.round(r.y + 8),
+      width: 40,
+      height: 40,
+    };
+    const eteint = (await page.screenshot({ clip: coin })).toString("base64");
+    await carte.evaluate((e) => e.setAttribute("data-jour", "true"));
+    await page.waitForTimeout(600);
+    const allume = (await page.screenshot({ clip: coin })).toString("base64");
+
+    const ecart = await page.evaluate(
+      async ([a, b]: string[]) => {
+        const moyenne = async (donnee: string) => {
+          const im = new Image();
+          im.src = "data:image/png;base64," + donnee;
+          await im.decode();
+          const t = document.createElement("canvas");
+          t.width = im.width;
+          t.height = im.height;
+          const g = t.getContext("2d")!;
+          g.drawImage(im, 0, 0);
+          const p = g.getImageData(0, 0, im.width, im.height).data;
+          let R = 0;
+          let V = 0;
+          let B = 0;
+          for (let i = 0; i < p.length; i += 4) {
+            R += p[i];
+            V += p[i + 1];
+            B += p[i + 2];
+          }
+          const n = p.length / 4;
+          return [R / n, V / n, B / n];
+        };
+        const [u, v] = [await moyenne(a), await moyenne(b)];
+        return Math.max(...v.map((x, i) => Math.abs(x - u[i])));
+      },
+      [eteint, allume],
+    );
+
+    /*
+      PLANCHER À 15 SUR 255. L'ancien réglage rendait 9,8 — mesurable, mais
+      au seuil du perceptible (ΔE 3,7). Le réglage actuel rend 20,4, soit
+      ΔE 6,8. Le plancher est posé entre les deux : il refuse l'ancien
+      sans exiger le maximum, et laisse la direction régler la teinte.
+    */
+    expect(
+      ecart,
+      `le halo ne déplace la couleur que de ${ecart.toFixed(1)}/255 : on ne le voit pas`,
+    ).toBeGreaterThan(15);
+  });
+});
+
+/**
+ * LA REFONTE GLOBALE — CE QU'ELLE A PROMIS, ET QUI PEUT SE DÉFAIRE.
+ *
+ * Quatre promesses mesurables, quatre garde-fous. Aucun ne vérifie une
+ * intention : tous mesurent le rendu, parce que c'est là que les trois
+ * défauts du pilote s'étaient logés sans qu'aucun test les voie.
+ */
+test.describe("La refonte tient ses mesures", () => {
+  test("le propos de l’accueil n’attend pas la scène", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    /*
+      MESURÉ AVANT CORRECTION : le titre valait 0,00 à 1,6 s et 0,50 à
+      2,6 s ; l'appel à l'action n'était entier qu'à 4,2 s. La scène se
+      jouait d'abord, le propos ensuite. Les seuils ci-dessous sont posés
+      LARGES — deux secondes pour le titre, trois pour l'action — parce
+      qu'une machine chargée a le droit d'être lente. Ils restent très en
+      dessous de l'ancienne séquence, qu'ils refusent sans ambiguïté.
+    */
+    await page.goto("/", { waitUntil: "commit" });
+    const depart = Date.now();
+
+    await page.waitForTimeout(Math.max(0, 2000 - (Date.now() - depart)));
+    const titre = await page.evaluate(() =>
+      Math.min(
+        ...[...document.querySelectorAll("#ouverture h1 span")].map(
+          (e) => +getComputedStyle(e).opacity,
+        ),
+      ),
     );
     expect(
-      Math.abs(tx),
-      "l’écran final n’est pas revenu en place",
-    ).toBeLessThan(6);
+      titre,
+      `le titre de l’accueil vaut encore ${titre.toFixed(2)} après deux secondes`,
+    ).toBeGreaterThan(0.9);
+
+    await page.waitForTimeout(Math.max(0, 3000 - (Date.now() - depart)));
+    const action = await page.evaluate(() => {
+      const b = document.querySelector("#ouverture .bouton-primaire")!;
+      return +getComputedStyle(b.closest("[style]") ?? b).opacity;
+    });
+    expect(
+      action,
+      `l’appel à l’action vaut encore ${action.toFixed(2)} après trois secondes`,
+    ).toBeGreaterThan(0.9);
+  });
+
+  test("rien d’essentiel ne reste caché sous les yeux du lecteur", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    /*
+      LA RÈGLE N'EST PAS « TOUT EST VISIBLE ». Un bloc sous la ligne de
+      flottaison a le droit d'attendre son tour — c'est le principe même
+      d'une révélation au défilement. La règle est : ce que le lecteur a
+      SOUS LES YEUX doit être lisible. On arrive donc sur chaque ancre,
+      comme depuis le sommaire, et on ne regarde que le champ visible.
+
+      Les deux exceptions sont déclarées, pas tolérées : la feuille de la
+      carte des vins joue une séquence de plusieurs secondes, et l'écran
+      de la salle s'efface VOLONTAIREMENT pendant que le carré s'en
+      détache. Les deux sont des gestes, pas des oublis.
+    */
+    const ancres = [
+      "ouverture",
+      "geste",
+      "cave",
+      "table",
+      "instant",
+      "pourqui",
+      "formules",
+      "invitation",
+    ];
+    const fautifs: string[] = [];
+    for (const id of ancres) {
+      await page.goto(`/#${id}`, { waitUntil: "networkidle" });
+      await page.waitForTimeout(2600);
+      const vus = await page.evaluate(() => {
+        const out: string[] = [];
+        for (const x of document.querySelectorAll("section[id] *")) {
+          if (
+            x.closest("[aria-hidden='true']") ||
+            x.classList.contains("jet") ||
+            x.classList.contains("jet-vin") ||
+            x.classList.contains("voile-sauge") ||
+            /* Le geste de la salle : l'écran s'efface par construction. */
+            x.closest("#table .objet")
+          ) {
+            continue;
+          }
+          if (+getComputedStyle(x).opacity >= 0.9) continue;
+          const b = x.getBoundingClientRect();
+          if (b.height < 4 || b.bottom <= 8 || b.top >= innerHeight - 8) {
+            continue;
+          }
+          if (out.length > 6) break;
+          out.push(
+            `${x.tagName.toLowerCase()} « ${(x.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 34)} »`,
+          );
+        }
+        return out;
+      });
+      if (vus.length) fautifs.push(`/#${id} → ${vus.join(" · ")}`);
+    }
+    expect(fautifs, `du contenu reste masqué dans le champ`).toEqual([]);
+  });
+
+  test("les deux écrans de la cave sont un vrai jeu d’onglets", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Le clavier suffit une fois.");
+    await page.goto("/");
+    await page.evaluate(() =>
+      document.querySelector("#cave")!.scrollIntoView({ block: "center" }),
+    );
+    await page.waitForTimeout(1200);
+
+    const onglets = page.locator("#cave [role='tab']");
+    await expect(onglets).toHaveCount(2);
+    await expect(onglets.first()).toHaveAttribute("aria-selected", "true");
+    await expect(onglets.nth(1)).toHaveAttribute("aria-selected", "false");
+
+    /* Le premier écran est le relevé, le second le réassort — et ce sont
+       deux captures RÉELLES, nommées, pas deux cadrages de la même. */
+    const src = async () =>
+      page.locator("#cave [role='tabpanel'] img").getAttribute("src");
+    expect(await src(), "le relevé n’est pas le premier écran").toContain(
+      "cave",
+    );
+
+    /* Au clavier : une seule tabulation entre dans le jeu, les flèches
+       changent d'écran. C'est le motif que les lecteurs d'écran annoncent. */
+    await onglets.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(600);
+    await expect(onglets.nth(1)).toBeFocused();
+    await expect(onglets.nth(1)).toHaveAttribute("aria-selected", "true");
+    expect(await src(), "la flèche ne change pas d’écran").toContain(
+      "reassort",
+    );
+
+    /* Et le cadre ne bouge pas d'un pixel en changeant d'écran : les deux
+       captures n'ont pas le même format, la page ne doit pas le sentir. */
+    const cadre = page.locator("#cave [role='tabpanel']");
+    const avant = (await cadre.boundingBox())!.height;
+    await page.keyboard.press("ArrowLeft");
+    await page.waitForTimeout(700);
+    const apres = (await cadre.boundingBox())!.height;
+    expect(
+      Math.round(apres),
+      `le panneau change de hauteur en changeant d’écran (${Math.round(avant)} → ${Math.round(apres)})`,
+    ).toBe(Math.round(avant));
+  });
+
+  test("les huit mouvements partagent un seul rythme vertical", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    /*
+      Chaque section déclarait sa propre respiration, et elles ne
+      concordaient pas : 144 px en haut pour l'une, 112 pour sa voisine.
+      `.mouvement` les tient maintenant toutes. L'ouverture en est exclue :
+      elle occupe une hauteur d'écran entière, elle n'a pas de marge.
+    */
+    await page.goto("/");
+    const r = await page.evaluate(() => {
+      const s = [...document.querySelectorAll("section[id]")].filter(
+        (x) => x.id !== "ouverture",
+      );
+      return {
+        total: s.length,
+        rythmees: s.filter((x) => x.classList.contains("mouvement")).length,
+        hauts: [...new Set(s.map((x) => getComputedStyle(x).paddingTop))],
+      };
+    });
+    expect(
+      r.rythmees,
+      `${r.total - r.rythmees} section(s) gardent leur propre respiration`,
+    ).toBe(r.total);
+    expect(
+      r.hauts.length,
+      `${r.hauts.length} respirations différentes : ${r.hauts.join(", ")}`,
+    ).toBe(1);
+  });
+});
+
+/**
+ * LES TROIS FORMULES — CE QU'ELLES PROMETTENT, ET CE QU'ELLES TAISENT.
+ *
+ * Cette section est la seule de l'accueil qui parle d'argent. Deux
+ * risques, donc, et deux natures de garde-fou : qu'elle publie un prix
+ * qui n'est pas confirmé, et qu'elle annonce une fonctionnalité que
+ * l'application ne rend pas. Les deux se vérifient contre la donnée,
+ * jamais contre une chaîne écrite à la main dans le test.
+ */
+test.describe("Les formules disent le produit, et rien de plus", () => {
+  test("aucun prix n’est publié tant qu’il n’est pas confirmé", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const texte = await page.evaluate(() =>
+      (document.querySelector("#formules")?.textContent ?? "").replace(
+        /\s+/g,
+        " ",
+      ),
+    );
+    if (!tarifsPublies()) {
+      /* Les montants du catalogue ne doivent apparaître nulle part tant
+         que la facturation n'est pas branchée — ni en chiffres, ni
+         accompagnés d'une périodicité qui les rendrait crédibles. */
+      for (const cle of ORDRE) {
+        const montant = CATALOGUE_PRODUIT[cle];
+        if (montant === null) continue;
+        expect(
+          texte,
+          `le montant ${montant} € est publié alors que les tarifs ne sont pas publiables`,
+        ).not.toContain(String(montant));
+      }
+      expect(
+        texte,
+        "une périodicité est affichée sous un prix qui n’existe pas",
+      ).not.toContain("/ mois");
+      expect(texte, "la réponse honnête manque").toContain("Sur demande");
+    }
+  });
+
+  test("les trois formules s’ouvrent, une seule à la fois", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const boutons = page.locator("#formules button[aria-expanded]");
+    await expect(boutons).toHaveCount(3);
+    const region = page.locator("#formules [role='region']");
+    await expect(region).toHaveAttribute("aria-hidden", "true");
+
+    await boutons.nth(1).click();
+    await expect(boutons.nth(1)).toHaveAttribute("aria-expanded", "true");
+    await expect(region).toHaveAttribute("aria-hidden", "false");
+
+    /* Ouvrir la troisième referme la deuxième : trois détails dépliés en
+       même temps redonneraient le catalogue que la section remplace. */
+    await boutons.nth(2).click();
+    await expect(boutons.nth(1)).toHaveAttribute("aria-expanded", "false");
+    await expect(boutons.nth(2)).toHaveAttribute("aria-expanded", "true");
+
+    /* Et le panneau dit DE QUI il parle. */
+    const titre = await region.getAttribute("aria-labelledby");
+    expect(titre, "le panneau ne désigne pas la formule ouverte").toBeTruthy();
+    expect(
+      await page.locator(`#${titre}`).innerText(),
+      "le panneau ne désigne pas la bonne formule",
+    ).toContain(FORMULES[2].nom);
+  });
+
+  test("ouvrir une formule ne déplace pas les deux autres", async ({
+    page,
+  }, info) => {
+    test.skip(
+      info.project.name !== "bureau",
+      "Le défaut n’existe qu’en rangée : mobile n’a qu’une colonne.",
+    );
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    const h = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll("#formules article")].map((a) =>
+          Math.round(a.getBoundingClientRect().height),
+        ),
+      );
+    const avant = await h();
+    expect(
+      avant,
+      "les trois cartes fermées ne font pas la même hauteur",
+    ).toEqual([avant[0], avant[0], avant[0]]);
+
+    await page.locator("#formules button[aria-expanded]").nth(1).click();
+    await page.waitForTimeout(800);
+    expect(await h(), "une carte voisine a changé de hauteur").toEqual(avant);
+
+    const panneau = await page.evaluate(() =>
+      Math.round(
+        document
+          .querySelector("#formules [role='region']")!
+          .getBoundingClientRect().height,
+      ),
+    );
+    expect(panneau, "le détail ne s’est pas déplié").toBeGreaterThan(300);
+  });
+
+  test("le détail est celui du catalogue, pas une réécriture", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    await page.goto("/");
+    /* On ouvre la formule du milieu : c'est la seule qui ait à la fois des
+       ajouts, des inclusions et des exclusions. */
+    await page.locator("#formules button[aria-expanded]").nth(1).click();
+    await page.waitForTimeout(700);
+    const texte = (
+      await page.locator("#formules [role='region']").innerText()
+    ).replace(/\s+/g, " ");
+
+    const cle = FORMULES[1].cle;
+    for (const t of comprisDans(cle)) {
+      expect(texte, `« ${t.intitule} » est compris et n’est pas dit`).toContain(
+        t.intitule,
+      );
+    }
+    for (const t of absentDe(cle)) {
+      expect(
+        texte,
+        `« ${t.intitule} » n’est pas compris et la page ne le dit pas`,
+      ).toContain(t.intitule);
+    }
+    expect(
+      ajoutsSur(cle).length,
+      "la formule du milieu n’ajoute rien : les trois offres ne sont plus différenciées",
+    ).toBeGreaterThan(3);
+  });
+
+  test("l’accueil et /tarifs annoncent exactement le même prix", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Une seule exécution suffit.");
+    /*
+      DEUX SURFACES, UNE SEULE SOURCE. Avant, chacune portait sa propre
+      fonction `Prix` : deux copies d'une règle commerciale, qui pouvaient
+      diverger sans que rien ne se casse — deux pages annonçant deux prix
+      différents pour la même offre se rendent très bien. Les deux lisent
+      désormais `lib/tarifs.ts` par le même composant, et ce test le
+      vérifie SUR LE RENDU, pas sur les imports.
+
+      La troisième surface — le parcours d'abonnement — vit dans
+      l'application, hors de ce dépôt. Elle se vérifiera contre la même
+      configuration le jour où les deux projets la partageront.
+    */
+    const lire = async (url: string) => {
+      await page.goto(url);
+      return page.evaluate(() =>
+        Object.fromEntries(
+          [...document.querySelectorAll("[data-prix]")].map((e) => [
+            e.getAttribute("data-prix"),
+            /* ON COMPARE L'INFORMATION, PAS SA COMPOSITION. La carte
+               d'accueil compose la mention en petites capitales, la page
+               des formules en bas-de-casse : c'est une décision
+               typographique, et elle n'a pas à faire échouer un test
+               commercial. Ce qui ne doit jamais diverger, ce sont les
+               MOTS et les CHIFFRES. */
+            (e as HTMLElement).innerText
+              .replace(/\s+/g, " ")
+              .trim()
+              .toLocaleLowerCase("fr"),
+          ]),
+        ),
+      );
+    };
+    const accueil = await lire("/");
+    const tarifs = await lire("/tarifs");
+
+    expect(
+      Object.keys(accueil).sort(),
+      "les deux pages ne couvrent pas les mêmes formules",
+    ).toEqual(Object.keys(tarifs).sort());
+    expect(Object.keys(accueil).length, "aucun prix rendu").toBe(3);
+    for (const cle of Object.keys(accueil)) {
+      expect(
+        accueil[cle],
+        `« ${cle} » n’est pas annoncé pareil sur l’accueil et sur /tarifs`,
+      ).toBe(tarifs[cle]);
+    }
+  });
+
+  test("l’affichage des tarifs demande la décision ET les données", async ({}, info) => {
+    test.skip(info.project.name !== "bureau", "C’est une règle, pas un rendu.");
+    /*
+      Deux conditions, et il en faut deux. Une signature commerciale seule
+      laisserait publier une configuration incomplète — un montant sans
+      périodicité, ou sans identifiant Stripe. Des données complètes seules
+      laisseraient publier des montants que personne n'a validés.
+
+      Aujourd'hui aucune des deux n'est remplie, et c'est l'état voulu.
+    */
+    const { valide, manques } = configurationComplete();
+    expect(
+      tarifsPublies(),
+      "des tarifs sont publiables alors que Stripe n’est pas branché",
+    ).toBe(false);
+    expect(
+      valide,
+      "la configuration se dit complète alors qu’elle est vide",
+    ).toBe(false);
+    /* Et elle sait dire ce qui lui manque, formule par formule. */
+    for (const cle of ORDRE) {
+      expect(
+        manques[cle],
+        `la configuration ne signale rien pour « ${cle} »`,
+      ).toContain("identifiant Stripe");
+    }
+  });
+
+  test("la section ne porte aucun appel à l’action principal", async ({
+    page,
+  }) => {
+    /*
+      La page n'en a que deux — le héros et l'invitation. Trois cartes
+      commerciales portant chacune un bouton plein les auraient noyés, et
+      le lecteur sollicité quatre fois n'écoute plus. Les cartes proposent
+      en second rang ; l'invitation reste la seule à demander.
+    */
+    await page.goto("/");
+    await expect(page.locator("#formules .bouton-primaire")).toHaveCount(0);
+    await expect(page.locator("#formules .bouton-second")).not.toHaveCount(0);
   });
 });
 
@@ -222,6 +810,37 @@ test.describe("La page se tait quand on le lui demande", () => {
     await expect(page.locator(".jet").first()).toBeVisible();
     await expect(page.locator('#instant img[src*="resultat"]')).toBeVisible();
   });
+
+  /*
+    ON RETIRE LE DÉPLACEMENT, PAS L'ÉTAT. Une carte survolée doit rester
+    reconnaissable comme survolée même sans mouvement : le halo et le
+    filet portent l'information, la levée n'en porte aucune. C'est la
+    distinction que ce test garde — et elle est fragile, parce que la
+    levée appartient maintenant à Motion, qui pourrait l'oublier.
+  */
+  test("la carte garde sa lumière et perd son déplacement", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== "bureau", "Le survol demande une souris.");
+    await page.goto("/");
+    const carte = page.locator("#instant article").first();
+    await carte.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    const avant = (await carte.boundingBox())!.y;
+    await page.locator("#instant button[aria-expanded]").first().hover();
+    await page.waitForTimeout(400);
+    const apres = (await carte.boundingBox())!.y;
+
+    expect(
+      apres - avant,
+      "la carte se déplace malgré prefers-reduced-motion",
+    ).toBe(0);
+    expect(
+      await carte.evaluate((e) => getComputedStyle(e, "::before").opacity),
+      "le halo s’est éteint avec le mouvement : l’état n’est plus lisible",
+    ).toBe("1");
+  });
 });
 
 test.describe("Rien ne déborde, à aucune largeur", () => {
@@ -257,6 +876,18 @@ test.describe("Rien ne déborde, à aucune largeur", () => {
    ══════════════════════════════════════════════════════════════ */
 
 import { HEURES } from "../lib/lumiere";
+import {
+  FORMULES,
+  ORDRE,
+  absentDe,
+  ajoutsSur,
+  comprisDans,
+} from "../lib/formules";
+import {
+  CATALOGUE_PRODUIT,
+  configurationComplete,
+  tarifsPublies,
+} from "../lib/tarifs";
 import {
   ADDITION,
   COMPOSITION,
@@ -297,9 +928,16 @@ test.describe("L’arc du jour", () => {
     }
   });
 
-  test("les huit mouvements sont montés, dans l’ordre du récit", async ({
+  test("les neuf mouvements sont montés, dans l’ordre du récit", async ({
     page,
   }) => {
+    /*
+      NEUF DEPUIS QUE LES FORMULES SONT ENTRÉES. Elles se placent entre la
+      respiration et l'heure dorée : après « pour qui », où le lecteur
+      s'est reconnu, et avant « l'invitation », qui demande. Déplacer
+      cette ligne, c'est déplacer le moment où l'on parle d'argent — le
+      test est là pour que ce soit une décision, pas un effet de bord.
+    */
     await page.goto("/");
     const ids = await page.evaluate(() =>
       [...document.querySelectorAll("section[id]")].map((e) => e.id),
@@ -308,10 +946,11 @@ test.describe("L’arc du jour", () => {
       "ouverture",
       "geste",
       "cave",
-      "accord",
+      "carte",
       "table",
       "instant",
       "pourqui",
+      "formules",
       "invitation",
     ]);
   });
@@ -579,16 +1218,69 @@ test.describe("Chaque geste arrive à son terme", () => {
     }
   });
 
-  test("le rapprochement entre bien dans l’écran", async ({ page }) => {
+  /**
+   * LA CARTE EST UN OBJET, PAS UNE CAPTURE.
+   *
+   * Ce garde-fou remplace celui qui mesurait l'entrée de caméra dans
+   * l'écran de la section « Les accords » — section retirée, parce qu'elle
+   * répétait le troisième mouvement de « Geste ». Il vérifie désormais ce
+   * qui compte à sa place : la carte des vins est composée de VRAI TEXTE,
+   * sur du papier, sans aucune image de logiciel.
+   */
+  test("la carte des vins est une feuille composée, pas une image", async ({
+    page,
+  }) => {
     await page.goto("/");
     await parcourir(page);
-    const t = await page.evaluate(
-      () =>
-        getComputedStyle(document.querySelector("#accord .objet > div")!)
-          .transform,
+    const r = await page.evaluate(() => {
+      const s = document.querySelector("#carte")!;
+      const feuille = s.querySelector(".carte-papier")!;
+      return {
+        images: s.querySelectorAll("img").length,
+        lignes: feuille.querySelectorAll("li").length,
+        texte: (feuille.textContent ?? "").replace(/\s+/g, " "),
+        papier: getComputedStyle(feuille).backgroundColor,
+      };
+    });
+    expect(r.images, "une image s’est glissée dans la section").toBe(0);
+    /*
+      LE COMPTE DÉPEND DE LA PHASE, et c'est voulu : la feuille montre onze
+      lignes par famille, huit par région, et la séquence passe de l'une à
+      l'autre. Un seuil strict rendait ce garde-fou dépendant de l'instant où
+      il regarde — il a d'ailleurs échoué ainsi. On vérifie donc le plancher
+      commun aux deux classements, et surtout que les mots sont là.
+    */
+    expect(
+      r.lignes,
+      "la carte ne porte pas assez de lignes",
+    ).toBeGreaterThanOrEqual(8);
+    for (const mot of ["Maison de Référence", "Carte des vins", "Meursault"]) {
+      expect(r.texte, `« ${mot} » manque à la carte`).toContain(mot);
+    }
+  });
+
+  /**
+   * LE PARAGRAPHE DE PROVENANCE A QUITTÉ LA PAGE, et sa marge avec lui.
+   * Il expliquait d'où venaient les chiffres de la cave ; cette précision
+   * appartient au code, pas à la vitrine.
+   */
+  test("rien n’explique plus la provenance sous la démonstration", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await parcourir(page);
+    const texte = await page.evaluate(() =>
+      (document.querySelector("#cave")?.textContent ?? "").replace(/\s+/g, " "),
     );
-    const e = Number((t.match(/-?[\d.]+/g) ?? ["1"])[0]);
-    expect(e, "la caméra n’est pas entrée dans l’écran").toBeGreaterThan(1.6);
+    for (const reste of [
+      "Vintoria Pro 2.0.2",
+      "module de stock et ses exports",
+      "sur sa propre démonstration",
+    ]) {
+      expect(texte, `« ${reste} » traîne encore sous la cave`).not.toContain(
+        reste,
+      );
+    }
   });
 
   test("le carré quitte l’écran, et son trou est comblé", async ({ page }) => {

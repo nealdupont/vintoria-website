@@ -781,7 +781,7 @@ export function Geste() {
   return (
     <section
       id="geste"
-      className="grain-clair relative isolate overflow-x-clip pt-28 pb-32 sm:pt-36 sm:pb-40"
+      className="mouvement grain-clair relative isolate overflow-x-clip"
       /* LE PANNEAU OUVERT PASSE DEVANT. Le rai de lumière du mouvement III
          (« cave ») monte de 30 % au-dessus de sa propre section et vient
          frapper celle-ci par en dessous ; sur l'ivoire, c'est la lumière

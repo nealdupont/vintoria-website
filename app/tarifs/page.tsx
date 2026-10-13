@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  CHAPITRES,
-  FORMULES,
-  PRIX_CONFIRMES,
-  PRIX_TROUVES,
-  type CleFormule,
-} from "@/lib/formules";
+import { CHAPITRES, FORMULES } from "@/lib/formules";
+import { CATALOGUE_PRODUIT, configurationComplete } from "@/lib/tarifs";
+import { Prix } from "@/components/Prix";
 
 export const metadata: Metadata = {
   title: "Formules",
@@ -17,50 +13,30 @@ export const metadata: Metadata = {
 
 /* ------------------------------------------------------------------ */
 
-/**
- * Le prix n'est pas publié tant qu'il n'est pas confirmé commercialement.
- * « Sur demande » est une réponse honnête en vente B2B ; un chiffre inventé
- * ne l'est pas. En développement, l'attente est signalée franchement pour
- * que personne ne croie la page terminée.
- */
-function Prix({ cle }: { cle: CleFormule }) {
-  if (PRIX_CONFIRMES && PRIX_TROUVES[cle] !== null) {
-    return (
-      <p className="voix mt-5 text-[2.6rem] leading-none text-fort">
-        {PRIX_TROUVES[cle]}&nbsp;€
-        <span className="t-meta ml-2 align-middle font-sans text-faible">/ mois</span>
-      </p>
-    );
-  }
-  return (
-    <p className="voix mt-5 text-[1.9rem] leading-none text-fort">
-      Sur demande
-      <span className="t-meta mt-2 block font-sans text-faible">
-        Communiqué pendant la démonstration
-      </span>
-    </p>
-  );
-}
-
 function AvisDeveloppement() {
   if (process.env.NODE_ENV !== "development") return null;
+  const { valide, manques } = configurationComplete();
   return (
     <div className="px pt-6">
-      <p
-        className="mx-auto max-w-[1180px] rounded-xl border border-dashed border-braise-vive bg-braise/15 px-5 py-4 text-left"
+      <div
         data-test="avis-tarifs"
+        className="mx-auto max-w-[1180px] rounded-xl border border-filet p-5"
       >
-        <span className="eyebrow block text-braise-vive">Développement — prix non publiés</span>
-        <span className="t-meta mt-2 block text-texte">
-          La page rend « Sur demande ». Le catalogue du produit porte
-          Essentiel&nbsp;{PRIX_TROUVES.essential}&nbsp;€, Business&nbsp;
-          {PRIX_TROUVES.business}&nbsp;€, Enterprise sur devis, mais
-          <code className="mx-1 text-fort">STRIPE_PRICES</code>y est entièrement
-          <code className="mx-1 text-fort">null</code>: la facturation n’est pas branchée.
-          Basculer <code className="mx-1 text-fort">PRIX_CONFIRMES</code>dans
-          <code className="mx-1 text-fort">lib/formules.ts</code>une fois la grille arrêtée.
-        </span>
-      </p>
+        <p className="t-meta text-faible">
+          <span className="text-fort">Tarifs en attente.</span> La page rend «
+          Sur demande ». Le catalogue du produit porte Essentiel&nbsp;
+          {CATALOGUE_PRODUIT.essential}&nbsp;€, Business&nbsp;
+          {CATALOGUE_PRODUIT.business}&nbsp;€, Enterprise sur devis, mais la
+          facturation n’est pas branchée.
+        </p>
+        <p className="t-meta mt-2 text-faible">
+          {valide
+            ? "La configuration est complète : il ne reste qu’à signer, en passant PRIX_CONFIRMES à true."
+            : `Il manque, dans lib/tarifs.ts : ${Object.entries(manques)
+                .map(([cle, m]) => `${cle} → ${(m as string[]).join(", ")}`)
+                .join(" · ")}.`}
+        </p>
+      </div>
     </div>
   );
 }
@@ -79,9 +55,10 @@ export default function Page() {
             Une carte lisible, comme la vôtre.
           </h1>
           <p className="t-chapeau mt-7 max-w-[56ch] text-texte">
-            Toutes les formules comprennent le conseil à chaque table : c’est le cœur
-            de Vintoria et il n’est jamais optionnel. Ce qui change au-dessus, c’est
-            la gestion de votre cave, puis l’organisation de vos équipes.
+            Toutes les formules comprennent le conseil à chaque table : c’est le
+            cœur de Vintoria et il n’est jamais optionnel. Ce qui change
+            au-dessus, c’est la gestion de votre cave, puis l’organisation de
+            vos équipes.
           </p>
         </div>
       </section>
@@ -95,7 +72,21 @@ export default function Page() {
           {FORMULES.map((f) => (
             <li
               key={f.cle}
-              className="relative flex flex-col bg-encre p-7 lg:p-8"
+              /*
+                LA LUMIÈRE DÉSIGNE LA FORMULE CONSEILLÉE, et le survol
+                désigne celle qu'on regarde. Jusqu'ici, « Conseillée »
+                n'était qu'une étiquette de huit pixels dans un coin : la
+                recommandation était écrite, elle n'était pas VUE. Le halo
+                du système l'allume en permanence — c'est exactement ce que
+                `data-jour` est fait pour dire. Les deux autres s'allument
+                au survol et au focus, pour que la comparaison réponde.
+
+                `.lueur` et non `.surface` : ces trois cellules partagent
+                déjà une dalle et un filet d'un pixel. Un second cadre en
+                ferait des cartes dans une carte.
+              */
+              className="lueur lueur-prise relative flex min-w-0 flex-col bg-encre p-5 sm:p-7 lg:p-8"
+              data-jour={f.recommandee ? "true" : undefined}
               data-formule={f.cle}
             >
               {f.recommandee ? (
@@ -105,7 +96,7 @@ export default function Page() {
               ) : null}
               <h3 className="voix t-tete text-fort">{f.nom}</h3>
               <p className="t-meta mt-2 text-faible">{f.pourQui}</p>
-              <Prix cle={f.cle} />
+              <Prix cle={f.cle} taille="page" className="mt-5" />
               <p className="t-corps mt-5 flex-1 text-texte">{f.promesse}</p>
               <Link
                 href="/demonstration"
@@ -120,13 +111,19 @@ export default function Page() {
 
       {/* ── Le détail, en lecture de carte ────────────────────────────── */}
       {CHAPITRES.map((chapitre) => (
-        <section key={chapitre.titre} className="px pb-14" aria-labelledby={`c-${chapitre.titre}`}>
+        <section
+          key={chapitre.titre}
+          className="px pb-14"
+          aria-labelledby={`c-${chapitre.titre}`}
+        >
           <div className="mx-auto max-w-[1180px]">
             <div className="mb-7 border-t border-filet pt-7">
               <h2 id={`c-${chapitre.titre}`} className="voix t-tete text-fort">
                 {chapitre.titre}
               </h2>
-              <p className="t-corps mt-1.5 max-w-[60ch] text-texte">{chapitre.intro}</p>
+              <p className="t-corps mt-1.5 max-w-[60ch] text-texte">
+                {chapitre.intro}
+              </p>
             </div>
 
             {/* Lecture large : les trois formules côte à côte. */}
@@ -150,7 +147,10 @@ export default function Page() {
               <tbody>
                 {chapitre.lignes.map((l) => (
                   <tr key={l.intitule} className="border-t border-filet">
-                    <th scope="row" className="t-corps py-3.5 pr-8 text-left font-normal text-texte">
+                    <th
+                      scope="row"
+                      className="t-corps py-3.5 pr-8 text-left font-normal text-texte"
+                    >
                       {l.intitule}
                     </th>
                     {FORMULES.map((f) => {
@@ -158,11 +158,18 @@ export default function Page() {
                       return (
                         <td key={f.cle} className="t-corps py-3.5 align-middle">
                           {v === null ? (
-                            <span className="text-faible/60" aria-label="Non compris">
+                            <span
+                              className="text-faible/60"
+                              aria-label="Non compris"
+                            >
                               —
                             </span>
                           ) : (
-                            <span className={v === "Compris" ? "text-fort" : "data text-fort"}>
+                            <span
+                              className={
+                                v === "Compris" ? "text-fort" : "data text-fort"
+                              }
+                            >
                               {v}
                             </span>
                           )}
@@ -197,11 +204,16 @@ export default function Page() {
                     {partout ? null : (
                       <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
                         {FORMULES.map((f) => (
-                          <div key={f.cle} className="flex items-baseline gap-1.5">
+                          <div
+                            key={f.cle}
+                            className="flex items-baseline gap-1.5"
+                          >
                             <dt className="eyebrow">{f.nom}</dt>
                             <dd
                               className={`t-meta ${
-                                l.valeurs[f.cle] === null ? "text-faible/60" : "text-fort"
+                                l.valeurs[f.cle] === null
+                                  ? "text-faible/60"
+                                  : "text-fort"
                               }`}
                             >
                               {l.valeurs[f.cle] ?? "—"}
@@ -249,8 +261,8 @@ export default function Page() {
             ))}
           </div>
           <p className="t-meta mt-12 max-w-[62ch] text-faible">
-            Nous ne promettons pas un pourcentage. Nous branchons Vintoria sur votre
-            carte, et vous regardez vos propres chiffres bouger.
+            Nous ne promettons pas un pourcentage. Nous branchons Vintoria sur
+            votre carte, et vous regardez vos propres chiffres bouger.
           </p>
         </div>
       </section>

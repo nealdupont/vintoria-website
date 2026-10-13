@@ -25,10 +25,23 @@ import { VerreBourgogne } from "./VerreBourgogne";
  * Le texte vit DANS le volume du calice, au-dessus du vin — là où, dans un
  * vrai verre, il n'y a que l'arôme.
  *
- * LA CHORÉGRAPHIE est lente et d'un seul tenant : la lumière entre, le verre
- * se trace, le vin monte, le reflet s'allume, puis seulement la marque et le
- * propos. La flaque se forme en DERNIER — c'est la chute : la lumière a
- * traversé, et elle a laissé quelque chose.
+ * LA CHORÉGRAPHIE EST D'UN SEUL TENANT, MAIS LE PROPOS NE L'ATTEND PLUS.
+ *
+ * Première version : la scène entière se jouait d'abord — lumière, verre,
+ * vin, reflet — et le texte n'arrivait qu'ensuite. C'était juste comme
+ * récit, et intenable comme page d'accueil. Mesuré : le titre restait
+ * invisible 2,15 s, l'appel à l'action 3 s, et la page n'était complète
+ * qu'à 4,55 s. Un visiteur qui arrive, regarde, et ne voit rien à lire
+ * pendant deux secondes est un visiteur qui part — et le brief interdit
+ * explicitement de retarder l'accès au contenu.
+ *
+ * LES DEUX ARCS SE SUPERPOSENT DÉSORMAIS au lieu de se suivre. La scène
+ * garde sa lenteur : la lumière entre, le verre se trace, le vin monte, la
+ * flaque se forme en dernier — c'est la chute, et elle est toujours là.
+ * Mais le propos s'installe PENDANT, pas après : le titre commence à 0,38 s,
+ * l'appel à l'action est entier à 1,7 s. On lit la page pendant que la
+ * scène finit de se poser derrière, ce qui est d'ailleurs ce que fait l'œil
+ * dans une salle — il lit la carte pendant qu'on sert.
  * Aucun ressort, aucun rebond, aucun dépassement : des courbes à départ
  * lent et à longue résolution. Tout est en opacité et en translation, sauf
  * le tracé du verre, qui est un `stroke-dashoffset` — un seul chemin, une
@@ -103,7 +116,7 @@ export function Ouverture() {
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={pas(1.5, 1.4)}
+          transition={pas(0.75, 1.2)}
         />
 
         {/* La flaque — la chute. Décalée à droite du pied : la lumière
@@ -118,7 +131,7 @@ export function Ouverture() {
           }}
           initial={{ opacity: 0, scale: reduit ? 1 : 0.84 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={pas(3.2, 1.3)}
+          transition={pas(1.5, 1.2)}
         />
         <motion.div
           className="flaque-coeur"
@@ -130,7 +143,7 @@ export function Ouverture() {
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={pas(3.5, 1.1)}
+          transition={pas(1.7, 1)}
         />
       </div>
 
@@ -142,7 +155,7 @@ export function Ouverture() {
           <motion.div
             initial={{ opacity: 0, y: reduit ? 0 : 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={pas(1.9, 1.3)}
+            transition={pas(0.25, 0.8)}
           >
             <Symbole
               hauteur={58}
@@ -157,7 +170,7 @@ export function Ouverture() {
               className="block"
               initial={monte(18)}
               animate={pose}
-              transition={pas(2.15, 1.35)}
+              transition={pas(0.38, 0.85)}
             >
               L’univers du vin,
             </motion.span>
@@ -165,7 +178,7 @@ export function Ouverture() {
               className="block"
               initial={monte(18)}
               animate={pose}
-              transition={pas(2.33, 1.35)}
+              transition={pas(0.5, 0.85)}
             >
               <em>pensé autrement.</em>
             </motion.span>
@@ -175,7 +188,7 @@ export function Ouverture() {
             className="mt-9 h-px w-24 bg-[color:var(--color-filet-fort)]"
             initial={{ opacity: 0, scaleX: reduit ? 1 : 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
-            transition={pas(2.6, 1.2)}
+            transition={pas(0.68, 0.7)}
           />
 
           {/* 4 · LA PROPOSITION DE VALEUR */}
@@ -183,7 +196,7 @@ export function Ouverture() {
             className="t-chapeau mt-9 max-w-[34rem] text-pretty text-[color:var(--color-texte)]"
             initial={monte(12)}
             animate={pose}
-            transition={pas(2.75, 1.3)}
+            transition={pas(0.72, 0.8)}
           >
             Vos clients choisissent leur plat. Vintoria leur recommande le vin
             de votre carte qui l’accompagne — et leur explique pourquoi.
@@ -194,7 +207,7 @@ export function Ouverture() {
             className="mt-11 flex flex-col items-center gap-5"
             initial={monte(10)}
             animate={pose}
-            transition={pas(3, 1.2)}
+            transition={pas(0.9, 0.8)}
           >
             <Link
               href="/demonstration"
@@ -220,7 +233,7 @@ export function Ouverture() {
             className="t-meta mt-10 max-w-[36rem] text-balance text-[color:var(--color-faible)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={pas(3.35, 1.2)}
+            transition={pas(1.1, 0.7)}
           >
             Pour les restaurants et les hôtels qui ont une carte des vins, et
             pas toujours un sommelier en salle.

@@ -205,6 +205,48 @@ export function Chrome() {
     setOuvert(false);
   }
 
+  /*
+   * LA MARQUE REMONTE À L'ACCUEIL, MÊME QUAND ON Y EST DÉJÀ.
+   *
+   * Depuis une AUTRE page, le lien natif suffit : la route change, et
+   * l'ajustement ci-dessus referme la vitre. Depuis l'accueil, il ne se
+   * passe rien — la route est identique, le routeur n'a donc rien à faire.
+   * Mesuré : 748 px de défilement avant le clic, 748 après, sommaire resté
+   * ouvert. Sur mobile, où le sommaire occupe tout l'écran, cliquer le V
+   * ne produisait aucun effet visible : le défaut signalé.
+   *
+   * On refait donc les trois gestes qu'une arrivée sur l'accueil produit —
+   * refermer la vitre, retirer l'ancre, remonter — et seulement ceux-là.
+   *
+   * `replaceState` et non `pushState` : revenir en arrière doit ramener
+   * d'où l'on vient, pas rejouer l'ancre qu'on quitte.
+   *
+   * `scrollTo` sans `behavior` suit le `scroll-behavior` de la feuille,
+   * que `prefers-reduced-motion` ramène déjà à `auto` — une seconde règle
+   * ici aurait pu diverger de la première.
+   *
+   * On n'appelle PAS `fermer()` : il rend le focus au déclencheur du
+   * sommaire, alors que le doigt vient de se poser sur la marque.
+   */
+  const versAccueil = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (chemin !== "/") return;
+      /* ON NE CONFISQUE QUE LE CLIC ORDINAIRE. ⌘-clic, Ctrl-clic, clic du
+         milieu ou Maj-clic ouvrent un onglet ou une fenêtre : le lien natif
+         doit alors faire son travail, et `preventDefault` le lui volerait. */
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+      e.preventDefault();
+      setOuvert(false);
+      if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname);
+      }
+      window.scrollTo({ top: 0 });
+    },
+    [chemin],
+  );
+
   const lienSecondaire =
     "t-meta inline-flex min-h-11 items-center transition-colors duration-300 hover:text-[color:var(--color-fort)]";
 
@@ -229,7 +271,8 @@ export function Chrome() {
            * /tarifs et /demonstration, qui n'en ont aucun usage.
            */
           prefetch={false}
-          aria-label="Vintoria, accueil"
+          onClick={versAccueil}
+          aria-label="Vintoria — Accueil"
           className="flex min-h-11 min-w-11 shrink-0 items-center pr-1"
         >
           {/*

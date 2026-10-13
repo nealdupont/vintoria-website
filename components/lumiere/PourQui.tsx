@@ -15,6 +15,18 @@ import { ciel } from "@/lib/lumiere";
  * exactement ce qu'elle apporte. Une respiration qui bouge n'est pas une
  * respiration.
  *
+ * LE SEUL GESTE AJOUTÉ PAR LA REFONTE EST UN TRAIT QUI SE TIRE. Chaque
+ * situation est précédée d'un filet d'or ; il se tirait jusqu'ici en même
+ * temps que son texte, c'est-à-dire qu'il n'existait pas comme geste. Il
+ * part maintenant du bord gauche et s'étire avant que la phrase arrive —
+ * le temps de dire « en voici une autre ». C'est le seul mouvement de la
+ * section, il dure un tiers de seconde, et il ne déplace aucun mot.
+ *
+ * ELLE A AUSSI MAIGRI. Elle tenait 1,08 écran pour cinquante et un mots,
+ * en respirant par ses marges : 144 px en haut, 144 en bas, 80 avant les
+ * situations. La respiration ne vient pas de la quantité de vide mais de
+ * l'absence de sollicitation — on peut donc resserrer sans rien perdre.
+ *
  * La sauge n'apparaît qu'ici et au Geste — c'est la lumière passée par une
  * feuille, et elle marque les deux moments calmes de la page.
  *
@@ -36,7 +48,7 @@ export function PourQui() {
   return (
     <section
       id="pourqui"
-      className="grain-clair relative isolate overflow-x-clip py-36 sm:py-44"
+      className="mouvement grain-clair relative isolate overflow-x-clip"
       style={{ background: ciel("pourqui") }}
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -60,7 +72,7 @@ export function PourQui() {
         </motion.div>
 
         <motion.ul
-          className="mt-20 grid gap-12 sm:mt-24 lg:grid-cols-3 lg:gap-14"
+          className="mt-16 grid gap-10 sm:mt-20 lg:grid-cols-3 lg:gap-14"
           initial="repos"
           whileInView="pose"
           viewport={{ once: true, amount: 0.3 }}
@@ -78,7 +90,14 @@ export function PourQui() {
               }}
               transition={{ duration: reduit ? 0 : 0.9, ease: EASE }}
             >
-              <div className="filet-or h-px w-14" />
+              <motion.div
+                className="filet-or h-px w-14 origin-left"
+                variants={{
+                  repos: { scaleX: reduit ? 1 : 0 },
+                  pose: { scaleX: 1 },
+                }}
+                transition={{ duration: reduit ? 0 : 0.34, ease: EASE }}
+              />
               <p className="t-chapeau mt-6 text-pretty text-[color:var(--color-texte)]">
                 {m}
               </p>
