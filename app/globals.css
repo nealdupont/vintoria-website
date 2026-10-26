@@ -789,21 +789,67 @@ body {
 
    L'OPACITÉ EST UN SEUIL DE LISIBILITÉ, pas un réglage esthétique : le
    texte posé sur la vitre doit tenir AA quoi qu'il y ait derrière.
-   D'où 66 % au repos, et 74 % ouvert, où les mots sont grands et
-   nombreux. Mesuré sur le fond réellement peint, pas sur le jeton.
+   Elle est passée de 64 % à 44 % — la page se voit RÉELLEMENT passer
+   dessous — et ce que la teinte ne retient plus, l'ENCRE le paie.
+
+   CE QUI A ÉTÉ MESURÉ, ET COMMENT. Une sonde rend le texte de la barre
+   transparent, photographie la bande et échantillonne les pixels sous
+   chaque mot — donc la composition entière : contenu, flou, saturation,
+   luminosité, teinte. Elle a tourné sur /, /tarifs et /demonstration, à
+   1440 et à 390 px, barre fermée et sommaire ouvert, aux six positions
+   de défilement les plus hostiles de chaque page.
+
+     pire contraste · barre fermée        avant      après
+       /          1440   « Accéder »      4,69:1    4,79:1
+       /           390   « Démonstration » 8,48:1    5,68:1
+       /tarifs    1440   « Accéder »      4,45:1    6,50:1   ← sous AA avant
+       /demonstration    « Accéder »      7,42:1   12,85:1
+
+   LE DÉFAUT QUE LA MESURE A SORTI : sur /tarifs, les cartes de formule
+   sont crème et passent sous une barre à encre claire. C'est le CLAIR
+   qui tuait le texte, pas le sombre — 4,45:1, sous le seuil, dans la
+   version publiée. Le verre du soir devait donc éteindre davantage, pas
+   moins : `brightness` descend de 0,86 à 0,62.
+
+   AUCUNE COMPRESSION DE CONTRASTE, et c'est une décision mesurée.
+   `contrast(0,6)` relève bien les noirs et laisse baisser la teinte,
+   mais ce qu'on voit passer est le PRODUIT des deux : à 30 % de teinte
+   et 0,6 de contraste, la modulation visible retombe exactement sur
+   celle de la version à 64 % sans compression. On aurait payé une
+   transparence qu'on ne verrait pas. La teinte baisse donc seule.
    ============================================================== */
+
+/*
+  LA TEINTE EST CHAUDE, ET C'EST LE JETON QUI LE DIT.
+  Elle ne suit plus `--color-fond` : l'ivoire de l'arc tire au vert
+  (#f7f4ed) et l'encre du soir au bleu (#0b0a0c) — deux froids, là où la
+  maison est le chêne, la cire et la braise. À 64 % cela ne se voyait
+  pas ; à 44 % une vitre froide refroidit toute la page qu'elle laisse
+  passer. Le verre a donc sa propre matière, nommée.
+*/
 .verre {
-  background-color: color-mix(in srgb, var(--color-fond) 64%, transparent);
+  --verre-teinte: #16110f; /* une encre BRUNE : le soir, pas la nuit */
+  --verre-alpha: 44%;
+
   /*
-    LE SOIR, LE VERRE EST FUMÉ : il assombrit. Première version, il
-    éclaircissait des deux côtés — `brightness(1.03)` — et la mesure a
-    immédiatement sanctionné : sur /tarifs, « Accéder à Vintoria »
-    tombait de 4,81:1 à 4,40:1, sous le seuil. Un verre teinté ne rend
-    pas un noir plus clair ; il l'enfonce. La règle suit donc la
-    matière, et le contraste y gagne au lieu d'y perdre.
+    L'ENCRE MONTE D'UN CRAN — la contrepartie exacte de la teinte qui
+    baisse. La vitre REMONTE ses jetons, comme `.carte-papier` et
+    `.carte-ivoire` le font déjà : ce qui est écrit dessus se lit sur du
+    verre, et aucun composant n'a à le savoir. Sans cela il aurait fallu
+    porter une couleur en dur sur chaque lien de l'en-tête.
+    On ne touche ni à `--color-fort` (les titres tiennent déjà) ni à
+    l'accent : seules les voix moyennes, qui n'avaient plus de marge.
   */
-  -webkit-backdrop-filter: blur(18px) saturate(1.5) brightness(0.86);
-  backdrop-filter: blur(18px) saturate(1.5) brightness(0.86);
+  --color-texte: #dcd5c9;
+  --color-faible: #bdb6ab;
+
+  background-color: color-mix(
+    in srgb,
+    var(--verre-teinte) var(--verre-alpha),
+    transparent
+  );
+  -webkit-backdrop-filter: blur(16px) saturate(1.45) brightness(0.62);
+  backdrop-filter: blur(16px) saturate(1.45) brightness(0.62);
   /* La FERMETURE : plus courte, et d'une courbe plus sèche. */
   transition:
     height var(--duree-etat) var(--ease-sortie),
@@ -816,14 +862,21 @@ body {
    lire la bande comme une plaque posée sur la page, même là où il n'y a
    qu'un aplat d'ivoire à diffuser. */
 .verre.lumiere {
-  -webkit-backdrop-filter: blur(18px) saturate(1.5) brightness(1.03);
-  backdrop-filter: blur(18px) saturate(1.5) brightness(1.03);
+  --verre-teinte: #faf3e4; /* l'ivoire de l'arc, réchauffé d'un cheveu */
+  --color-texte: #2a2529;
+  --color-faible: #3a3438;
+
+  -webkit-backdrop-filter: blur(16px) saturate(1.55) brightness(1.14);
+  backdrop-filter: blur(16px) saturate(1.55) brightness(1.14);
 }
 
 .verre[data-ouvert="true"] {
-  background-color: color-mix(in srgb, var(--color-fond) 60%, transparent);
-  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(0.72);
-  backdrop-filter: blur(26px) saturate(1.6) brightness(0.72);
+  /* Ouvert, les mots sont grands et nombreux : quatre points de teinte
+     de plus, et le flou s'épaissit comme avant. */
+  --verre-alpha: 48%;
+
+  -webkit-backdrop-filter: blur(26px) saturate(1.5) brightness(0.58);
+  backdrop-filter: blur(26px) saturate(1.5) brightness(0.58);
   /* L'OUVERTURE : la vitre descend, et le flou s'épaissit avec elle. */
   transition:
     height var(--duree-entree) var(--ease-film),
@@ -833,8 +886,8 @@ body {
 }
 
 .verre.lumiere[data-ouvert="true"] {
-  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(1.04);
-  backdrop-filter: blur(26px) saturate(1.6) brightness(1.04);
+  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(1.1);
+  backdrop-filter: blur(26px) saturate(1.6) brightness(1.1);
 }
 
 /*
@@ -846,10 +899,10 @@ body {
   (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
 ) {
   .verre {
-    background-color: color-mix(in srgb, var(--color-fond) 96%, transparent);
+    --verre-alpha: 96%;
   }
   .verre[data-ouvert="true"] {
-    background-color: var(--color-fond);
+    --verre-alpha: 100%;
   }
 }
 

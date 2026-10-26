@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ciel } from "@/lib/lumiere";
 import { COMPTE, VALEUR, VIGILANCE } from "@/lib/cave-demonstration";
-import { Roulement } from "./Roulement";
+import { ECHELON, Roulement } from "./Roulement";
 
 /**
  * MOUVEMENT III — LA CAVE.
@@ -101,6 +101,116 @@ const ROULE = {
   bouteilles: { delai: 0.34, duree: 0.9 },
   valeur: { delai: 0.62, duree: 1.14 },
 } as const;
+
+/**
+ * LE CRESCENDO SE REJOUE — et c'est tout ce qui a changé à la mécanique.
+ *
+ * Il ne se jouait QU'UNE FOIS, pour toute la visite : `viewport={{ once:
+ * true }}`. Un lecteur qui redescend sur la cave retrouvait trois nombres
+ * déjà posés — la démonstration la plus parlante de la section, passée.
+ *
+ * TROIS ÉTATS, ET PAS DEUX. « Au repos » et « posé » ne suffisent pas à
+ * décrire ce qu'on veut : il faut distinguer le nombre qui ROULE, le
+ * nombre qui TIENT, et le bloc SORTI du champ. C'est le rôle de `tenu` et
+ * de `libere` ci-dessous — l'état visible, lui, reste binaire, parce que
+ * c'est tout ce dont Motion a besoin.
+ *
+ * LES VINGT SECONDES SONT UN PLANCHER DE STABILITÉ, pas une attente avant
+ * le tour suivant. Tant qu'elles courent, SORTIR DU CHAMP NE RÉARME PAS :
+ * les valeurs finales restent les valeurs finales. C'est ce qui évite le
+ * défaut le plus visible d'un simple `once: false` — passer la frontière
+ * de la section d'un coup de molette nerveux, et voir les compteurs
+ * repartir de zéro trois fois de suite.
+ *
+ * LA REMISE À ZÉRO NE SE VOIT JAMAIS : elle n'a lieu que hors du champ.
+ * Soit à la sortie, si le maintien est déjà écoulé ; soit à l'échéance du
+ * maintien, si l'on est déjà sorti. Les deux chemins mènent au même
+ * endroit, et aucun ne traverse l'écran du lecteur.
+ */
+const MAINTIEN = 20;
+
+/** Même fraction visible qu'avant — `viewport={{ amount: 0.4 }}`. */
+const SEUIL = 0.4;
+
+/**
+ * Quand la DERNIÈRE roue se verrouille : départ du montant, sa durée, et
+ * l'échelon de chacun de ses rangs au-delà du premier. C'est de là que
+ * partent les vingt secondes — pas du déclenchement, sinon le maintien
+ * mangerait les deux secondes du roulement.
+ */
+const CYCLE =
+  ROULE.valeur.delai +
+  ROULE.valeur.duree +
+  Math.max(0, [...VALEUR.montant].filter((c) => /[0-9]/.test(c)).length - 1) *
+    ECHELON;
+
+type Etat = "repos" | "pose";
+
+function useCrescendo(fige: boolean) {
+  const cible = useRef<HTMLDivElement>(null);
+  const [etat, setEtat] = useState<Etat>(fige ? "pose" : "repos");
+
+  useEffect(() => {
+    /* Mouvement réduit : la valeur est là dès le premier rendu et rien
+       n'est observé. Pas d'observateur, pas de minuteur, pas de cycle. */
+    if (fige) return;
+    const noeud = cible.current;
+    if (!noeud) return;
+
+    /*
+      L'ÉTAT DE LA MÉCANIQUE VIT DANS LA FERMETURE, pas dans le rendu.
+      La callback de l'observateur est créée une fois ; la lire depuis
+      `useState` l'aurait figée sur le premier rendu, et le bloc se
+      serait réanimé à chaque passage de la frontière.
+    */
+    let tenu = false; // la séquence est lancée, les valeurs tiennent
+    let libere = false; // les vingt secondes sont écoulées
+    let dedans = false;
+    let minuteur: ReturnType<typeof setTimeout> | undefined;
+
+    const reposer = () => {
+      tenu = false;
+      libere = false;
+      setEtat("repos");
+    };
+
+    const oeil = new IntersectionObserver(
+      (entrees) => {
+        dedans = entrees[entrees.length - 1].isIntersecting;
+
+        if (dedans) {
+          /* Déjà posé : on ne relance rien tant qu'on reste visible. */
+          if (tenu) return;
+          tenu = true;
+          libere = false;
+          setEtat("pose");
+          minuteur = setTimeout(
+            () => {
+              libere = true;
+              /* Sorti pendant le maintien : on réarme maintenant, hors
+                 du champ, donc sans que le retour à zéro se voie. */
+              if (!dedans) reposer();
+            },
+            (CYCLE + MAINTIEN) * 1000,
+          );
+          return;
+        }
+
+        /* Sortie : on ne réarme que si le maintien est écoulé. */
+        if (libere) reposer();
+      },
+      { threshold: SEUIL },
+    );
+
+    oeil.observe(noeud);
+    return () => {
+      oeil.disconnect();
+      clearTimeout(minuteur);
+    };
+  }, [fige]);
+
+  return [cible, etat] as const;
+}
 
 /**
  * LES DEUX ÉCRANS DU PANNEAU.
@@ -285,6 +395,7 @@ function Panneau({ reduit }: { reduit: boolean }) {
 
 export function Cave() {
   const reduit = useReducedMotion();
+  const [crescendo, etat] = useCrescendo(!!reduit);
   const pas = (delai: number, duree = 0.9) => ({
     duration: reduit ? 0 : duree,
     delay: reduit ? 0 : delai,
@@ -348,18 +459,31 @@ export function Cave() {
 
               UN SEUL DÉCLENCHEMENT POUR TOUTE LA SÉQUENCE : quand le bloc
               entre dans le champ, les trois compteurs roulent sous les
-              yeux du lecteur, dans l'ordre, et une seule fois. */}
+              yeux du lecteur, dans l'ordre, et ensemble. Un seul
+              observateur conduit les quatre lignes — c'est ce qui garantit
+              qu'elles ne se désynchronisent pas.
+
+              ET IL EST POSÉ SUR LE BLOC, qui n'est clippé par rien. Une
+              roue ne peut pas s'observer elle-même : au repos elle est
+              hors de sa propre fenêtre `overflow-hidden`, l'observateur
+              verrait 0 % et n'entrerait jamais. */}
           <motion.div
+            ref={crescendo}
             className="lg:col-span-6"
             initial="repos"
-            whileInView="pose"
-            viewport={{ once: true, amount: 0.4 }}
+            animate={etat}
           >
             {COMPTE.map((m, i) => (
               <motion.div
                 key={m.cle}
                 className="grid grid-cols-[4.5rem_1fr] items-baseline gap-x-5 border-t border-[color:var(--color-filet)] py-5 sm:grid-cols-[7rem_1fr] sm:gap-x-8 sm:py-6"
-                variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+                /* Le retour au repos est SEC : il se produit hors du
+                   champ, et un fondu sortant de 0,7 s n'y aurait aucun
+                   spectateur — seulement du travail de composition. */
+                variants={{
+                  repos: { opacity: 0, transition: { duration: 0 } },
+                  pose: { opacity: 1 },
+                }}
                 transition={pas(
                   i === 0 ? SEQUENCE.references : SEQUENCE.bouteilles,
                   0.7,
@@ -384,7 +508,10 @@ export function Cave() {
             {/* ── LE SOMMET ──────────────────────────────────────── */}
             <motion.div
               className="grid grid-cols-[4.5rem_1fr] gap-x-5 border-t border-[color:var(--color-filet-fort)] pt-10 pb-12 sm:grid-cols-[7rem_1fr] sm:gap-x-8 sm:pt-12 sm:pb-14"
-              variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+              variants={{
+                repos: { opacity: 0, transition: { duration: 0 } },
+                pose: { opacity: 1 },
+              }}
               transition={pas(SEQUENCE.valeur, 0.8)}
             >
               {/* GOUTTIÈRE VIDE, et c'est voulu : les trois lignes comptées
@@ -432,7 +559,10 @@ export function Cave() {
             {/* ── LA RETOMBÉE ────────────────────────────────────── */}
             <motion.div
               className="grid grid-cols-[4.5rem_1fr] items-baseline gap-x-5 border-t border-b border-[color:var(--color-filet)] py-5 sm:grid-cols-[7rem_1fr] sm:gap-x-8 sm:py-6"
-              variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+              variants={{
+                repos: { opacity: 0, transition: { duration: 0 } },
+                pose: { opacity: 1 },
+              }}
               transition={pas(SEQUENCE.vigilance, 0.7)}
             >
               {/* Elle RETOMBE : un fondu, pas un roulement. Le crescendo est

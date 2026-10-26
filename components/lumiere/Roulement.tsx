@@ -54,8 +54,12 @@ import { motion, useReducedMotion } from "motion/react";
  */
 
 /** Le rang de droite se verrouille le dernier : il roule un peu plus
- *  longtemps, et d'autant plus vite. */
-const ECHELON = 0.08;
+ *  longtemps, et d'autant plus vite.
+ *
+ *  EXPORTÉ parce que la Cave en a besoin : c'est lui qui dit QUAND la
+ *  dernière roue se verrouille, donc quand le maintien de la valeur
+ *  commence. Recopier 0,08 là-bas aurait fait deux vérités. */
+export const ECHELON = 0.08;
 /** Crans par seconde, au premier rang puis de rang en rang. */
 const VITESSE = 15;
 const ACCELERATION = 10;
@@ -94,7 +98,17 @@ function Cadran({
         data-cadran=""
         className="absolute inset-x-0 bottom-0 block"
         variants={{
-          repos: { y: `${((crans - 1) / crans) * 100}%` },
+          /*
+            LE RETOUR AU DÉPART EST INSTANTANÉ, et il n'a pas de public :
+            la Cave ne le demande qu'une fois le bloc SORTI du champ.
+            Sans cette durée nulle, la roue redescendrait de son dernier
+            cran jusqu'au premier — un odomètre qui tourne à l'envers
+            pendant `course` secondes, hors de l'écran, pour rien.
+          */
+          repos: {
+            y: `${((crans - 1) / crans) * 100}%`,
+            transition: { duration: 0 },
+          },
           pose: { y: "0%" },
         }}
         transition={{ duration: course, delay: delai, ease: ROULEMENT }}
@@ -133,7 +147,10 @@ export function Roulement({
   return (
     <motion.span
       className={`flex ${className}`}
-      variants={{ repos: { opacity: 0 }, pose: { opacity: 1 } }}
+      variants={{
+        repos: { opacity: 0, transition: { duration: 0 } },
+        pose: { opacity: 1 },
+      }}
       /* Le compteur s'allume en même temps qu'il part : assez vite pour qu'on
          ne le voie pas apparaître, assez lentement pour qu'il ne clignote
          pas. Le séparateur et le symbole s'allument avec lui — un « € » seul,

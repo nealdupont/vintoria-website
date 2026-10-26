@@ -1374,6 +1374,130 @@ test.describe("Chaque geste arrive à son terme", () => {
       }
     }
   });
+
+  /**
+   * LE CRESCENDO SE REJOUE — ET IL NE SE REJOUE PAS N'IMPORTE QUAND.
+   *
+   * Trois choses à garder, et aucune ne se voit sur une capture :
+   *   · la valeur finale TIENT au moins vingt secondes. Un simple
+   *     `once: false` ne le garantit pas : il suffit de repasser la
+   *     frontière de la section pour que tout reparte de zéro ;
+   *   · la remise à zéro n'a lieu que HORS DU CHAMP — sinon le lecteur
+   *     voit ses chiffres s'effondrer sous ses yeux ;
+   *   · un nouveau passage, lui, REJOUE.
+   *
+   * On lit la position des roues plutôt que les glyphes : une roue au
+   * repos est à des milliers de pixels de son cran final, une roue
+   * verrouillée est à zéro. Le signal est net, et il ne dépend pas de
+   * l'instant exact où la capture tombe.
+   */
+  test("les compteurs tiennent vingt secondes, puis se rejouent", async ({
+    page,
+  }) => {
+    /*
+      CELUI-CI TOURNE AUX DEUX FORMATS, contrairement à ses voisins.
+      Le déclencheur est un `IntersectionObserver` à 40 % : si le bloc du
+      crescendo devenait plus haut que deux fois et demie la fenêtre, la
+      fraction ne serait JAMAIS atteinte et les compteurs resteraient à
+      zéro pour toujours. C'est une panne que seule la petite fenêtre
+      peut attraper. (Mesuré : 585 px de bloc pour 812 de fenêtre.)
+    */
+    /* Le maintien dure vingt secondes par contrat : le test doit pouvoir
+       l'attendre en entier, plus le roulement et les marges. */
+    test.setTimeout(90_000);
+
+    await page.goto("/");
+    await page.addStyleTag({
+      content: "html, body { scroll-behavior: auto !important; }",
+    });
+
+    /** Le plus grand décalage restant, en pixels. 0 = tout est verrouillé. */
+    const roues = () =>
+      page.evaluate(() => {
+        const c = [...document.querySelectorAll("#cave [data-cadran]")];
+        const f = c.map((e) =>
+          Math.abs(new DOMMatrixReadOnly(getComputedStyle(e).transform).f),
+        );
+        return { nombre: c.length, decalage: Math.max(0, ...f) };
+      });
+
+    const versCave = () =>
+      page.evaluate(() =>
+        document
+          .getElementById("cave")!
+          .scrollIntoView({ block: "center", behavior: "instant" }),
+      );
+    const loin = () => page.evaluate(() => window.scrollTo(0, 0));
+
+    await loin();
+    await page.waitForTimeout(400);
+    const depart = await roues();
+    expect(depart.nombre, "aucune roue n’est montée").toBeGreaterThan(0);
+    expect(
+      depart.decalage,
+      "les roues sont déjà posées alors que la cave n’a pas été vue",
+    ).toBeGreaterThan(100);
+
+    /* ── Premier passage : ça roule, puis ça se verrouille ── */
+    const entree = Date.now();
+    await versCave();
+    await page.waitForTimeout(2600);
+    expect(
+      (await roues()).decalage,
+      "les compteurs ne se sont pas verrouillés au premier passage",
+    ).toBeCloseTo(0, 1);
+
+    /* ── Aller-retour PENDANT le maintien : rien ne bouge ── */
+    await loin();
+    await page.waitForTimeout(900);
+    expect(
+      (await roues()).decalage,
+      "les compteurs se sont réarmés pendant les vingt secondes de maintien",
+    ).toBeCloseTo(0, 1);
+    await versCave();
+    await page.waitForTimeout(250);
+    expect(
+      (await roues()).decalage,
+      "un aller-retour rapide a relancé les compteurs",
+    ).toBeCloseTo(0, 1);
+
+    /* ── Le maintien s'écoule, puis on sort : LÀ, ça se réarme ── */
+    const MAINTIEN_MS = 20_000;
+    const ROULEMENT_MS = 2_100;
+    const reste = entree + MAINTIEN_MS + ROULEMENT_MS + 1_200 - Date.now();
+    if (reste > 0) await page.waitForTimeout(reste);
+    expect(
+      (await roues()).decalage,
+      "les compteurs se sont réarmés alors que la cave est restée visible",
+    ).toBeCloseTo(0, 1);
+
+    await loin();
+    await page.waitForTimeout(600);
+    expect(
+      (await roues()).decalage,
+      "les roues ne sont pas revenues à leur départ une fois sorties du champ",
+    ).toBeGreaterThan(100);
+
+    /* ── Et le passage suivant rejoue, jusqu'au verrouillage ── */
+    await versCave();
+    await page.waitForTimeout(2600);
+    expect(
+      (await roues()).decalage,
+      "le second passage n’a pas reverrouillé les compteurs",
+    ).toBeCloseTo(0, 1);
+
+    /* La valeur annoncée n’a pas bougé d’un cycle à l’autre. */
+    const annonce = await page.evaluate(() =>
+      [...document.querySelectorAll("#cave .sr-only")].map(
+        (n) => n.textContent,
+      ),
+    );
+    expect(annonce, "la valeur lue a changé entre deux cycles").toEqual([
+      COMPTE[0].nombre,
+      COMPTE[1].nombre,
+      VALEUR.montant,
+    ]);
+  });
 });
 
 test.describe("Mouvement réduit : la page se tient, entière", () => {

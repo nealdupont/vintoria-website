@@ -19,8 +19,13 @@ import { LockupHorizontal, Symbole } from "@/components/marque/Marque";
  *
  * LE VERRE EST PERMANENT. Il n'attend pas le clic : la barre diffuse en
  * continu ce qui passe sous elle. Le flou s'épaissit quand le sommaire
- * s'ouvre — de 18 à 34 px — parce que la diffusion fait alors partie de
+ * s'ouvre — de 16 à 26 px — parce que la diffusion fait alors partie de
  * la chorégraphie, pas parce qu'elle apparaîtrait.
+ *
+ * ET IL EST VRAIMENT TRANSPARENT : 44 % de teinte, non 64. La page se
+ * voit passer dessous. Ce que la teinte ne retient plus, l'encre le
+ * paie — `.verre` remonte ses propres `--color-texte` et
+ * `--color-faible` dans globals.css, où la mesure est consignée.
  *
  * UNE SEULE NAVIGATION À TOUTES LES LARGEURS. La liste en ligne du grand
  * écran a disparu : elle et le sommaire disaient la même chose à deux
