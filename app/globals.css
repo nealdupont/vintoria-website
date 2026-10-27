@@ -569,6 +569,143 @@ body {
   --color-surface: #eee7db;
 }
 
+/* LE FOND PERDU — ce qui entoure la page jusqu'aux traits de coupe.
+
+   Il ne peint rien. Il EST LA MESURE : `container-type: inline-size` fait de
+   lui la référence des `cqw` de `.epreuve`, et c'est ainsi que la feuille
+   connaît sa propre proportion sans que personne n'écrive une hauteur. Sa
+   largeur vient de la grille, et de rien d'autre. */
+.fond-perdu {
+  container-type: inline-size;
+}
+
+/* ==============================================================
+   L'ÉPREUVE — la page du mouvement IV, et sa seule matière.
+
+   UNE PAGE N'A PAS DE CADRE : ELLE A DES MARGES ET DES TRAITS DE COUPE.
+   C'est toute la différence avec `.carte-papier`, qui est une carte POSÉE
+   sur du cuir — un objet dans un décor, avec son rayon, son filet et son
+   ombre d'objet. Ici il n'y a pas de décor : la section est la lumière de
+   l'heure, et la feuille est cette même lumière arrêtée par du papier.
+
+   POURQUOI UNE SECONDE SURFACE DE PAPIER, ET NON `.carte-papier`. Le cuir
+   et la carte crème sont la signature du mouvement II — sept emplois dans
+   `Geste.tsx`. Le mouvement IV les empruntait, et c'est la raison pour
+   laquelle il se lisait comme un reste de son voisin : il n'avait pas de
+   matière propre. Trois écarts, tous mesurables :
+
+     · LA TEINTE. `.carte-papier` vaut #efe7d6, un crème qui ne tient que
+       sur du cognac ; posé sur l'ivoire de l'heure `accord` (#faf6ec →
+       #f7f0e2) il n'a plus que 1,04:1 d'écart de luminance — il DISPARAÎT.
+       #fdfcf8 va dans l'autre sens : plus blanc que son fond, comme une
+       feuille l'est toujours par rapport à la table.
+     · LE RAYON. Zéro, et c'est le détail qui fait tout : trois rayons
+       vivent dans `@theme` (12 / 18 / 26 px) et tout le site les porte.
+       Une feuille de papier n'en a aucun. Angles vifs, donc papier.
+     · L'OMBRE. Celle de `.carte-papier` est une ombre d'OBJET LEVÉ —
+       48 px de diffusion à 0,92 d'opacité, une carte qu'on a posée là.
+       Celle-ci est une ombre de CONTACT : un trait sous l'arête, puis une
+       diffusion très large et très faible. Une feuille ne lévite pas.
+
+   contrastes mesurés sur #fdfcf8
+     fort 16,5:1 · texte 9,8:1 · faible 6,7:1 · accent 11,0:1
+   L'échelle d'encre est celle de `.carte-papier` — même famille d'encre
+   brune, parce que c'est la même imprimerie ; seul le papier est plus
+   blanc, donc tous les rapports MONTENT.
+   ============================================================== */
+.epreuve {
+  --color-fond: #fdfcf8;
+  --color-surface: #ffffff;
+  --color-fort: #221b17; /* une encre brune : le noir pur n'existe pas sur du papier */
+  --color-texte: #4a4039;
+  --color-faible: #645850;
+  --color-accent: #6b1d38;
+  --color-filet: rgba(34, 27, 23, 0.12);
+  --color-filet-fort: rgba(34, 27, 23, 0.24);
+
+  position: relative;
+  background-color: var(--color-fond);
+  color: var(--color-texte);
+
+  /*
+    LA PROPORTION EST CELLE DU FORMAT, ET ELLE EST DANS LE STYLE, PAS DANS LE
+    COMPOSANT : c'est la définition de l'objet. 1:√2 — et c'est la même pour
+    l'A4 et pour l'A5, ce qui n'est pas une commodité mais la propriété qui
+    fonde la série ISO : plier une A4 en deux donne une A5. La feuille du
+    téléphone et celle du bureau ont donc EXACTEMENT la même silhouette, et
+    les deux annoncent un format vrai.
+
+    LA HAUTEUR NE DÉPEND DONC QUE DE LA LARGEUR. Aucun contenu ne peut plus
+    déplacer quoi que ce soit : c'est ce qui remplace le plancher de 26,5 rem
+    posé à la main par la version précédente, et c'est ce qui rend la bascule
+    de classement géométriquement incapable de faire sauter la page.
+
+    ET C'EST UN PLANCHER, PAS UNE HAUTEUR — la distinction a coûté une
+    mesure. Avec `aspect-ratio`, la hauteur est IMPOSÉE : l'encre qui ne
+    tient pas sort du papier au lieu de l'allonger, et `min-height:
+    fit-content` ne la rattrape pas, parce que l'enfant qui la porte
+    s'étire lui-même à 100 % d'une hauteur déjà fixée — la mesure est
+    circulaire, et le navigateur tranche en faveur du ratio. Constaté sur
+    la page d'A5 : le folio tombait 21 px SOUS la feuille, imprimé sur
+    l'ivoire.
+
+    `cqw` règle cela sans aucune circularité : l'unité vaut 1 % de la
+    largeur du conteneur (`.fond-perdu`), qui ne dépend que de la grille.
+    La page fait donc AU MOINS √2 fois sa largeur, et une ligne de trop
+    l'allonge d'un cheveu au lieu de la faire déborder. Là où l'unité
+    n'existerait pas, la règle est ignorée et la page se contente de la
+    hauteur de son contenu : elle perd sa proportion, jamais son encre.
+  */
+  min-height: 141.4214cqw;
+
+  /* ET LE PIED DE PAGE EST AU PIED DE LA PAGE. Une colonne, et le bloc des
+     rubriques qui prend ce qui reste : le folio se pose donc sur la dernière
+     ligne de la justification, que la page soit pleine ou non. Sans cela il
+     remontait coller aux rubriques, et flottait à 29 px du bord inférieur sur
+     la page d'A5 — une carte dont le folio n'est pas au pied n'a pas l'air
+     d'avoir été imposée. */
+  display: flex;
+  flex-direction: column;
+
+  /* L'ombre de contact, et le liseré de lumière sur l'arête haute — c'est
+     lui qui donne au papier son épaisseur, un pixel suffit. */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1px 2px rgba(60, 38, 20, 0.11),
+    0 22px 40px -28px rgba(60, 38, 20, 0.42);
+}
+
+/* La fibre, en `multiply` comme celle de la carte du mouvement II : elle
+   CREUSE la teinte au lieu de la poudrer. Plus discrète ici — sur un papier
+   presque blanc, le même grain se verrait deux fois plus. */
+.epreuve::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: multiply;
+  opacity: 0.13;
+}
+
+/* LE TRAIT DE COUPE — un angle, détaché du papier.
+
+   Il est DÉTACHÉ, et ce n'est pas un effet de style : un trait de coupe se
+   pose à quelques millimètres du bord à rogner, sinon il serait imprimé sur
+   la page. Collé au papier il redeviendrait une bordure — exactement ce que
+   cette composition refuse. Deux filets par angle, un pixel, posés sur
+   l'ivoire : ils empruntent donc le filet de la section et non celui de la
+   feuille. */
+.coupe {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-color: var(--color-filet-fort);
+  pointer-events: none;
+}
+
 /* ==============================================================
    LA CARTE IVOIRE — une feuille posée sur le tabac.
 

@@ -1226,6 +1226,14 @@ test.describe("Chaque geste arrive à son terme", () => {
    * répétait le troisième mouvement de « Geste ». Il vérifie désormais ce
    * qui compte à sa place : la carte des vins est composée de VRAI TEXTE,
    * sur du papier, sans aucune image de logiciel.
+   *
+   * LA FEUILLE S'APPELLE DÉSORMAIS `.epreuve`, ET CE N'EST PAS UN RENOMMAGE.
+   * Elle portait `.carte-papier` — la carte crème du mouvement II, posée sur
+   * son cuir : le mouvement IV empruntait la matière de son voisin. Il a la
+   * sienne, et ce garde-fou mesure en plus CE QUI LA DÉFINIT : une page a une
+   * proportion vraie (1:√2, celle de l'A4 comme de l'A5), et c'est elle qui
+   * remplace le cadre qu'on lui a retiré. Sans cette mesure, la feuille
+   * pourrait redevenir un rectangle quelconque sans qu'aucun test bronche.
    */
   test("la carte des vins est une feuille composée, pas une image", async ({
     page,
@@ -1234,14 +1242,32 @@ test.describe("Chaque geste arrive à son terme", () => {
     await parcourir(page);
     const r = await page.evaluate(() => {
       const s = document.querySelector("#carte")!;
-      const feuille = s.querySelector(".carte-papier")!;
+      const feuille = s.querySelector(".epreuve")!;
+      const b = feuille.getBoundingClientRect();
       return {
         images: s.querySelectorAll("img").length,
         lignes: feuille.querySelectorAll("li").length,
         texte: (feuille.textContent ?? "").replace(/\s+/g, " "),
         papier: getComputedStyle(feuille).backgroundColor,
+        rayon: getComputedStyle(feuille).borderRadius,
+        proportion: b.height / b.width,
+        /* Le folio est au pied de la page, et DANS la page : il en était
+           tombé 21 px plus bas, imprimé sur l'ivoire. */
+        folioDehors: Math.round(
+          (feuille.querySelector("p:last-of-type")?.getBoundingClientRect()
+            .bottom ?? 0) - b.bottom,
+        ),
       };
     });
+    expect(
+      r.proportion,
+      `la feuille n'a plus la proportion d'une page : 1:${r.proportion.toFixed(3)}`,
+    ).toBeGreaterThan(1.4);
+    expect(
+      r.rayon,
+      "la page a pris un rayon : une feuille de papier n'en a pas",
+    ).toBe("0px");
+    expect(r.folioDehors, "le folio est tombé hors de la page").toBeLessThanOrEqual(0);
     expect(r.images, "une image s’est glissée dans la section").toBe(0);
     /*
       LE COMPTE DÉPEND DE LA PHASE, et c'est voulu : la feuille montre onze
