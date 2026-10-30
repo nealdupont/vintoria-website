@@ -277,7 +277,7 @@ export function Chrome() {
            */
           prefetch={false}
           onClick={versAccueil}
-          aria-label="Vintoria — Accueil"
+          aria-label="Accueil Vintoria"
           className="flex min-h-11 min-w-11 shrink-0 items-center pr-1"
         >
           {/*

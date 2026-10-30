@@ -49,7 +49,7 @@ const SEQUENCES = [
   {
     t: "27 → 30 s",
     nom: "La boucle",
-    dit: "Carte, cave, conseil, vente — ce que Vintoria relie.",
+    dit: "Carte, cave, conseil, vente : ce que Vintoria relie.",
   },
   { t: "30 → 32 s", nom: "Vintoria", dit: "La sortie." },
 ];
@@ -96,7 +96,7 @@ export default function Page() {
             généré par le produit. Les montants sont ceux que le logiciel
             calcule sur cette cave : ce sont des données de démonstration,
             jamais une moyenne ni une performance. Aucun pourcentage de chiffre
-            d’affaires n’est avancé — nous n’en avons pas.
+            d’affaires n’est avancé. Nous n’en avons pas.
           </p>
         </div>
       </section>

@@ -32,7 +32,7 @@ export const HEURES = [
     titre: "L’ouverture",
     haut: "#f7f4ed",
     bas: "#ded3bf",
-    lumiere: "le matin, haute et franche — elle tombe sur le chêne",
+    lumiere: "le matin, haute et franche : elle tombe sur le chêne",
   },
   {
     cle: "geste",
@@ -47,7 +47,7 @@ export const HEURES = [
     titre: "La cave",
     haut: "#fcfaf5",
     bas: "#faf6ec",
-    lumiere: "plein midi — la craie de l’Atelier lui-même",
+    lumiere: "plein midi, la craie de l’Atelier lui-même",
   },
   {
     cle: "accord",
@@ -57,7 +57,7 @@ export const HEURES = [
     titre: "La carte des vins",
     haut: "#faf6ec",
     bas: "#f7f0e2",
-    lumiere: "début d’après-midi — la caméra entre dans l’écran",
+    lumiere: "début d’après-midi : la caméra entre dans l’écran",
   },
   {
     cle: "table",
@@ -79,7 +79,7 @@ export const HEURES = [
     titre: "Pour qui",
     haut: "#efe2cd",
     bas: "#f1e8da",
-    lumiere: "une respiration — la lumière reprend un peu, teintée de sauge",
+    lumiere: "une respiration : la lumière reprend un peu, teintée de sauge",
   },
   {
     /*

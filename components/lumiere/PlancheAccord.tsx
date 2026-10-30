@@ -501,7 +501,7 @@ export function PlancheArt() {
         letterSpacing="1.3"
         opacity="0.62"
       >
-        UNE POSITION ENTRE DEUX MOTS — JAMAIS UNE NOTE
+        UNE POSITION ENTRE DEUX MOTS, JAMAIS UNE NOTE
       </text>
 
       <line

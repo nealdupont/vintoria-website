@@ -198,7 +198,7 @@ export function Table() {
               >
                 <Image
                   src="/produit/qr.webp"
-                  alt="Vintoria Pro, écran Salle : le QR code d’accès client, son lien public, le support imprimable en A6, et le parcours — scanner, choisir son plat, découvrir l’accord."
+                  alt="Vintoria Pro, écran Salle : le QR code d’accès client, son lien public, le support imprimable en A6, et le parcours : scanner, choisir son plat, découvrir l’accord."
                   width={1600}
                   height={1000}
                   sizes="(min-width: 1024px) 820px, 94vw"

@@ -250,7 +250,7 @@ test.describe("Navigation", () => {
    * ne répond pas.
    */
   const marque = (page: Page) =>
-    page.getByRole("link", { name: "Vintoria — Accueil" });
+    page.getByRole("link", { name: "Accueil Vintoria" });
 
   test("la marque ramène à l’accueil depuis une autre page", async ({
     page,

@@ -237,7 +237,7 @@ const ECRANS = [
     src: "/produit/cave.webp",
     largeur: 1600,
     hauteur: 1003,
-    alt: "Vintoria Pro, écran Cave : le relevé de la maison — cent cinquante-huit bouteilles, quatorze références suivies et une sans suivi — et la composition de la cave par couleur.",
+    alt: "Vintoria Pro, écran Cave : le relevé de la maison (cent cinquante-huit bouteilles, quatorze références suivies et une sans suivi) et la composition de la cave par couleur.",
     cadrage:
       "ml-[-267.44%] mt-[-51.16%] w-[372.09%] max-w-none sm:ml-0 sm:mt-0 sm:w-full",
   },

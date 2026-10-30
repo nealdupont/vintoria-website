@@ -208,7 +208,7 @@ function Rubrique({
           {...paraitre(0.08)}
           className="data text-[0.58rem] tracking-[0.1em] text-[color:var(--color-faible)]"
         >
-          {rubrique.contenance} — Prix
+          {rubrique.contenance} · Prix
         </motion.p>
         <motion.span
           aria-hidden

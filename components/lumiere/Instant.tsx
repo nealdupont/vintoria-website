@@ -48,7 +48,7 @@ const TEMPS = [
     repere: "Le plat",
     titre: "La question qui revient à chaque service.",
     texte:
-      "« Qu’est-ce que vous me conseillez avec ça ? » Dans la plupart des salles, la réponse honnête est une approximation — et une approximation ne vend pas une bouteille.",
+      "« Qu’est-ce que vous me conseillez avec ça ? » Dans la plupart des salles, la réponse honnête est une approximation. Et une approximation ne vend pas une bouteille.",
     ecran: {
       src: "/demo/plats.webp",
       alt: "Le parcours convive : le choix du plat.",
@@ -72,7 +72,7 @@ const TEMPS = [
     repere: "Le vin",
     titre: "Le vin de votre carte, et la raison.",
     texte:
-      "Pas un catalogue : des propositions prises dans votre cave, expliquées comme le ferait un sommelier. Le client comprend pourquoi — et c’est là qu’il commande.",
+      "Pas un catalogue : des propositions prises dans votre cave, expliquées comme le ferait un sommelier. Le client comprend pourquoi. C’est là qu’il commande.",
     ecran: {
       src: "/demo/resultat.webp",
       alt: "Le parcours convive : la recommandation, et la raison qui l’accompagne.",
