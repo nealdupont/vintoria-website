@@ -221,7 +221,7 @@ const PORTES: readonly Porte[] = [
         corps: VALEUR.calcul,
         planche: "valeur",
         chiffres: [{ valeur: VALEUR.montant, unite: VALEUR.dit }],
-        pied: "Valeur commerciale — ni coût d’achat, ni marge",
+        pied: "Valeur commerciale : ni coût d’achat, ni marge",
         format: "large",
         /* LA PRÉSENCE DE CETTE CARTE VIENT DE SA LARGEUR, PAS DE SA HAUTEUR.
            Première version : 27rem de haut, soit plus que tout ce qui
@@ -241,7 +241,7 @@ const PORTES: readonly Porte[] = [
         etiquette: "La vigilance",
         titre: "Savoir ce qui manque avant qu’il ne manque.",
         corps:
-          "Chaque référence a son seuil — le vôtre, ou trois par défaut. En dessous, elle ressort du lot ; à zéro, elle est épuisée.",
+          "Chaque référence a son seuil : le vôtre, ou trois par défaut. En dessous, elle ressort du lot ; à zéro, elle est épuisée.",
         planche: "vigilance",
         papier: "grege",
         pied: "Recalculé à chaque visite, jamais stocké",
@@ -257,7 +257,7 @@ const PORTES: readonly Porte[] = [
         corps:
           "Chaque entrée et chaque sortie s’inscrit au journal : la quantité d’avant, celle d’après, le motif et la date.",
         planche: "mouvement",
-        pied: "Journal en ajout seul — rien n’est réécrit",
+        pied: "Journal en ajout seul : rien n’est réécrit",
         format: "etroit",
         hauteur: "h-[clamp(26rem,96vw,31rem)]",
         decalage: "mt-4",
@@ -310,7 +310,7 @@ const PORTES: readonly Porte[] = [
         etiquette: "Le vin juste",
         titre: "Le bon vin, parmi ceux de votre cave.",
         corps:
-          "Seules vos références entrent. Et disponible ne suffit pas : sans prix dans le format servi, un vin n’est jamais conseillé — même mieux noté.",
+          "Seules vos références entrent. Et disponible ne suffit pas : sans prix dans le format servi, un vin n’est jamais conseillé, même mieux noté.",
         planche: "vinjuste",
         pied: "Vos vins, pas une liste de vins",
         format: "large",

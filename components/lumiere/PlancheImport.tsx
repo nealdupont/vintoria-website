@@ -345,6 +345,7 @@ export function PlancheEtiquette() {
 export function PlancheListe() {
   const BRUT = [
     "condrieu  domaine des terrasses 2021  78",
+    // Saisie telle qu'un restaurateur la colle : ses tirets sont le sujet. tiret-ok
     "Meursault - Domaine du Clos - 2020 - 110€",
     "petit chablis, dom. des falaises, 2022, 38 €",
   ];

@@ -199,7 +199,7 @@ export function Ouverture() {
             transition={pas(0.72, 0.8)}
           >
             Vos clients choisissent leur plat. Vintoria leur recommande le vin
-            de votre carte qui l’accompagne — et leur explique pourquoi.
+            de votre carte qui l’accompagne, et leur explique pourquoi.
           </motion.p>
 
           {/* 5 · L'ACTION */}

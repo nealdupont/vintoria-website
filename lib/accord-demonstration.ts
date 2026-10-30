@@ -106,7 +106,7 @@ export const AXES = [
 export const REGLAGES = {
   formats: ["au verre", "à la bouteille"],
   /** L'échelle bouteille ; celle du verre existe aussi (8 € / 15 €). */
-  budgets: ["Libre", "moins de 50 €", "50 – 100 €", "plus de 100 €"],
+  budgets: ["Libre", "moins de 50 €", "50 à 100 €", "plus de 100 €"],
   /** Trois réponses par goût proposable. */
   gouts: ["j’aime", "sans préférence", "j’évite"],
 } as const;

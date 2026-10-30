@@ -102,7 +102,7 @@ function Merci({ etablissement }: { etablissement: string }) {
         Nous revenons vers {etablissement} sous 24 heures.
       </p>
       <p className="t-corps mt-5 max-w-prose text-texte">
-        D’ici là, vous pouvez nous envoyer votre carte des vins — nous la chargeons
+        D’ici là, vous pouvez nous envoyer votre carte des vins. Nous la chargeons
         avant l’appel, pour que la démonstration se fasse sur vos vins et non sur
         les nôtres.
       </p>
