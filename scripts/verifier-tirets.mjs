@@ -96,11 +96,23 @@ function visible(s) {
   return out
 }
 
+/**
+ * Trait d'union entoure d'espaces, ligne par ligne. Une puce de liste en debut
+ * de ligne n'en est pas un, et calc() est une expression CSS, pas du texte.
+ */
+function traitEnTiret(s) {
+  for (const ligne of s.split('\n')) {
+    const corps = ligne.replace(/^\s*[-*+]\s+/, '  ')
+    if (corps.includes('calc(')) continue
+    if (/ - /.test(corps)) return true
+  }
+  return false
+}
+
 function motif(s) {
   if (s.includes(LONG)) return 'tiret long'
   if (s.includes(MOYEN)) return 'tiret moyen'
-  // Trait d'union entoure d'espaces. calc() est une expression CSS, pas du texte.
-  if (!s.includes('calc(') && / - /.test(s)) return "trait d'union en tiret"
+  if (traitEnTiret(s)) return "trait d'union en tiret"
   return null
 }
 
