@@ -1,39 +1,24 @@
 import Image from "next/image";
 
 /**
- * LA MARQUE — composée d'après la géométrie OFFICIELLE.
+ * LA MARQUE, composée d'après la géométrie officielle de `vintoria-brand`.
  *
- * Source de vérité : le dépôt `vintoria-brand`. Ses règles, que ce fichier
- * respecte à la lettre :
- *   · le symbole ne se redessine jamais — on n'emploie que les dérivés de
- *     `dist/logo/symbole/` ;
- *   · le wordmark ne se compose jamais en texte — on emploie le tracé
- *     `dist/logo/wordmark/wordmark-bordeaux.svg`. L'en-tête affichait
- *     jusqu'ici « VINTORIA » en Spectral interlettré : c'était précisément
- *     ce que la marque interdit.
- *
- * LES PROPORTIONS NE SONT PAS INVENTÉES. Elles sont mesurées dans
- * `dist/logo/lockup/horizontal-clair.svg` (viewBox 1606,04 × 400) :
- *   symbole  x=0, largeur 487,18, hauteur 400
- *   wordmark translate(547,32 · 250), hauteur 102,29
- * d'où, rapportées à la hauteur du symbole :
- *   écart = (547,32 − 487,18) / 400 = 0,1504
- *   hauteur du wordmark = 102,29 / 400 = 0,2557
- * Les deux blocs sont centrés optiquement l'un sur l'autre (écart de 1,14
- * unité sur 400 dans le fichier officiel — négligeable).
- *
- * TAILLE MINIMALE. La charte interdit au wordmark de descendre sous 80 px
- * de large. Son rapport largeur/hauteur est de 10,35 ; il lui faut donc
- * 7,73 px de haut, soit un symbole d'au moins 30,2 px. D'où `hauteur = 32`
- * par défaut, et le symbole SEUL en dessous.
+ *  · Le symbole ne se redessine jamais : on emploie le dérivé officiel
+ *    `public/marque/symbole-256.png`.
+ *  · Le wordmark ne se compose jamais en texte. On emploie son TRACÉ
+ *    officiel (dist/logo/wordmark), recopié ici point pour point. Seule
+ *    la couleur change : `currentColor`, pour que le même tracé se lise en
+ *    crème sur la nuit et en bordeaux ailleurs, sans deux fichiers.
+ *  · Les proportions du lockup horizontal sont celles mesurées dans
+ *    `lockup/horizontal-clair.svg` (viewBox 1606,04 × 400) :
+ *      écart symbole/wordmark = 0,1504 × hauteur du symbole
+ *      hauteur du wordmark    = 0,2557 × hauteur du symbole
  */
 
-/** Rapports relevés dans le lockup horizontal officiel. */
 const ECART = 0.1504;
 const WORDMARK = 0.2557;
-/** Rapports propres aux fichiers sources. */
-const SYMBOLE_RATIO = 950 / 780; // 1,218
-const WORDMARK_RATIO = 1058.86 / 102.29; // 10,35
+const SYMBOLE_RATIO = 950 / 780;
+const WORDMARK_RATIO = 1058.86 / 102.29;
 
 export function Symbole({
   hauteur,
@@ -59,13 +44,43 @@ export function Symbole({
   );
 }
 
+/** Le tracé officiel du wordmark, en couleur courante. */
+export function Wordmark({
+  hauteur,
+  className = "",
+}: {
+  hauteur: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 1058.86 102.29"
+      width={hauteur * WORDMARK_RATIO}
+      height={hauteur}
+      className={className}
+      aria-hidden
+      focusable="false"
+    >
+      <g fill="currentColor" transform="translate(0.14 101.14)">
+        <path d="M58 0L43.86 0L-0.14 -100L15.29 -100L51.29 -17.86L87.57 -100L101.86 -100L58 0" />
+        <path d="M179.57 0L165.29 0L165.29 -100L179.57 -100L179.57 0" />
+        <path d="M272.43 0L258.14 0L258.14 -100L269.86 -100L329.86 -25.43L329.86 -100L344.14 -100L344.14 0L332.43 0L272.43 -74.57L272.43 0" />
+        <path d="M456.71 0L442.57 0L442.57 -87.57L408.29 -87.57L408.29 -100L491 -100L491 -87.57L456.71 -87.57L456.71 0" />
+        <path d="M600.29 1.14L600.29 1.14Q588.86 1.14 579.07 -2.71Q569.29 -6.57 562.14 -13.5Q555 -20.43 551 -29.71Q547 -39 547 -50L547 -50Q547 -61 551 -70.29Q555 -79.57 562.14 -86.5Q569.29 -93.43 579 -97.29Q588.71 -101.14 600.29 -101.14L600.29 -101.14Q611.71 -101.14 621.36 -97.36Q631 -93.57 638.21 -86.64Q645.43 -79.71 649.36 -70.43Q653.29 -61.14 653.29 -50L653.29 -50Q653.29 -38.86 649.36 -29.57Q645.43 -20.29 638.21 -13.36Q631 -6.43 621.36 -2.64Q611.71 1.14 600.29 1.14M600.29 -11.57L600.29 -11.57Q608.57 -11.57 615.64 -14.43Q622.71 -17.29 627.93 -22.5Q633.14 -27.71 636.07 -34.71Q639 -41.71 639 -50L639 -50Q639 -58.29 636.07 -65.29Q633.14 -72.29 627.93 -77.5Q622.71 -82.71 615.64 -85.57Q608.57 -88.43 600.29 -88.43L600.29 -88.43Q591.86 -88.43 584.79 -85.57Q577.71 -82.71 572.43 -77.5Q567.14 -72.29 564.21 -65.29Q561.29 -58.29 561.29 -50L561.29 -50Q561.29 -41.71 564.21 -34.71Q567.14 -27.71 572.43 -22.5Q577.71 -17.29 584.79 -14.43Q591.86 -11.57 600.29 -11.57" />
+        <path d="M738 0L723.71 0L723.71 -100L762.71 -100Q782.14 -100 793.29 -90.79Q804.43 -81.57 804.43 -65.14L804.43 -65.14Q804.43 -54.29 799.43 -46.5Q794.43 -38.71 785.14 -34.57L785.14 -34.57Q783.86 -34 782.43 -33.43L782.43 -33.43L806.14 0L790.57 0L769 -30.71Q766 -30.43 762.71 -30.43L762.71 -30.43L738 -30.43L738 0M738 -87.57L738 -42.57L762.29 -42.57Q776 -42.57 783.07 -48.5Q790.14 -54.43 790.14 -65.14Q790.14 -75.86 783.07 -81.71Q776 -87.57 762.29 -87.57L762.29 -87.57L738 -87.57" />
+        <path d="M890.43 0L876.14 0L876.14 -100L890.43 -100L890.43 0" />
+        <path d="M968.57 0L953.86 0L999.14 -100L1013.29 -100L1058.71 0L1043.71 0L1032.71 -25L979.57 -25L968.57 0M984.57 -36.43L1027.71 -36.43L1006.14 -85.43L984.57 -36.43" />
+      </g>
+    </svg>
+  );
+}
+
 /**
- * Le lockup horizontal : symbole + wordmark, à l'écart officiel.
- * `role="img"` et le nom accessible portent sur l'ENSEMBLE — le symbole est
- * décoratif, le wordmark est un tracé : ni l'un ni l'autre ne se lit seul.
+ * Le lockup horizontal. Le nom accessible porte sur l'ENSEMBLE : ni le
+ * symbole ni le tracé ne se lisent seuls.
  */
-export function LockupHorizontal({
-  hauteur = 32,
+export function Lockup({
+  hauteur = 30,
   className = "",
   priority = false,
 }: {
@@ -73,24 +88,15 @@ export function LockupHorizontal({
   className?: string;
   priority?: boolean;
 }) {
-  const hWordmark = hauteur * WORDMARK;
-  const lWordmark = hWordmark * WORDMARK_RATIO;
   return (
     <span
       role="img"
       aria-label="Vintoria"
-      className={`inline-flex items-center ${className}`}
+      className={`lockup ${className}`}
       style={{ gap: hauteur * ECART }}
     >
       <Symbole hauteur={hauteur} priority={priority} />
-      <Image
-        src="/marque/wordmark-bordeaux.svg"
-        alt=""
-        width={Math.round(lWordmark)}
-        height={Math.round(hWordmark)}
-        priority={priority}
-        style={{ height: hWordmark, width: lWordmark }}
-      />
+      <Wordmark hauteur={hauteur * WORDMARK} />
     </span>
   );
 }

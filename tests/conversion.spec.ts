@@ -137,26 +137,24 @@ test.describe("Le formulaire de démonstration", () => {
   });
 });
 
-test.describe("Les chemins vers la conversion", () => {
+test.describe("Les chemins vers la démonstration", () => {
+  /* L'essai gratuit est la porte principale (voir vitrine.spec.ts). La
+     démonstration reste offerte à qui préfère qu'on lui montre : elle doit
+     être atteignable depuis l'accueil et les formules. */
   for (const route of ["/", "/tarifs"]) {
     test(`${route} mène à la démonstration`, async ({ page }) => {
       await page.goto(route);
-      const vers = page.locator('a[href="/demonstration"]');
+      const vers = page.locator('main a[href="/demonstration"]');
       expect(await vers.count()).toBeGreaterThan(0);
       await vers.first().click();
       await expect(page).toHaveURL(/\/demonstration$/);
-      await expect(page.getByRole("heading", { level: 1 })).toContainText(
-        "Vingt minutes",
-      );
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("Vintoria");
     });
   }
 
-  test("aucun mailto: ne remplace le formulaire sur l’accueil", async ({
-    page,
-  }) => {
+  test("aucun bouton d’action n’est un mailto", async ({ page }) => {
     await page.goto("/");
-    // Le pied peut offrir une adresse ; aucun APPEL À L'ACTION ne doit le faire.
-    const mailtosDansLeContenu = page.locator('main a[href^="mailto:"]');
-    await expect(mailtosDansLeContenu).toHaveCount(0);
+    // Une adresse peut être offerte dans une phrase ; jamais comme bouton.
+    await expect(page.locator('a.bouton[href^="mailto:"]')).toHaveCount(0);
   });
 });

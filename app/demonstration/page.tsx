@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { FormulaireDemonstration } from "@/components/formulaire/FormulaireDemonstration";
+import { COURRIEL_CONTACT, INSCRIPTION } from "@/lib/liens";
 
 export const metadata: Metadata = {
   title: "Demander une démonstration",
@@ -9,21 +9,27 @@ export const metadata: Metadata = {
   alternates: { canonical: "/demonstration" },
 };
 
+/**
+ * LA DÉMONSTRATION. La porte de ceux qui préfèrent qu'on leur montre :
+ * un groupe, un hôtel, un restaurateur qui veut un interlocuteur. L'essai
+ * gratuit reste proposé à côté, pour qui voudrait commencer tout de suite.
+ */
+
 const ETAPES = [
   {
-    quand: "Avant",
+    quand: "Avant l’appel",
     titre: "Vous nous envoyez votre carte",
     texte:
       "Un PDF, une photo, un tableur. Nous la chargeons pour que la démonstration se fasse sur vos vins, pas sur les nôtres.",
   },
   {
-    quand: "20 min",
-    titre: "Nous vous montrons Vintoria à l’œuvre",
+    quand: "Vingt minutes",
+    titre: "Vous voyez Vintoria à l’œuvre",
     texte:
       "Vos plats d’un côté, vos bouteilles de l’autre, et le conseil qui se forme entre les deux. Vous posez vos questions.",
   },
   {
-    quand: "Après",
+    quand: "Ensuite",
     titre: "Vous décidez",
     texte:
       "Aucun engagement, aucune installation, aucun matériel. Si ce n’est pas le moment, nous vous le dirons nous-mêmes.",
@@ -33,56 +39,53 @@ const ETAPES = [
 export default function Page() {
   return (
     <>
-      <section className="px rythme-ample">
-        <div className="mx-auto max-w-[1180px]">
-          <p className="eyebrow mb-6">La démonstration</p>
-          <h1 className="voix t-display max-w-[16ch] text-balance text-fort">
-            Vingt minutes, sur votre carte.
+      <section className="page-tete" aria-labelledby="demo-titre">
+        <div className="conteneur">
+          <h1 id="demo-titre" className="t-xl" style={{ maxWidth: "14ch" }}>
+            Voyez Vintoria sur votre propre carte.
           </h1>
-          <p className="t-chapeau mt-7 max-w-[52ch] text-texte">
-            Nous chargeons vos vins et vos plats avant l’appel. Vous voyez
-            Vintoria travailler sur votre établissement, pas sur une
-            démonstration préparée.
+          <p className="chapeau">
+            Vingt minutes en visio, sur vos vins et vos plats. Nous chargeons
+            votre carte avant l’appel : vous voyez les accords que vos clients
+            liraient ce soir.
           </p>
         </div>
       </section>
 
-      <section className="px pb-24">
-        <div className="mx-auto grid max-w-[1180px] gap-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
-          <div className="parait min-w-0">
-            <FormulaireDemonstration />
+      <section className="conteneur demo" aria-label="Formulaire de demande">
+        <div className="verre demo-formulaire">
+          <FormulaireDemonstration />
+        </div>
+
+        <aside className="demo-cote">
+          <h2>Comment ça se passe</h2>
+          <ol>
+            {ETAPES.map((e) => (
+              <li key={e.quand}>
+                <span>{e.quand}</span>
+                <h3>{e.titre}</h3>
+                <p className="corps">{e.texte}</p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="verre verre--brun demo-essai" data-lumiere>
+            <p className="corps">
+              Vous préférez essayer seul, tout de suite ? L’essai est gratuit
+              et ne demande aucune carte bancaire.
+            </p>
+            <a className="bouton bouton-or bouton-petit" href={INSCRIPTION}>
+              Commencer l’essai gratuit
+            </a>
           </div>
 
-          <aside className="parait min-w-0">
-            <h2 className="eyebrow mb-8">Comment ça se passe</h2>
-            <ol className="flex flex-col gap-9">
-              {ETAPES.map((e) => (
-                <li key={e.quand} className="border-l border-filet pl-5">
-                  <p className="data t-meta mb-2 text-accent">{e.quand}</p>
-                  <h3 className="voix t-tete text-fort">{e.titre}</h3>
-                  <p className="t-corps mt-2 text-texte">{e.texte}</p>
-                </li>
-              ))}
-            </ol>
-
-            {/* Les liens isolés portent leur propre hauteur de cible : un
-                lien de 14 px de haut n'est pas atteignable au pouce. */}
-            <div className="mt-10 flex flex-col items-start border-t border-filet pt-4">
-              <a
-                className="t-meta inline-flex min-h-11 items-center text-texte underline underline-offset-4 hover:text-accent"
-                href="mailto:contact@vintoria.com"
-              >
-                contact@vintoria.com
-              </a>
-              <Link
-                className="t-meta inline-flex min-h-11 items-center text-texte underline underline-offset-4 hover:text-accent"
-                href="/tarifs"
-              >
-                Voir les formules
-              </Link>
-            </div>
-          </aside>
-        </div>
+          <p className="petit" style={{ marginTop: "1.75rem" }}>
+            Ou écrivez-nous :{" "}
+            <a className="lien" href={`mailto:${COURRIEL_CONTACT}`}>
+              {COURRIEL_CONTACT}
+            </a>
+          </p>
+        </aside>
       </section>
     </>
   );
