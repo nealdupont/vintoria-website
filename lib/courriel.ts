@@ -45,7 +45,7 @@ export async function ecrireAuContact(message: Message): Promise<Envoi> {
    * le prospect attend un rappel qui n'arrivera jamais.
    */
   if (!cle) {
-    console.error("[courriel] RESEND_API_KEY absente — aucun envoi effectué.");
+    console.error("[courriel] RESEND_API_KEY absente : aucun envoi effectué.");
     return { ok: false, erreur: INDISPONIBLE };
   }
 

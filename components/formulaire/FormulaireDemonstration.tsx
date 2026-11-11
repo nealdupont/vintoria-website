@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useId, useRef } from "react";
 import { demanderDemonstration } from "@/app/demonstration/action";
 import { ETAT_INITIAL, type Champ, type EtatDemande } from "@/app/demonstration/etat";
+import { COURRIEL_CONTACT } from "@/lib/liens";
 
 /* ------------------------------------------------------------------ */
 
@@ -24,7 +25,7 @@ interface ChampProps {
  * une erreur. Le placeholder ne remplace jamais l'étiquette : il disparaît
  * à la saisie, et avec lui la seule indication de ce qu'on remplissait.
  */
-function Champ({
+function ChampSaisi({
   nom,
   etiquette,
   type = "text",
@@ -50,37 +51,30 @@ function Champ({
     inputMode,
     "aria-invalid": erreur ? (true as const) : undefined,
     "aria-describedby": decrit || undefined,
-    className: [
-      "w-full rounded-xl border bg-transparent px-4 text-fort",
-      "placeholder:text-faible/70",
-      "transition-colors duration-[120ms]",
-      erreur ? "border-braise-vive" : "border-filet hover:border-filet-fort",
-      zone ? "min-h-[7rem] py-3 leading-relaxed" : "min-h-[48px] py-3",
-    ].join(" "),
   };
 
   return (
-    <p className="flex flex-col gap-2">
-      <label htmlFor={id} className="t-meta font-medium text-texte">
+    <p className="champ">
+      <label htmlFor={id}>
         {etiquette}
         {requis ? (
-          <span className="ml-1 text-accent" aria-hidden>
+          <span className="champ-requis" aria-hidden>
             *
           </span>
         ) : (
-          <span className="ml-2 text-faible">facultatif</span>
+          <span className="champ-facultatif">facultatif</span>
         )}
       </label>
 
       {zone ? <textarea {...commun} rows={4} /> : <input {...commun} type={type} />}
 
       {aide ? (
-        <span id={idAide} className="t-meta text-faible">
+        <span id={idAide} className="champ-aide">
           {aide}
         </span>
       ) : null}
       {erreur ? (
-        <span id={idErreur} className="t-meta text-braise-vive">
+        <span id={idErreur} className="champ-erreur">
           {erreur}
         </span>
       ) : null}
@@ -92,23 +86,19 @@ function Champ({
 
 function Merci({ etablissement }: { etablissement: string }) {
   return (
-    <div
-      className="rounded-2xl border border-filet-fort p-8 sm:p-10"
-      role="status"
-      aria-live="polite"
-    >
-      <p className="eyebrow mb-4">Demande reçue</p>
-      <p className="voix t-citation text-fort">
+    <div className="merci" role="status" aria-live="polite">
+      <p className="chapitre">Demande reçue</p>
+      <p className="t-m" style={{ marginTop: "1rem" }}>
         Nous revenons vers {etablissement} sous 24 heures.
       </p>
-      <p className="t-corps mt-5 max-w-prose text-texte">
-        D’ici là, vous pouvez nous envoyer votre carte des vins — nous la chargeons
+      <p className="corps">
+        D’ici là, vous pouvez nous envoyer votre carte des vins. Nous la chargeons
         avant l’appel, pour que la démonstration se fasse sur vos vins et non sur
         les nôtres.
       </p>
-      <p className="t-meta mt-6 text-faible">
-        <a className="underline underline-offset-4 hover:text-accent" href="mailto:contact@vintoria.com">
-          contact@vintoria.com
+      <p className="petit">
+        <a className="lien" href={`mailto:${COURRIEL_CONTACT}`}>
+          {COURRIEL_CONTACT}
         </a>
       </p>
     </div>
@@ -155,20 +145,19 @@ export function FormulaireDemonstration() {
   const valeurs = etat.phase === "erreur" ? etat.valeurs : {};
 
   return (
-    <form ref={formulaire} action={action} noValidate className="flex flex-col gap-6">
-      {/* Le leurre : hors tabulation, hors arbre d'accessibilité. */}
+    <form ref={formulaire} action={action} noValidate className="form">
       {/* Le leurre reste HORS-CADRE et non masqué : un `display:none` est le
           premier signal qu'un robot un peu sérieux apprend à ignorer. Il est
           `aria-hidden` et hors tabulation, donc invisible à tout humain,
           lecteur d'écran compris. */}
-      <div aria-hidden className="absolute left-[-9999px] top-0 h-px w-px overflow-hidden">
+      <div aria-hidden className="leurre">
         <label htmlFor="mot">Ne remplissez pas ce champ</label>
         <input id="mot" name="mot" type="text" tabIndex={-1} autoComplete="off" />
       </div>
       <input ref={ouverture} type="hidden" name="ouverture" defaultValue="" />
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Champ
+      <div className="form-grille">
+        <ChampSaisi
           nom="etablissement"
           etiquette="Établissement"
           requis
@@ -176,14 +165,14 @@ export function FormulaireDemonstration() {
           erreur={erreurs.etablissement}
           valeur={valeurs.etablissement}
         />
-        <Champ
+        <ChampSaisi
           nom="ville"
           etiquette="Ville"
           autoComplete="address-level2"
           erreur={erreurs.ville}
           valeur={valeurs.ville}
         />
-        <Champ
+        <ChampSaisi
           nom="nom"
           etiquette="Votre nom"
           requis
@@ -191,7 +180,7 @@ export function FormulaireDemonstration() {
           erreur={erreurs.nom}
           valeur={valeurs.nom}
         />
-        <Champ
+        <ChampSaisi
           nom="courriel"
           etiquette="E-mail"
           type="email"
@@ -201,7 +190,7 @@ export function FormulaireDemonstration() {
           erreur={erreurs.courriel}
           valeur={valeurs.courriel}
         />
-        <Champ
+        <ChampSaisi
           nom="telephone"
           etiquette="Téléphone"
           type="tel"
@@ -210,7 +199,7 @@ export function FormulaireDemonstration() {
           erreur={erreurs.telephone}
           valeur={valeurs.telephone}
         />
-        <Champ
+        <ChampSaisi
           nom="couverts"
           etiquette="Couverts par service"
           type="number"
@@ -219,7 +208,7 @@ export function FormulaireDemonstration() {
           erreur={erreurs.couverts}
           valeur={valeurs.couverts}
         />
-        <Champ
+        <ChampSaisi
           nom="references"
           etiquette="Références à la carte"
           type="number"
@@ -230,7 +219,7 @@ export function FormulaireDemonstration() {
         />
       </div>
 
-      <Champ nom="message" etiquette="Un mot sur votre carte" zone />
+      <ChampSaisi nom="message" etiquette="Un mot sur votre carte" zone />
 
       {/*
         Le résumé d'erreur est annoncé par `aria-live` ET recevra le focus
@@ -240,18 +229,16 @@ export function FormulaireDemonstration() {
         ref={resume}
         tabIndex={-1}
         aria-live="polite"
-        className={`t-meta ${etat.phase === "erreur" ? "text-braise-vive" : "sr-only"}`}
+        className={etat.phase === "erreur" ? "form-erreur" : "sr-only"}
       >
         {etat.phase === "erreur" ? etat.message : ""}
       </p>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-2">
-        <button type="submit" className="bouton bouton-primaire" disabled={enCours}>
+      <div className="form-pied">
+        <button type="submit" className="bouton bouton-or" disabled={enCours}>
           {enCours ? "Envoi…" : "Demander la démonstration"}
         </button>
-        <span className="t-meta text-faible">
-          Réponse sous 24 h · sans engagement
-        </span>
+        <span className="petit">Réponse sous 24 h, sans engagement</span>
       </div>
     </form>
   );

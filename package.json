@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verifier-tirets.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "verifier:tirets": "node scripts/verifier-tirets.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",

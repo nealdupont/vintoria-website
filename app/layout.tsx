@@ -1,67 +1,54 @@
 import type { Metadata, Viewport } from "next";
-import { Spectral, Archivo } from "next/font/google";
+import { Bodoni_Moda, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Chrome } from "@/components/Chrome";
-import { Pied } from "@/components/Pied";
+import { EnTete } from "@/components/site/EnTete";
+import { Pied } from "@/components/site/Pied";
+import { Lumieres } from "@/components/site/Lumieres";
 
 /**
- * Deux voix, une règle : la MARQUE parle en sérif, l'INTERFACE en grotesque.
+ * Les deux voix de vintoria-brand, et elles seules.
  *
- * Spectral (Production Type) — sérif taillé, lisible de 12 à 100 px. C'est la
- * voix de Vintoria : le titre, la citation, les mots du sommelier.
- * Archivo (Omnibus-Type) — grotesque neutre et précise. C'est la voix de
- * l'outil : labels, métadonnées, navigation, boutons.
+ * Bodoni Moda porte la marque : titres, accords, citations. Son axe de
+ * taille optique est chargé (`opsz`) : un didone dessiné pour 11 px devient
+ * pâteux à 80 px, et un didone dessiné pour 80 px casse ses déliés à 16 px.
+ * Avec l'axe, le navigateur choisit le bon dessin à chaque taille.
  *
- * Aucun monospace : il annonce la technologie, alors que nous la voulons
- * invisible — et c'est la signature la plus datable de la décennie.
- *
- * Cinq fontes, pas neuf. Chaque graisse chargée ici est employée quelque
- * part ; aucune ne dort. Le poids des polices était le premier poste de
- * la page, devant le JavaScript.
+ * Schibsted Grotesk porte l'information : texte courant, boutons, données.
  */
-const spectral = Spectral({
+const voix = Bodoni_Moda({
   variable: "--font-voix-src",
   subsets: ["latin"],
-  weight: ["300", "400"],
   style: ["normal", "italic"],
+  axes: ["opsz"],
   display: "swap",
 });
 
-const archivo = Archivo({
+const structure = Schibsted_Grotesk({
   variable: "--font-structure-src",
   subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
-/*
- * Le fond de Vintoria va d'un bord à l'autre de l'écran.
- *
- * `viewportFit: "cover"` : sans lui, iOS Safari rétrécit le viewport de
- * mise en page pour tenir entre les zones système. La page ne PEUT pas
- * peindre derrière la barre d'état ni l'encoche, d'où le bandeau en haut.
- *
- * Le contenu, lui, reste tenu à l'écart de ces zones par env(safe-area-*).
- */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#0a1020",
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vintoria.com"),
   title: {
-    default: "Vintoria · L’expertise du sommelier, à chaque table",
+    default: "Vintoria · Le sommelier de votre restaurant, à chaque table",
     template: "%s · Vintoria",
   },
   description:
-    "Vos clients scannent, choisissent leur plat, et découvrent les vins de votre carte expliqués comme le ferait un sommelier. Plus de ventes sur le vin, une cave tenue sans effort.",
+    "Accords mets-vins à table par QR code, gestion de cave et carte des vins composée pour vous. Vintoria donne à votre restaurant l’expertise d’un sommelier. Essai gratuit, sans carte bancaire.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Vintoria · L’expertise du sommelier, à chaque table",
+    title: "Vintoria · Le sommelier de votre restaurant, à chaque table",
     description:
-      "Le conseil d’un sommelier à chaque table, et une cave qui se tient toute seule.",
+      "Chaque table mieux conseillée. Chaque bouteille mieux valorisée. Chaque cave mieux pilotée.",
     url: "https://vintoria.com",
     siteName: "Vintoria",
     type: "website",
@@ -78,36 +65,21 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      /*
-       * Next 16 n'écrase PLUS `scroll-behavior` pendant les navigations.
-       * Sans cet attribut, passer de / à /tarifs ferait défiler la page en
-       * douceur sur toute sa hauteur au lieu d'arriver en haut — à cause du
-       * `scroll-behavior: smooth` que nous voulons pour les ancres internes.
-       * L'attribut rend l'arbitrage à Next : saut net entre les routes,
-       * défilement doux à l'intérieur d'une page.
-       */
+      /* Next 16 n'arbitre plus `scroll-behavior` entre les routes : sans cet
+         attribut, passer de / à /tarifs défilerait toute la page en douceur
+         au lieu d'arriver en haut. */
       data-scroll-behavior="smooth"
-      className={`${spectral.variable} ${archivo.variable} antialiased`}
+      className={`${voix.variable} ${structure.variable}`}
     >
-      {/*
-          Le fond et la couleur du corps viennent de `globals.css` (règle
-          `body`, puis `body:has(.lumiere)` pour l'accueil). Les déclarer ici
-          en utilitaires serait INERTE — les couches de Tailwind font gagner
-          la règle CSS — et surtout trompeur : c'est la ligne qu'on
-          corrigerait en croyant agir sur le noir, alors qu'il vient
-          d'ailleurs. On ne garde donc que ce que cette balise gouverne
-          réellement.
-        */}
-      <body className="filmgrain min-h-screen">
-        <a
-          href="#contenu"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-[#1b1618] focus:px-4 focus:py-2 focus:text-sm focus:text-[#fcfaf5] focus:outline-2 focus:outline-offset-2 focus:outline-[#d4b96a]"
-        >
+      <body>
+        <a href="#contenu" className="evitement">
           Aller au contenu
         </a>
-        <Chrome />
+        <div className="atmosphere" aria-hidden />
+        <EnTete />
         <main id="contenu">{children}</main>
         <Pied />
+        <Lumieres />
       </body>
     </html>
   );

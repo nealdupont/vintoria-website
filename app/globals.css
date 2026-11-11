@@ -1,1774 +1,3473 @@
-@import "tailwindcss";
+/* ================================================================
+   VINTORIA · NUIT DE CAVE
 
-/* ============================================================
-   VINTORIA — SYSTÈME
+   Le site vitrine se lit comme une cave le soir : une voûte bleu nuit,
+   l'or d'une bougie, du verre brun et vert qui retient la lumière.
 
-   Un restaurant a deux temps. LE SERVICE, le soir, à l'encre.
-   LE TRAVAIL DE LA CAVE, le matin, sur le crème.
+   Trois règles tiennent tout le fichier.
+   1. L'or ne décore pas, il signale : l'action principale, le fil d'un
+      accord, ce qui demande l'attention.
+   2. Le verre n'est employé que là où il porte quelque chose (un accord,
+      une fonctionnalité, une formule). Le texte courant reste sur la nuit.
+   3. Le mouvement répond au visiteur (survol, ouverture, défilement).
+      Un seul moment se joue tout seul : l'arrivée sur la page.
 
-   D'où la règle qui gouverne tout ce fichier : les couleurs ne sont
-   pas nommées par ce qu'elles SONT mais par ce qu'elles FONT. Un même
-   composant écrit `text-fort` et se lit correctement sur les deux
-   surfaces, sans condition et sans variante. La bascule se fait en un
-   seul endroit : la classe `jour`.
-   ============================================================ */
+   Polices : celles de vintoria-brand. Bodoni Moda est la voix de la
+   marque (titres), Schibsted Grotesk celle de l'information (texte).
 
-@theme {
-  /* --- Matière ------------------------------------------------ */
-  --color-encre: #0b0a0c; /* la salle avant le service */
-  --color-encre-2: #121013; /* surface posée sur l'encre */
-  --color-jour: #ece5d8; /* le matin, la cave, le carnet */
-  --color-jour-2: #e3dacb; /* surface posée sur le crème */
-
-  /* --- Échelle de texte, contrastes vérifiés sur l'encre -------- */
-  /* Couche BRUTE : la matière, nommée par ce qu'elle est. Elle sert aux
-     composants qui vivent toujours du même côté — la démonstration, le
-     verre. Les mouvements, eux, emploient la couche sémantique. */
-  --color-os: #ece5d8; /* 15,8:1 — titres, texte fort */
-  --color-cendre: #a8a298; /* 7,8:1 — texte courant */
-  --color-cendre-2: #837d73; /* 4,8:1 — métadonnées, labels */
-
-  /* --- Accents ------------------------------------------------ */
-  --color-braise: #6e1023; /* la robe du vin */
-  --color-braise-vive: #8e2a3a;
-  --color-laiton: #d4b96a; /* l'or de Vintoria Pro — 10,30:1 sur l'encre */
-  --color-tungstene: #e8c88c; /* la lampe de salle — 12,30:1 */
-
-  /* --- Voix ---------------------------------------------------- */
-  /* La marque parle en sérif. L'interface parle en grotesque. */
-  --font-voix: var(--font-voix-src); /* Spectral — Vintoria parle */
-  --font-structure: var(--font-structure-src); /* Archivo — l'outil affiche */
-
-  /* --- Mouvement ----------------------------------------------- */
-  /* Quatre durées, pas une de plus. Chacune a un emploi. */
-  --duree-tactile: 120ms; /* ce que le doigt déclenche */
-  --duree-etat: 240ms; /* ce qui change d'état */
-  --duree-entree: 560ms; /* ce qui entre dans le champ */
-  --duree-robe: 1200ms; /* ce que le vin dépose */
-
-  --ease-film: cubic-bezier(0.16, 1, 0.3, 1); /* entrées */
-
-  /* --- LA PROFONDEUR ------------------------------------------
-     Le site savait composer des pages ; il ne savait pas poser
-     d'objets. Aucun jeton ne disait un rayon, une élévation ni un
-     halo : chaque carte inventait les siens, et le relief ne tenait
-     que par habitude. Ces valeurs-ci sont l'échelle commune.
-
-     TROIS RAYONS, pas davantage. Le petit pour ce qui se touche
-     (pastilles, boutons), le courant pour les cartes, le grand pour
-     les panneaux qui portent une composition entière. */
-  --radius-touche: 12px;
-  --radius-carte: 18px;
-  --radius-panneau: 26px;
-
-  /* TROIS ÉLÉVATIONS, et leurs ombres sont CHAUDES. Une ombre neutre
-     sur du cognac fait du gris : celles-ci tirent sur le brun de la
-     matière, comme une ombre portée sur du cuir. */
-  --ombre-posee:
-    0 1px 2px rgba(38, 22, 12, 0.08), 0 8px 20px -12px rgba(38, 22, 12, 0.3);
-  --ombre-levee:
-    0 2px 4px rgba(38, 22, 12, 0.1), 0 18px 38px -16px rgba(38, 22, 12, 0.42);
-  --ombre-ouverte:
-    0 3px 6px rgba(38, 22, 12, 0.12), 0 36px 70px -28px rgba(38, 22, 12, 0.5);
-
-  /* LE HALO — la lumière qui vient de la matière, jamais un néon. Sa
-     teinte est la lampe de salle.
-
-     SA FORCE EST UN JETON, PARCE QU'ELLE DÉPEND DU FOND. Un lavis chaud
-     posé sur du crème à 250 de luminance ne peut que l'assombrir ; posé
-     sur du cognac à 60, il l'éclaircit. La même opacité n'y produit donc
-     pas du tout la même lecture, et une valeur unique condamnait l'un
-     des deux. Les deux valeurs ci-dessous sont mesurées, pas estimées :
-     chacune porte l'écart PERÇU entre carte éteinte et carte allumée à
-     ΔE ≈ 7 — « franc » sur l'échelle CIE, deux fois l'ancien réglage qui
-     plafonnait à 3,7, et loin des 11+ où le halo cesse d'être une lumière
-     pour devenir une teinte. Balayage complet : 0,16 → ΔE 3,7 · 0,26 →
-     5,9 · 0,30 → 6,8 · 0,40 → 9,1 · 0,50 → 11,5 sur crème.
-
-     LES VALEURS DIFFÈRENT PARCE QUE LES FONDS DIFFÈRENT, pas par goût :
-     à force égale, le même lavis rend ΔE 6,8 sur le crème, 9,3 sur le
-     cuir, et bien davantage sur l'encre — plus un fond est sombre, plus
-     une lumière chaude y pèse. Trois valeurs, donc, une par jeu :
-       encre  0,09  (ici, le jeu du soir)       ΔE 7,2
-       cognac 0,26  (`.tabac`)                  ΔE 7,0
-       crème  0,30  (`.jour`, `.lumiere`)       ΔE 6,8
-     Le rapport entre la première et la dernière est de un à trois : c'est
-     la mesure de ce qu'une même lumière pèse différemment selon ce
-     qu'elle éclaire. Sur l'encre, 0,30 rendrait ΔE 24 — un néon.
-     Chacune est mesurée, pas estimée, et chacune porte l'écart perçu à
-     ΔE ≈ 7 — « franc » sur l'échelle CIE, loin des 11+ où le halo cesse
-     d'être une lumière pour devenir une teinte. */
-  --halo-chaud: 232, 200, 140;
-  --halo-force: 0.09;
-  --ease-sortie: cubic-bezier(0.4, 0, 1, 1); /* sorties, plus sèches */
-
-  /* ============================================================
-     JETONS SÉMANTIQUES — la valeur par défaut est celle du SOIR.
-     Voir la classe `jour` plus bas pour le jeu du matin.
-     Contrastes mesurés sur l'encre #0b0a0c :
-       fort 15,8:1 · texte 7,8:1 · faible 4,8:1 · accent 10,3:1
-     ============================================================ */
-  --color-fond: #0b0a0c;
-  --color-surface: #121013;
-  --color-fort: #ece5d8; /* titres, texte appuyé */
-  --color-texte: #a8a298; /* texte courant */
-  --color-faible: #837d73; /* métadonnées, étiquettes */
-  --color-accent: #d4b96a; /* le métal qui signale */
-  --color-filet: rgba(236, 229, 216, 0.14);
-  --color-filet-fort: rgba(236, 229, 216, 0.24);
-}
-
-/* ============================================================
-   LE JOUR — la cave, le matin.
-
-   Contrastes mesurés sur le crème #ece5d8 :
-     fort 15,8:1 · texte 7,7:1 · faible 4,7:1 · accent (braise) 9,5:1
-
-   L'OR EST INTERDIT ICI : #d4b96a ne donne que 1,53:1 sur le crème.
-   C'est la braise qui prend le relais de l'accent. Cette substitution
-   est la raison d'être des jetons sémantiques — aucun composant n'a
-   à connaître la règle, il écrit `text-accent` et elle s'applique.
-   ============================================================ */
-.jour {
-  --halo-force: 0.3;
-  --color-fond: #ece5d8;
-  --color-surface: #e3dacb;
-  --color-fort: #0b0a0c;
-  --color-texte: #4a443c;
-  --color-faible: #6b6459;
-  --color-accent: #6e1023;
-  --color-filet: rgba(11, 10, 12, 0.14);
-  --color-filet-fort: rgba(11, 10, 12, 0.26);
-
-  background-color: var(--color-fond);
-  color: var(--color-texte);
-  color-scheme: light;
-}
+   Contrastes mesurés sur la nuit #0A1020 :
+     crème #F1EADC 15,8:1 · texte #B3AC9F 8,4:1 · faible #8E897F 5,4:1
+     or #C9A54E 8,1:1 · encre sur or 8,1:1
+   ================================================================ */
 
 :root {
-  /* La robe — aucun vin lu : lumière de salle. Voir lib/robes.ts */
-  --robe-profond: #4a3a22;
-  --robe-lumiere: #e8c88c;
+  /* La nuit */
+  --nuit: #0a1020;
+  --nuit-2: #0e1628;
+  --nuit-3: #131d33;
 
-  /*
-    L'interrupteur de la trace. 0 tant que la démonstration n'a rien
-    retenu : la page d'avant la sélection est exactement celle d'hier.
-    Posé à 1 par components/Salle.tsx dès qu'un vin est lu.
-  */
-  --robe-presence: 0;
+  /* Les textes */
+  --creme: #f1eadc;
+  --texte: #b3ac9f;
+  --faible: #8e897f;
+
+  /* Les métaux et les verres */
+  --or: #c9a54e;
+  --or-clair: #d9be74;
+  --or-pale: #e9d6a0;
+  --bronze: 168 118 72;
+  --vert: 47 93 78;
+  --vert-clair: #a9c9b6;
+  --vin: #8f2d46;
+  --vin-clair: #c54b63;
+
+  /* Les filets */
+  --filet: rgb(241 234 220 / 0.09);
+  --filet-fort: rgb(241 234 220 / 0.17);
+
+  /* Les voix */
+  --f-voix: var(--font-voix-src, "Bodoni Moda"), "Bodoni 72", Didot, Georgia, serif;
+  --f-texte: var(--font-structure-src, "Schibsted Grotesk"), ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* La mise en page */
+  --gouttiere: clamp(1.25rem, 4.2vw, 3rem);
+  --largeur: 1240px;
+  --rayon-s: 14px;
+  --rayon-m: 22px;
+  --rayon-l: 30px;
+
+  /* Le mouvement */
+  --ease: cubic-bezier(0.22, 0.8, 0.16, 1);
+  --ease-lent: cubic-bezier(0.32, 0.04, 0.12, 1);
 }
 
-/*
-  La robe se pose en 1,2 s : assez lent pour être perçu comme une
-  respiration, jamais comme un changement de thème. Appliqué UNIQUEMENT
-  aux éléments qui portent la robe — jamais en cascade, pour ne pas
-  alourdir les états de survol.
-*/
-.robe-teinte {
-  color: var(--robe-lumiere);
-  transition: color var(--duree-robe) var(--ease-film);
-}
-.robe-pastille {
-  background-color: var(--robe-lumiere);
-  transition: background-color var(--duree-robe) var(--ease-film);
+/* ---------------------------------------------------------------- */
+/* Remise à plat                                                     */
+/* ---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/*
-  LA TRACE — ce que le vin choisi laisse dans le reste de l'expérience.
-
-  Elle ne colore rien : elle éclaire du noir, très peu, et seulement lui.
-  Aucun fond, aucun texte, aucun filet — donc aucun contraste touché.
-  Et jamais --robe-lumiere, qui appartient au texte.
-*/
-.robe-trace {
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--robe-profond) 62%, transparent),
-    color-mix(in srgb, var(--robe-profond) 20%, transparent) 45%,
-    transparent 72%
-  );
-  opacity: calc(var(--robe-presence, 0) * var(--trace-force, 0.08));
-  transition:
-    opacity 1600ms var(--ease-film) var(--trace-retard, 0ms),
-    background 1600ms var(--ease-film) var(--trace-retard, 0ms);
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
 }
 
-.robe-halo {
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--robe-profond) 55%, transparent),
-    color-mix(in srgb, var(--robe-profond) 18%, transparent) 42%,
-    transparent 70%
-  );
-  transition: background var(--duree-robe) var(--ease-film);
+ul,
+ol {
+  padding: 0;
+  list-style: none;
 }
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Le fond                                                           */
+/* ---------------------------------------------------------------- */
 
 html {
-  /*
-    Le canevas porte l'encre, pas seulement le body : c'est lui qu'on voit
-    dans le rebond élastique d'iOS, au-delà des bords de la page.
-  */
-  background: var(--color-encre);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  background: var(--nuit);
   color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /*
-    LA GOUTTIÈRE EST RÉSERVÉE EN PERMANENCE, et c'est le sommaire qui
-    l'exige. Ouvert, il bloque le défilement du corps ; sans gouttière
-    réservée, la barre de défilement disparaîtrait et toute la page —
-    l'en-tête fixe excepté — sauterait de sa largeur, à l'ouverture
-    puis à la fermeture. Les pages de ce site défilent toutes : la
-    gouttière était déjà occupée, rien ne se déplace aujourd'hui.
-    (Sur les barres en superposition, macOS par défaut, elle ne coûte
-    rien : il n'y a pas de gouttière à réserver.)
-  */
-  scrollbar-gutter: stable;
+  scroll-padding-top: 6.5rem;
 }
 
 body {
-  background: var(--color-encre);
-  color: var(--color-fort);
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
-  overflow-x: hidden;
-  font-synthesis-weight: none;
+  min-height: 100vh;
+  font-family: var(--f-texte);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--texte);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 
 ::selection {
-  background: var(--color-braise);
-  color: #ece5d8;
+  background: rgb(201 165 78 / 0.32);
+  color: var(--creme);
 }
-.jour ::selection {
-  background: var(--color-braise);
-  color: #ece5d8;
+
+/*
+ * L'ATMOSPHÈRE. Trois lueurs fixes sous toute la page : le bronze d'une
+ * lampe en haut à gauche, le vert d'une bouteille à droite, le vin en bas.
+ * Elles sont FIXES pour que le verre ait toujours quelque chose à diffuser,
+ * où que l'on soit dans la page. Le grain casse les dégradés, qui sans lui
+ * se cranteraient en bandes sur un écran 8 bits.
+ */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70rem 50rem at 6% -14%, rgb(var(--bronze) / 0.2), transparent 62%),
+    radial-gradient(60rem 46rem at 108% 36%, rgb(var(--vert) / 0.26), transparent 60%),
+    radial-gradient(64rem 44rem at 26% 120%, rgb(143 45 70 / 0.16), transparent 62%),
+    linear-gradient(180deg, #0a1020 0%, #0c1427 55%, #0a1020 100%);
+}
+
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+}
+
+/* ---------------------------------------------------------------- */
+/* Typographie                                                       */
+/* ---------------------------------------------------------------- */
+
+.t-xl,
+.t-l,
+.t-m,
+.t-s {
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  color: var(--creme);
+}
+
+.t-xl {
+  font-size: clamp(2.35rem, 5.6vw, 5.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.t-l {
+  font-size: clamp(2.05rem, 4.2vw, 3.65rem);
+  line-height: 1.06;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+.t-m {
+  font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+  line-height: 1.16;
+  letter-spacing: -0.006em;
+  text-wrap: balance;
+}
+
+.t-s {
+  font-size: 1.3rem;
+  line-height: 1.24;
+}
+
+.chapeau {
+  font-size: clamp(1.1rem, 1.35vw, 1.26rem);
+  line-height: 1.62;
+  color: var(--texte);
+  max-width: 36rem;
+  text-wrap: pretty;
+}
+
+.corps {
+  font-size: 1rem;
+  line-height: 1.66;
+  color: var(--texte);
+  text-wrap: pretty;
+}
+
+.petit {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--faible);
+}
+
+.fort {
+  color: var(--creme);
+}
+
+/* Le nom d'un chapitre : le seul repère posé au-dessus d'un titre. */
+.chapitre {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--f-texte);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--or);
+}
+
+.chapitre::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------- */
+/* Mise en page                                                      */
+/* ---------------------------------------------------------------- */
+
+.conteneur {
+  width: min(100% - 2 * var(--gouttiere), var(--largeur));
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.evitement {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 80;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  background: var(--creme);
+  color: var(--nuit);
+  font-weight: 500;
+  transform: translateY(-200%);
+}
+
+.evitement:focus {
+  transform: none;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--or-clair);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
-/* ============================================================
-   HIÉRARCHIE — 7 degrés, pas un de plus.
-   Chaque degré a une fonction. Aucun n'existe pour « faire joli ».
-
-   .t-display   Sérif · l'affirmation qui ouvre. Une par écran.
-   .t-titre     Sérif · le titre de mouvement.
-   .t-citation  Sérif · la voix humaine.
-   .t-tete      Sérif · l'entrée d'une liste. Nomme, ne développe pas.
-   .t-chapeau   Grotesque · le paragraphe d'entrée.
-   .t-corps     Grotesque · le texte courant. Le plus lu du site.
-   .t-meta      Grotesque · la mention de service.
-   .eyebrow     Grotesque capitales · l'étiquette. Situe, ne dit rien.
-   ============================================================ */
-
-.t-display {
-  font-size: clamp(2.75rem, 6.1vw, 4.75rem);
-  line-height: 1.01;
-  letter-spacing: -0.022em;
-}
-.t-titre {
-  font-size: clamp(2rem, 4.3vw, 3.4rem);
-  line-height: 1.06;
-  letter-spacing: -0.018em;
-}
-.t-citation {
-  font-size: clamp(1.55rem, 3.2vw, 2.6rem);
-  line-height: 1.18;
-  letter-spacing: -0.014em;
-}
-.t-tete {
-  font-size: clamp(1.3rem, 1.9vw, 1.7rem);
-  line-height: 1.22;
-  letter-spacing: -0.008em;
-}
-.t-chapeau {
-  font-size: clamp(1.05rem, 1.25vw, 1.175rem);
-  line-height: 1.62;
-}
-.t-corps {
-  font-size: 1rem;
-  line-height: 1.68;
-}
-.t-meta {
-  font-size: 0.8125rem;
-  line-height: 1.55;
-}
-
-/* La voix de la marque */
-.voix {
-  font-family: var(--font-voix), ui-serif, Georgia, serif;
-  font-weight: 300;
-}
-
-/* La voix de l'outil : millésimes, régions, repères. Chiffres alignés. */
-.data {
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.06em;
-}
-
-/* L'étiquette — 12 px, capitales espacées */
-.eyebrow {
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-faible);
-}
-
-/*
-  L'ÉTIQUETTE POSÉE SUR LE VERRE.
-  `.eyebrow` fixe sa couleur HORS COUCHE : aucune classe utilitaire ne
-  peut la reprendre — le `text-fort` de l'ancien bouton « Sommaire »
-  était mort pour cette raison exacte, et personne ne l'avait vu.
-  Or le discret n'a pas la marge nécessaire sur une surface translucide :
-  mesuré à 3,48:1 sur /demonstration, le sommaire ouvert. Il prend donc
-  la voix du texte courant. Une variante plutôt qu'un déplacement de
-  `.eyebrow` dans une couche, qui rejouerait tout le site.
-*/
-.eyebrow-verre {
-  color: var(--color-texte);
-}
-.eyebrow-verre:hover {
-  color: var(--color-fort);
-}
-
-/* ==============================================================
-   LA GRAVURE — la voix taillée du mouvement II.
-
-   Troisième et dernière fonte du site, chargée par la SEULE page qui
-   l'emploie (voir app/page.tsx). Un didone : plein très gras, délié très
-   fin, empattements réduits à un trait. À 60 px il ne se lit pas mieux
-   que Spectral ; à 150 px il devient un objet, ce que Spectral — dessiné
-   pour tenir de 12 à 100 px dans un traitement de texte — ne fait pas.
-
-   `font-optical-sizing: auto` est capital ici. Bodoni Moda porte un axe
-   opsz : sans cette ligne, le navigateur sert le dessin de petit corps —
-   déliés épaissis, contraste écrasé — au moment précis où l'on veut le
-   contraire.
-   ============================================================== */
-.gravure {
-  font-family:
-    var(--font-gravure-src), var(--font-voix), ui-serif, Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-}
-
-/* ==============================================================
-   LA MATIÈRE — une courbe de verre, jamais un décor.
-
-   Elle arrive en `multiply`, comme toute couleur de cet accueil : la lie
-   n'est pas un aplat posé sur l'ivoire, c'est ce que la lumière devient
-   en traversant le vin. UNE seule forme par composition, coupée par le
-   cadre. Deux en feraient une accumulation.
-   ============================================================== */
-.courbe {
-  mix-blend-mode: multiply;
-  pointer-events: none;
-}
-
-/* ==============================================================
-   LA FEUILLE DE CIGARE — l'envers du mouvement II.
-
-   Ouvrir une porte doit se sentir comme entrer dans une autre pièce.
-   La page de sélection est en ivoire ; les trois détails basculent sur
-   un tabac chaud, séché, patiné — ni chocolat (qui tire au noir et
-   mange les captures), ni caramel (qui tire au roux et crie). Le brun
-   est la signature chromatique de ces trois expériences, et le seul
-   endroit du site où il apparaît.
-
-   LA BASCULE SE FAIT PAR LES JETONS, pas par des classes de couleur
-   réécrites partout : c'est l'idiome de ce dépôt depuis `.lumiere` et
-   `.jour`. Un composant écrit `text-fort` et se lit correctement des
-   deux côtés, sans condition.
-
-   contrastes mesurés sur le tabac #4a3326
-     fort 9,6:1 · texte 6,9:1 · faible 5,4:1 · accent 5,0:1
-   Le relief chaud du haut éclaircit le fond jusqu'à rgb(84,59,42) :
-   c'est LÀ que se mesure le pire cas, pas sur le jeton de fond.
-   ============================================================== */
-.tabac {
-  /* Sur un fond sombre, le même lavis éclaircit au lieu d'assombrir, et
-     l'écart part plus vite : il en faut MOINS pour obtenir la même
-     lisibilité. Mesuré dans les mêmes conditions que le crème — ΔE 7,0
-     ici, 6,8 là-bas : la même lumière, obtenue autrement. */
-  --halo-force: 0.26;
-  --color-fond: #4a3326;
-  --color-surface: #553c2d;
-  --color-fort: #f4ece0;
-  --color-texte: #d8c6b2;
-  --color-faible: #cdb9a5;
-  --color-accent: #eab09b; /* la cendre rose du cigare */
-  --color-filet: rgba(244, 236, 224, 0.16);
-  --color-filet-fort: rgba(244, 236, 224, 0.3);
-  --robe-lumiere: var(--color-accent);
-
-  /*
-    LA MATIÈRE EST DÉSORMAIS UNE PEAU, PAS UN CALCUL.
-
-    La version précédente fabriquait sa matière : deux champs de
-    turbulence additionnés, éclairés par deux lampes opposées. Elle
-    tenait, et sa géométrie est consignée dans l'historique — mais elle
-    restait une imitation, et son grain était isotrope là où un cuir a des
-    plis, des creux et des cicatrices qui racontent une pièce.
-
-    LES TROIS DÉGRADÉS ONT DISPARU AVEC ELLE. Ils donnaient au fond les
-    nuances que la turbulence ne savait pas produire ; le cuir les porte
-    lui-même, et les empiler aurait été peindre sur une photographie.
-
-    LA COULEUR DÉCLARÉE EST LA MOYENNE MESURÉE DE L'IMAGE, rgb(95, 56, 34).
-    Elle ne se voit jamais : elle n'existe que si le fichier manque, et
-    évite qu'un panneau de texte clair tombe alors sur du blanc.
-  */
-  background-color: #5f3822;
-  isolation: isolate;
-}
-
-/*
-  LE PAPIER MÂCHÉ — une matière, obtenue par la lumière et non par du bruit.
-
-  Un grain posé en surimpression donne du SABLE : des points, une texture
-  d'écran. Ce qu'on cherche est un RELIEF — une feuille pressée, dont les
-  creux et les bosses accrochent la lumière. D'où `feDiffuseLighting` : le
-  bruit n'est pas peint, il sert de carte de hauteur, et c'est l'éclairage
-  rasant (azimut 238°, élévation 52°) qui le rend visible. La même nuance
-  de brun, selon qu'elle est en creux ou en bosse, devient deux nuances.
-
-  `stitchTiles='stitch'` est indispensable : sans lui, la turbulence se
-  recoupe à chaque tuile et le motif se met à battre comme un papier
-  peint. Deux échelles, et pas une de plus : la grande pour le pressage
-  (640 px), la fine pour la fibre (180 px).
-
-  Deux images de données, aucune requête, et la matière suit n'importe
-  quelle largeur. Une photographie de feuille de tabac aurait pesé cent
-  fois plus pour un résultat moins tenu.
-*/
-.tabac::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-
-  /*
-    LE CUIR, EN UNE SEULE IMAGE QUI COUVRE.
-
-    `cover` plutôt qu'une tuile répétée : une photographie ne se raccorde
-    pas, et toute répétition aurait laissé une couture. Le panneau fait au
-    plus 1920 × 1257 et au moins 390 × 1100 ; l'image, 1600 × 900, est
-    donc agrandie de 1,15 à 1,34 selon le format — jamais au point que le
-    grain se délite, jamais si peu qu'on voie le même pli deux fois.
-
-    ELLE EST RETOURNÉE VERTICALEMENT. La source porte sa lumière en haut à
-    gauche — précisément où se tiennent le bouton de retour et le rail,
-    douze pixels de texte clair. Retournée, la zone sombre passe en haut
-    et la zone claire tombe en bas, où la vignette de `::after` l'attend.
-
-    ET DÉSATURÉE DE 30 %. Brute, mesurée à rgb(104, 50, 19), elle bascule
-    dans l'orange caramel — la teinte explicitement écartée au premier
-    chantier. À 0,7 elle vaut rgb(95, 56, 34) : le cuir garde sa chaleur,
-    le cognac reste un cognac. Le traitement est cuit dans le fichier, pas
-    appliqué en `filter` : un filtre se recalcule à chaque composition.
-  */
-  background-image: url("/matiere/cuir-cognac.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Et la lumière qui tombe dessus : deux sources très douces, une chaude
-   en haut à droite, une froide en bas à gauche. Sans elles la matière
-   est uniforme, donc plate — un papier pressé n'est jamais éclairé
-   régulièrement. */
-.tabac::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-
-  /*
-    CE QUI RESTE DE LA LUMIÈRE DE COMPOSITION : un seul coin assombri.
-    Le cuir apporte ses propres nuances, et la source chaude qui occupait
-    la droite n'a plus d'objet. Ne subsiste que l'ombre du bas à gauche,
-    là où la photographie retournée est la plus claire et où se posent la
-    pagination et les flèches — mesuré, pas supposé.
-  */
-  background-image: radial-gradient(
-    86% 62% at 6% 98%,
-    rgba(22, 13, 8, 0.34) 0%,
-    transparent 70%
-  );
-}
-
-/* Le contenu de la feuille passe au-dessus de sa matière. */
-.tabac > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ==============================================================
-   LE PAPIER — la carte du volet 01.
-
-   PAS DE SILEX, ET C'EST UNE DÉCISION. Un gris minéral tiède serait plus
-   contemporain, mais il se bat contre le sujet : les trois gestes portent
-   tous sur du PAPIER — une carte imprimée, une étiquette collée sur du
-   verre, une liste tapée. Une feuille de pierre ne raconte rien. Et sur
-   un cognac chaud, un gris tiède se rapproche en valeur : moins de
-   séparation, et le bordeaux y perd son mordant.
-
-   Le défaut à corriger — « trois rectangles uniformes » — ne tient pas à
-   la teinte mais à la MATIÈRE : fibre, encre brune plutôt que noire,
-   formats inégaux, dessins qui débordent. D'où deux nuances de papier et
-   non une, pour que les trois cartes ne soient pas jumelles.
-
-   contrastes sur le naturel #efe7d6 : fort 15:1 · texte 7,6:1 ·
-   faible 5,2:1 · accent 8,9:1 — et sur le grège #e6ded0, faible 4,9:1.
-   ============================================================== */
-.carte-papier {
-  --color-fond: #efe7d6;
-  --color-surface: #f6f0e3;
-  --color-fort: #221b17; /* une encre brune : le noir pur n'existe pas sur du papier */
-  --color-texte: #4a4039;
-  --color-faible: #645850;
-  --color-accent: #6b1d38;
-  --color-filet: rgba(34, 27, 23, 0.13);
-  --color-filet-fort: rgba(34, 27, 23, 0.26);
-
-  position: relative;
-  background-color: var(--color-fond);
-  color: var(--color-texte);
-  box-shadow:
-    0 1px 0 rgba(255, 253, 246, 0.6) inset,
-    0 24px 48px -26px rgba(26, 15, 8, 0.92),
-    0 3px 9px -3px rgba(26, 15, 8, 0.45);
-}
-
-/* La fibre du papier, en `multiply` : elle creuse la teinte au lieu de la
-   poudrer. Très basse opacité — on doit la sentir à dix centimètres, pas
-   la voir à un mètre. */
-.carte-papier::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-  mix-blend-mode: multiply;
-  opacity: 0.22;
-}
-
-/* La seconde nuance : un grège plus sourd, plus froid d'un cheveu. */
-.papier-grege {
-  --color-fond: #e6ded0;
-  --color-surface: #eee7db;
-}
-
-/* ==============================================================
-   LA CARTE IVOIRE — une feuille posée sur le tabac.
-
-   Elle REMONTE les jetons du jour : ce qui est écrit dessus se lit sur
-   ivoire, et le composant n'a pas à le savoir. Sans cela, chaque texte
-   de carte devrait porter sa couleur en dur, et la première faute
-   serait un gris clair sur crème.
-   ============================================================== */
-.carte-ivoire {
-  --color-fond: #f7f2e8;
-  --color-surface: #fdfbf6;
-  --color-fort: #1b1618;
-  --color-texte: #474245;
-  --color-faible: #5d5659;
-  --color-accent: #6b1d38;
-  --color-filet: rgba(27, 22, 24, 0.1);
-  --color-filet-fort: rgba(27, 22, 24, 0.2);
-
-  background-color: var(--color-fond);
-  color: var(--color-texte);
-  /* Une ombre portée TEINTÉE : une ombre neutre sur un brun chaud vire
-     au gris et décolle la carte du décor au lieu de l'y poser. */
-  box-shadow:
-    0 1px 0 rgba(255, 252, 245, 0.5) inset,
-    0 18px 40px -22px rgba(29, 17, 10, 0.85),
-    0 2px 6px -2px rgba(29, 17, 10, 0.4);
-}
-
-/* ==============================================================
-   LE JEU DE CARTES — un défilement natif, pas un carrousel réécrit.
-
-   `scroll-snap` natif : le geste vertical de la page n'est jamais
-   capturé, l'inertie est celle du système, et le clavier fonctionne
-   sans une ligne de JavaScript. On n'ajoute que ce que le CSS ne sait
-   pas faire : savoir OÙ l'on est.
-   ============================================================== */
-.jeu {
-  /* LA GOUTTIÈRE EST DANS LA PISTE, pas dans son parent : les cartes
-     s'alignent sur la colonne de texte à gauche, et glissent hors de
-     l'écran à droite. Un parent à padding symétrique les aurait coupées
-     à la marge, et le jeu aurait eu l'air enfermé dans une boîte. */
-  padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
-  scroll-padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-}
-.jeu::-webkit-scrollbar {
-  display: none;
-}
-.jeu > * {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
-
-/* L'INCLINAISON N'EST PAS UN EFFET : elle dit quelle carte on lit.
-   Celle qu'on regarde se redresse, les autres restent posées de biais,
-   comme un jeu étalé sur une table. */
-.carte-posee {
-  rotate: var(--incl, 0deg);
-  transition:
-    rotate var(--duree-entree) var(--ease-film),
-    scale var(--duree-entree) var(--ease-film),
-    filter var(--duree-entree) var(--ease-film);
-}
-.carte-posee[data-lue="true"] {
-  rotate: 0deg;
-  scale: 1;
-}
-.carte-posee[data-lue="false"] {
-  scale: 0.965;
-  filter: saturate(0.82) brightness(0.97);
-}
-
-/* ============================================================
-   BOUTONS — trois rangs, une seule logique.
-
-   Un écran n'a qu'une action principale. Le rang dit lequel :
-     primaire   l'action commerciale. Un par mouvement, jamais deux.
-     second     l'alternative, pour qui n'est pas prêt à décider.
-     fantome    la navigation, qui n'engage rien.
-
-   La hauteur minimale de 48 px n'est pas négociable : c'est la cible
-   tactile. Elle s'applique AUSSI au rang fantôme, le plus petit.
-   ============================================================ */
-
-/*
-  L'ÉTIQUETTE LA PLUS LONGUE DU SITE, DANS LA CELLULE LA PLUS ÉTROITE.
-
-  « Demander une démonstration », en capitales espacées de 0,11 em, mesure
-  313 px — plus qu'un iPhone SE n'en offre une fois les marges retirées.
-  Dans une cellule de formule, elle poussait la dalle à 369 px de large sur
-  un écran de 320 : cinquante-quatre pixels de débordement horizontal.
-
-  LA PORTÉE EST STRUCTURELLE, PAS ÉNUMÉRÉE. Premier essai : viser les
-  cellules de formule, puis les formulaires, puis… — à chaque fois un
-  bouton oublié ailleurs. La bonne frontière n'est pas une liste
-  d'emplacements, c'est l'EN-TÊTE : son bouton est validé, protégé, et il
-  tient déjà dans 320 px avec son libellé court. `main` et `footer`
-  l'excluent par construction, sans négation et sans énumération.
-*/
-@media (max-width: 400px) {
-  main .bouton,
-  footer .bouton {
-    white-space: normal;
-    padding-inline: 1rem;
-    text-align: center;
-  }
-}
+/* ---------------------------------------------------------------- */
+/* Boutons et liens                                                  */
+/* ---------------------------------------------------------------- */
 
 .bouton {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  min-height: 48px;
-  padding-inline: 1.6rem;
+  min-height: 3.25rem;
+  padding: 0 1.7rem;
   border-radius: 999px;
-  font-family: var(--font-structure), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.8125rem;
+  font-family: var(--f-texte);
+  font-size: 0.98rem;
   font-weight: 500;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.004em;
   white-space: nowrap;
-  cursor: pointer;
-  border: 1px solid transparent;
   transition:
-    background-color var(--duree-tactile) var(--ease-film),
-    border-color var(--duree-tactile) var(--ease-film),
-    color var(--duree-tactile) var(--ease-film),
-    transform var(--duree-tactile) var(--ease-film),
-    opacity var(--duree-tactile) var(--ease-film);
+    transform 0.3s var(--ease),
+    box-shadow 0.4s var(--ease),
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s;
 }
+
 .bouton:active {
-  transform: translateY(1px);
-}
-.bouton:disabled,
-.bouton[aria-disabled="true"] {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+  transform: scale(0.985);
 }
 
-/* L'action commerciale — la seule qui porte la pleine surface claire. */
-.bouton-primaire {
-  background: var(--color-fort);
-  color: var(--color-fond);
-}
-.bouton-primaire:hover:not(:disabled) {
-  background: var(--color-tungstene);
-}
-.jour .bouton-primaire:hover:not(:disabled) {
-  background: var(--color-braise);
-  color: #ece5d8;
+.bouton-or {
+  color: #0a1020;
+  background: linear-gradient(180deg, #e3c981 0%, #c9a54e 54%, #b28c3b 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 rgb(0 0 0 / 0.16),
+    0 14px 34px -16px rgb(201 165 78 / 0.75);
 }
 
-/* L'alternative — dessinée, pas remplie. */
-.bouton-second {
-  background: transparent;
-  color: var(--color-fort);
-  border-color: var(--color-filet-fort);
-}
-.bouton-second:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-/* La navigation — aucune surface, aucun trait. */
-.bouton-fantome {
-  background: transparent;
-  color: var(--color-texte);
-  padding-inline: 0.9rem;
-}
-.bouton-fantome:hover {
-  color: var(--color-fort);
-}
-
-/* ============================================================
-   Rythme vertical — deux respirations, choisies.
-   `rythme`       : les mouvements qui expliquent
-   `rythme-ample` : les mouvements qui laissent respirer
-   ============================================================ */
-
-.rythme {
-  padding-block: clamp(4rem, 7.5vw, 6.5rem);
-}
-.rythme-ample {
-  padding-block: clamp(5rem, 9.5vw, 8.5rem);
-}
-
-/*
-  En paysage, l'encoche mord sur les côtés. `max()` ne retient l'inset que
-  s'il dépasse le rythme habituel : partout ailleurs env() vaut 0 et la
-  valeur d'origine est conservée telle quelle.
-*/
-.px {
-  padding-left: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-left));
-  padding-right: max(clamp(1.5rem, 6vw, 7rem), env(safe-area-inset-right));
-}
-
-/* ==============================================================
-   LE VERRE — la barre et le sommaire sont la MÊME vitre.
-
-   UNE SEULE SURFACE, et c'est une contrainte, pas un parti pris :
-   deux panneaux `backdrop-filter` posés bout à bout échantillonnent
-   chacun l'arrière-plan de SA propre boîte, avec serrage des bords.
-   La jointure se voit, en clair, sur toute la largeur. La barre ne se
-   superpose donc pas à un panneau : elle EST le haut d'une vitre
-   unique, dont la hauteur s'ouvre.
-
-   LE FLOU N'ATTEND PAS LE CLIC. Au repos aussi, la barre diffuse ce
-   qui passe dessous. Sur un aplat d'ivoire il n'y a rien à diffuser et
-   la vitre ne se distingue pas — c'est de la physique, pas un défaut :
-   elle se révèle dès qu'un contenu passe derrière. `saturate` et une
-   pointe de `brightness` lui donnent sa matière même sur l'aplat, sans
-   qu'aucun dégradé décoratif ne soit peint.
-
-   L'OPACITÉ EST UN SEUIL DE LISIBILITÉ, pas un réglage esthétique : le
-   texte posé sur la vitre doit tenir AA quoi qu'il y ait derrière.
-   Elle est passée de 64 % à 44 % — la page se voit RÉELLEMENT passer
-   dessous — et ce que la teinte ne retient plus, l'ENCRE le paie.
-
-   CE QUI A ÉTÉ MESURÉ, ET COMMENT. Une sonde rend le texte de la barre
-   transparent, photographie la bande et échantillonne les pixels sous
-   chaque mot — donc la composition entière : contenu, flou, saturation,
-   luminosité, teinte. Elle a tourné sur /, /tarifs et /demonstration, à
-   1440 et à 390 px, barre fermée et sommaire ouvert, aux six positions
-   de défilement les plus hostiles de chaque page.
-
-     pire contraste · barre fermée        avant      après
-       /          1440   « Accéder »      4,69:1    4,79:1
-       /           390   « Démonstration » 8,48:1    5,68:1
-       /tarifs    1440   « Accéder »      4,45:1    6,50:1   ← sous AA avant
-       /demonstration    « Accéder »      7,42:1   12,85:1
-
-   LE DÉFAUT QUE LA MESURE A SORTI : sur /tarifs, les cartes de formule
-   sont crème et passent sous une barre à encre claire. C'est le CLAIR
-   qui tuait le texte, pas le sombre — 4,45:1, sous le seuil, dans la
-   version publiée. Le verre du soir devait donc éteindre davantage, pas
-   moins : `brightness` descend de 0,86 à 0,62.
-
-   AUCUNE COMPRESSION DE CONTRASTE, et c'est une décision mesurée.
-   `contrast(0,6)` relève bien les noirs et laisse baisser la teinte,
-   mais ce qu'on voit passer est le PRODUIT des deux : à 30 % de teinte
-   et 0,6 de contraste, la modulation visible retombe exactement sur
-   celle de la version à 64 % sans compression. On aurait payé une
-   transparence qu'on ne verrait pas. La teinte baisse donc seule.
-   ============================================================== */
-
-/*
-  LA TEINTE EST CHAUDE, ET C'EST LE JETON QUI LE DIT.
-  Elle ne suit plus `--color-fond` : l'ivoire de l'arc tire au vert
-  (#f7f4ed) et l'encre du soir au bleu (#0b0a0c) — deux froids, là où la
-  maison est le chêne, la cire et la braise. À 64 % cela ne se voyait
-  pas ; à 44 % une vitre froide refroidit toute la page qu'elle laisse
-  passer. Le verre a donc sa propre matière, nommée.
-*/
-.verre {
-  --verre-teinte: #16110f; /* une encre BRUNE : le soir, pas la nuit */
-  --verre-alpha: 44%;
-
-  /*
-    L'ENCRE MONTE D'UN CRAN — la contrepartie exacte de la teinte qui
-    baisse. La vitre REMONTE ses jetons, comme `.carte-papier` et
-    `.carte-ivoire` le font déjà : ce qui est écrit dessus se lit sur du
-    verre, et aucun composant n'a à le savoir. Sans cela il aurait fallu
-    porter une couleur en dur sur chaque lien de l'en-tête.
-    On ne touche ni à `--color-fort` (les titres tiennent déjà) ni à
-    l'accent : seules les voix moyennes, qui n'avaient plus de marge.
-  */
-  --color-texte: #dcd5c9;
-  --color-faible: #bdb6ab;
-
-  background-color: color-mix(
-    in srgb,
-    var(--verre-teinte) var(--verre-alpha),
-    transparent
-  );
-  -webkit-backdrop-filter: blur(16px) saturate(1.45) brightness(0.62);
-  backdrop-filter: blur(16px) saturate(1.45) brightness(0.62);
-  /* La FERMETURE : plus courte, et d'une courbe plus sèche. */
-  transition:
-    height var(--duree-etat) var(--ease-sortie),
-    background-color var(--duree-etat) var(--ease-sortie),
-    backdrop-filter var(--duree-etat) var(--ease-sortie),
-    border-color var(--duree-entree) var(--ease-film);
-}
-
-/* LE MATIN, IL CAPTE LA LUMIÈRE : une pointe de clarté suffit à faire
-   lire la bande comme une plaque posée sur la page, même là où il n'y a
-   qu'un aplat d'ivoire à diffuser. */
-.verre.lumiere {
-  --verre-teinte: #faf3e4; /* l'ivoire de l'arc, réchauffé d'un cheveu */
-  --color-texte: #2a2529;
-  --color-faible: #3a3438;
-
-  -webkit-backdrop-filter: blur(16px) saturate(1.55) brightness(1.14);
-  backdrop-filter: blur(16px) saturate(1.55) brightness(1.14);
-}
-
-.verre[data-ouvert="true"] {
-  /* Ouvert, les mots sont grands et nombreux : quatre points de teinte
-     de plus, et le flou s'épaissit comme avant. */
-  --verre-alpha: 48%;
-
-  -webkit-backdrop-filter: blur(26px) saturate(1.5) brightness(0.58);
-  backdrop-filter: blur(26px) saturate(1.5) brightness(0.58);
-  /* L'OUVERTURE : la vitre descend, et le flou s'épaissit avec elle. */
-  transition:
-    height var(--duree-entree) var(--ease-film),
-    background-color var(--duree-entree) var(--ease-film),
-    backdrop-filter var(--duree-entree) var(--ease-film),
-    border-color var(--duree-etat) var(--ease-film);
-}
-
-.verre.lumiere[data-ouvert="true"] {
-  -webkit-backdrop-filter: blur(26px) saturate(1.6) brightness(1.1);
-  backdrop-filter: blur(26px) saturate(1.6) brightness(1.1);
-}
-
-/*
-  SANS `backdrop-filter`, LA TRANSPARENCE NE DIFFUSE RIEN : elle ne fait
-  que baisser le contraste du texte posé dessus. La vitre devient alors
-  presque opaque — on perd la matière, jamais la lisibilité.
-*/
-@supports not (
-  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
-) {
-  .verre {
-    --verre-alpha: 96%;
-  }
-  .verre[data-ouvert="true"] {
-    --verre-alpha: 100%;
-  }
-}
-
-/* ==============================================================
-   LE CISEAU — deux filets, jamais une icône.
-
-   Ouverture : ils se rejoignent sur une seule ligne, PUIS pivotent.
-   Fermeture : ils se redressent, PUIS s'écartent.
-   Les deux temps se recouvrent par leurs retards, donc le geste ne
-   s'interrompt jamais — et aucun glyphe n'est échangé contre un autre.
-
-   LA ROTATION EST DE 15°, PAS DE 45°. À 45° les filets deviennent une
-   croix, c'est-à-dire un symbole d'interface ; à 15° ils restent deux
-   traits de même longueur, simplement croisés. Toute la différence
-   entre un hamburger et un geste tient dans cet écart.
-
-   `translate` ET `rotate` SONT LES PROPRIÉTÉS INDIVIDUELLES, et il le
-   faut : une déclaration `transform` unique ne sait pas retarder ses
-   composantes séparément, et le mouvement redeviendrait d'un bloc.
-   ============================================================== */
-.ciseau {
-  position: relative;
-  display: block;
-  width: 2.25rem;
-  height: 0.625rem;
-}
-
-.ciseau span {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1.5px;
-  margin-top: -0.75px;
-  background-color: currentColor;
-  transform-origin: 50% 50%;
-  transition:
-    translate var(--duree-etat) var(--ease-sortie) 300ms,
-    rotate 340ms var(--ease-film);
-}
-
-.ciseau span:first-child {
-  translate: 0 -4px;
-}
-.ciseau span:last-child {
-  translate: 0 4px;
-}
-
-[data-ouvert="true"] .ciseau span {
-  translate: 0 0;
-  transition:
-    translate var(--duree-etat) var(--ease-film),
-    rotate 420ms var(--ease-film) 180ms;
-}
-[data-ouvert="true"] .ciseau span:first-child {
-  rotate: 15deg;
-}
-[data-ouvert="true"] .ciseau span:last-child {
-  rotate: -15deg;
-}
-
-/*
-  FERMÉ, LE SOMMAIRE N'EST PAS SEULEMENT HORS DU CHAMP : il n'a plus de
-  boîte. Son remplissage bas lui laissait 36 px de hauteur même replié —
-  assez pour que ses liens comptent comme des cibles tactiles trop
-  petites, et pour qu'un outil le tienne pour visible alors qu'il est
-  rogné. `visibility` ne se retire qu'à la FIN de la remontée de la
-  vitre, sinon les mots disparaîtraient avant elle.
-*/
-.sommaire {
-  visibility: hidden;
-  transition: visibility 0s linear var(--duree-etat);
-}
-[data-ouvert="true"] .sommaire {
-  visibility: visible;
-  transition: visibility 0s linear 0s;
-}
-
-/* ==============================================================
-   LES ENTRÉES DU SOMMAIRE.
-   Elles arrivent APRÈS la vitre — `--rang` donne l'échelonnement — et
-   repartent ENSEMBLE, vite. Une sortie échelonnée ferait traîner une
-   fermeture qui doit être nette.
-   ============================================================== */
-.entree-sommaire {
-  opacity: 0;
-  translate: 0 14px;
-  transition:
-    opacity var(--duree-tactile) var(--ease-sortie),
-    translate var(--duree-tactile) var(--ease-sortie);
-}
-
-[data-ouvert="true"] .entree-sommaire {
-  opacity: 1;
-  translate: 0 0;
-  transition:
-    opacity var(--duree-entree) var(--ease-film)
-      calc(140ms + var(--rang) * 55ms),
-    translate var(--duree-entree) var(--ease-film)
-      calc(140ms + var(--rang) * 55ms);
-}
-
-/* L'en-tête est fixe : les ancres ne doivent jamais atterrir dessous. */
-section[id],
-:target {
-  scroll-margin-top: calc(6rem + env(safe-area-inset-top));
-}
-
-/* Grain de pellicule — la matière du noir. Le jour n'en a pas besoin. */
-/*
-   Sur l'accueil, il ne sert plus à rien. Mesuré : en `overlay` sur un fond de
-   luminance 0,906, l'écart de rendu est de l'ordre du MILLIÈME — invisible.
-   Mais le calque reste : `position: fixed`, plein écran, en mode de fusion,
-   à z-60, donc recomposé à chaque image du défilement piloté. On paie une
-   composition permanente pour rien, et par-dessus le `.grain-clair` des
-   sections claires, qui lui se voit.
-   Les routes du soir le gardent : là, il fait son travail. */
-body:has(.lumiere).filmgrain::after {
-  display: none;
-}
-
-.filmgrain::after {
+/* Le reflet qui passe sur le métal au survol. */
+.bouton-or::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.42) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.9s var(--ease);
 }
 
-/* ============================================================
-   ENTRÉE AU DÉFILEMENT — en CSS pur, sans JavaScript.
+.bouton-or:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 -1px 0 rgb(0 0 0 / 0.16),
+    0 20px 46px -16px rgb(217 190 116 / 0.9);
+}
 
-   `animation-timeline: view()` fait porter l'animation par la position
-   de l'élément dans le champ, pas par une horloge. Rien à hydrater,
-   rien à observer : zéro octet de JavaScript pour tout le site.
-   Là où la propriété manque, l'élément est simplement déjà visible —
-   c'est le repli, et il est correct.
-   ============================================================ */
+.bouton-or:hover::after {
+  transform: translateX(120%);
+}
+
+.bouton-verre {
+  color: var(--creme);
+  background: rgb(241 234 220 / 0.05);
+  border: 1px solid rgb(241 234 220 / 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.bouton-verre:hover {
+  border-color: rgb(217 190 116 / 0.55);
+  background: rgb(241 234 220 / 0.09);
+}
+
+.bouton-petit {
+  min-height: 2.75rem;
+  padding: 0 1.15rem;
+  font-size: 0.9rem;
+}
+
+.bouton-large {
+  min-height: 3.6rem;
+  padding: 0 2.1rem;
+  font-size: 1.02rem;
+}
+
+.lien {
+  color: var(--creme);
+  text-decoration: underline;
+  text-decoration-color: rgb(201 165 78 / 0.5);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+  transition: text-decoration-color 0.25s, color 0.25s;
+}
+
+.lien:hover {
+  color: var(--or-pale);
+  text-decoration-color: var(--or);
+}
+
+/* Un lien posé seul (hors d'une phrase) garde une cible de 44 px, et
+   même un peu plus : il doit les tenir quand sa carte arrive réduite. */
+.lien-seul {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Le verre                                                          */
+/* ---------------------------------------------------------------- */
+
+.verre {
+  /* La teinte du verre est une variable : les variantes ne changent qu'elle,
+     et l'arête qui accroche la lumière reste commune à tous. */
+  --verre-fond: linear-gradient(160deg, rgb(241 234 220 / 0.075), rgb(241 234 220 / 0.022) 62%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--rayon-l);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.055), transparent 26%),
+    var(--verre-fond);
+  border: 1px solid rgb(241 234 220 / 0.1);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 40px 80px -44px rgb(0 0 0 / 0.75);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  transition: border-color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+}
+
+.verre--brun {
+  --verre-fond: linear-gradient(160deg, rgb(var(--bronze) / 0.26), rgb(120 78 44 / 0.1) 56%, rgb(60 38 22 / 0.12));
+  border-color: rgb(217 170 110 / 0.22);
+}
+
+.verre--vert {
+  --verre-fond: linear-gradient(160deg, rgb(140 200 170 / 0.15), rgb(var(--vert) / 0.13) 56%, rgb(18 46 38 / 0.14));
+  border-color: rgb(169 201 182 / 0.2);
+}
+
+/*
+ * LE LISERÉ QUI S'ALLUME. Sous le curseur, l'arête du verre prend l'or,
+ * et seulement là où la main passe : un anneau d'un pixel, découpé par un
+ * masque, éclairé par un halo centré sur le curseur.
+ */
+.verre::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(15rem circle at var(--mx, 50%) var(--my, 0%), rgb(240 220 160 / 0.95), rgb(201 165 78 / 0.25) 45%, transparent 72%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: opacity 0.5s var(--ease);
+}
+
+/*
+ * LA LUMIÈRE AU SURVOL. Le curseur est une bougie qu'on approche du verre.
+ * Les coordonnées viennent de <Lumieres />, posées sur tout élément qui
+ * porte [data-lumiere]. Sans souris (ou sans JavaScript), rien ne bouge :
+ * la lueur reste éteinte et le verre est simplement du verre.
+ */
+.verre::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(26rem circle at var(--mx, 50%) var(--my, 0%), rgb(232 200 140 / 0.17), transparent 58%);
+  transition: opacity 0.6s var(--ease);
+}
+
+.verre[data-lumiere]:hover::before,
+.verre[data-lumiere]:hover::after {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- */
+/* Les révélations au défilement                                     */
+/* ---------------------------------------------------------------- */
+
+/*
+ * Ce qui entre dans l'écran s'y pose AU RYTHME DU DÉFILEMENT : le geste du
+ * visiteur pilote l'apparition, qui se rejoue à l'envers s'il remonte.
+ * Pur CSS (animation-timeline: view()), donc aucun script ; là où le
+ * navigateur ne sait pas faire, tout est simplement déjà en place.
+ *
+ *   data-revele          un objet (verre, carte) qui monte et se redresse
+ *   data-revele="titre"  un titre qui sort d'une fente
+ *   data-revele="fil"    un trait qui se tire de gauche à droite
+ *   --i                  le rang dans une série, pour décaler
+ */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .parait {
-      animation: parait linear both;
+    [data-revele] {
+      animation: revele-objet linear both;
       animation-timeline: view();
-      animation-range: entry 8% cover 26%;
+      animation-range: entry calc(4% + var(--i, 0) * 7%) entry calc(70% + var(--i, 0) * 7%);
+    }
+
+    [data-revele="titre"] {
+      animation-name: revele-titre;
+      animation-range: entry 10% cover 32%;
+    }
+
+    [data-revele="fil"] {
+      animation-name: revele-fil;
+      animation-range: entry 20% cover 40%;
     }
   }
 }
 
-@keyframes parait {
+@keyframes revele-objet {
   from {
     opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+    transform: translateY(56px) scale(0.965);
   }
 }
 
-/* Le header à l'arrivée, et le panneau du sommaire : un fondu simple. */
+@keyframes revele-titre {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(-10% 0 -25% 0);
+  }
+}
+
+@keyframes revele-fil {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* La marque                                                         */
+/* ---------------------------------------------------------------- */
+
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  color: var(--creme);
+}
+
+/* ---------------------------------------------------------------- */
+/* L'en-tête : une barre de verre qui flotte                          */
+/* ---------------------------------------------------------------- */
+
+.entete {
+  position: fixed;
+  z-index: 50;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: 50%;
+  width: min(100% - 1.5rem, 1290px);
+  transform: translateX(-50%);
+}
+
+.entete-barre {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 4rem;
+  padding: 0 0.55rem 0 1.35rem;
+  border-radius: 999px;
+  background: rgb(14 22 40 / 0.4);
+  border: 1px solid rgb(241 234 220 / 0.08);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  transition:
+    background-color 0.45s var(--ease),
+    border-color 0.45s var(--ease),
+    box-shadow 0.45s var(--ease);
+}
+
+/* La barre de lecture : un fil d'or au bas de la barre, qui suit la page. */
+.entete-lecture {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: -1px;
+  height: 1px;
+  overflow: hidden;
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.entete-lecture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--or-clair) 30%, var(--or-pale));
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .entete-lecture::after {
+      animation: lecture linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes lecture {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.entete[data-pose="oui"] .entete-barre,
+.entete[data-ouvert="oui"] .entete-barre {
+  background: rgb(11 18 34 / 0.78);
+  border-color: rgb(241 234 220 / 0.12);
+  box-shadow: 0 24px 50px -30px rgb(0 0 0 / 0.85);
+}
+
+.entete-marque {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  border-radius: 10px;
+}
+
+.entete-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.entete-nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding: 0 0.95rem;
+  border-radius: 999px;
+  font-size: 0.93rem;
+  color: var(--texte);
+  transition: color 0.25s, background-color 0.25s;
+}
+
+.entete-nav a:hover {
+  color: var(--creme);
+  background: rgb(241 234 220 / 0.06);
+}
+
+.entete-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.entete-connexion {
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.93rem;
+  color: var(--creme);
+  transition: background-color 0.25s;
+}
+
+.entete-connexion:hover {
+  background: rgb(241 234 220 / 0.06);
+}
+
+.entete-menu {
+  display: none;
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--creme);
+}
+
+.entete-menu span {
+  position: absolute;
+  left: 50%;
+  width: 1.15rem;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translateX(-50%);
+  transition: transform 0.35s var(--ease), top 0.35s var(--ease);
+}
+
+.entete-menu span:first-child {
+  top: calc(50% - 4px);
+}
+
+.entete-menu span:last-child {
+  top: calc(50% + 3px);
+}
+
+.entete[data-ouvert="oui"] .entete-menu span:first-child {
+  top: calc(50% - 0.75px);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.entete[data-ouvert="oui"] .entete-menu span:last-child {
+  top: calc(50% - 0.75px);
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.entete-panneau {
+  margin-top: 0.5rem;
+  padding: 1.25rem 1.25rem 1.4rem;
+  border-radius: 28px;
+  background: rgb(11 18 34 / 0.9);
+  border: 1px solid rgb(241 234 220 / 0.1);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+  transform-origin: top center;
+  animation: panneau 0.4s var(--ease);
+}
+
+.entete-panneau ul a {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  font-family: var(--f-voix);
+  font-size: 1.6rem;
+  color: var(--creme);
+  border-bottom: 1px solid var(--filet);
+}
+
+.entete-panneau-actions {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+@keyframes panneau {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+}
+
+@media (max-width: 1023px) {
+  .entete-nav,
+  .entete-connexion {
+    display: none;
+  }
+
+  .entete-menu {
+    display: inline-flex;
+  }
+}
+
+/* Sous 375 px, le symbole seul : la charte interdit au tracé du nom de
+   descendre sous 80 px, et la barre n'a plus la place des deux. */
+@media (max-width: 374px) {
+  .entete .lockup svg {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .entete-barre {
+    padding-left: 1rem;
+  }
+
+  .entete-essai {
+    padding: 0 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* I · L'ouverture : un générique                                    */
+/* ---------------------------------------------------------------- */
+
+.ouv {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: clamp(6.75rem, 13vh, 8.75rem);
+  padding-bottom: clamp(4.5rem, 10vh, 7rem);
+}
+
+/* Le fond : le vin (WebGL), et sous lui un repli en CSS qui lui ressemble,
+   pour les navigateurs sans WebGL et la seconde avant qu'il ne démarre. */
+.ouv-fond {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(46% 60% at 74% 56%, rgb(143 45 70 / 0.42), rgb(93 26 51 / 0.24) 45%, transparent 76%),
+    var(--nuit);
+  /* Le bas s'efface dans l'atmosphère de la page : aucune couture. */
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+}
+
+.ouv-liquide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-lent);
+}
+
+.ouv-liquide[data-pret="oui"] {
+  opacity: 1;
+}
+
+/* Le voile garde le texte lisible et fond le bas de l'ouverture dans la page. */
+.ouv-voile {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(10 16 32 / 0.86) 0%, rgb(10 16 32 / 0.62) 32%, rgb(10 16 32 / 0.12) 58%, rgb(10 16 32 / 0) 70%),
+    linear-gradient(180deg, rgb(10 16 32 / 0.5) 0%, transparent 20%);
+}
+
+/* Les deux traits d'or du rideau. */
+.ouv-trait {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: -1;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--or-clair) 18%, var(--or-pale) 50%, var(--or-clair) 82%, transparent);
+  box-shadow: 0 0 22px 1px rgb(217 190 116 / 0.75);
+}
+
+.ouv-grille {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: clamp(3rem, 6vw, 4rem);
+  align-items: center;
+}
+
+.ouv-propos {
+  grid-column: 1 / 8;
+  transform: translate3d(0, calc(var(--sortie, 0) * -90px), 0);
+  opacity: calc(1 - var(--sortie, 0) * 1.25);
+}
+
+.ouv-titre {
+  font-size: clamp(2.5rem, min(5.3vw, 8.2vh), 5.1rem);
+  line-height: 0.97;
+  letter-spacing: -0.024em;
+  margin-bottom: clamp(1.75rem, 3vw, 2.4rem);
+}
+
+.ouv-vers {
+  display: block;
+}
+
+.ouv-vers + .ouv-vers {
+  margin-top: 0.12em;
+}
+
+.ouv-vers > span {
+  display: block;
+}
+
+.ouv-suite {
+  padding-left: 1.1em;
+}
+
+.ouv-mot {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ouv-lettre {
+  display: inline-block;
+}
+
+.ouv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+}
+
+.ouv-garantie {
+  margin-top: 1.1rem;
+}
+
+.ouv-scene {
+  grid-column: 8 / -1;
+  display: flex;
+  justify-content: flex-end;
+  perspective: 1400px;
+  transform: translate3d(0, calc(var(--sortie, 0) * -170px), 0);
+}
+
+/* La carte s'incline vers la main : variables posées par l'ouverture. */
+.ouv-carte {
+  width: min(100%, 30rem);
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 1.1s cubic-bezier(0.2, 0.75, 0.15, 1);
+}
+
+/* Sur le vin, le verre se fume : il garde sa transparence et la lisibilité. */
+.ouv-carte .accord {
+  width: 100%;
+  background: linear-gradient(160deg, rgb(58 34 26 / 0.62), rgb(24 12 18 / 0.7) 60%, rgb(12 10 22 / 0.74));
+  border-color: rgb(217 170 110 / 0.26);
+  backdrop-filter: blur(26px) saturate(125%);
+  -webkit-backdrop-filter: blur(26px) saturate(125%);
+}
+
+/* Découvrir : une goutte d'or descend le long d'un fil. */
+.ouv-defiler {
+  position: absolute;
+  left: 50%;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--faible);
+  opacity: calc(1 - var(--sortie, 0) * 4);
+  transition: color 0.3s;
+}
+
+.ouv-defiler:hover {
+  color: var(--creme);
+}
+
+.ouv-defiler span {
+  position: relative;
+  width: 1px;
+  height: 2.6rem;
+  overflow: hidden;
+  background: rgb(241 234 220 / 0.16);
+}
+
+.ouv-defiler span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -45%;
+  width: 1px;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--or-clair));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Le rideau s'ouvre sur le vin. */
+  .ouv-fond {
+    animation: rideau 1.3s cubic-bezier(0.76, 0, 0.24, 1) 0.45s both;
+  }
+
+  .ouv-trait--haut {
+    animation:
+      trait-naitre 0.6s cubic-bezier(0.65, 0, 0.35, 1) both,
+      trait-haut 1.3s cubic-bezier(0.76, 0, 0.24, 1) 0.45s both;
+  }
+
+  .ouv-trait--bas {
+    animation:
+      trait-naitre 0.6s cubic-bezier(0.65, 0, 0.35, 1) both,
+      trait-bas 1.3s cubic-bezier(0.76, 0, 0.24, 1) 0.45s both;
+  }
+
+  /* Le titre se compose : chaque demi-vers part 130 ms après le précédent,
+     chaque lettre 18 ms après sa voisine. */
+  .ouv-lettre {
+    animation: lettre 1.15s cubic-bezier(0.2, 0.75, 0.15, 1) both;
+    animation-delay: calc(850ms + var(--l) * 120ms + var(--i) * 17ms);
+  }
+
+  .ouv-apparait {
+    animation: entree 1.1s var(--ease-lent) both;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .ouv-defiler {
+    animation: apparaitre 1s ease 2.6s both;
+  }
+
+  .ouv-defiler span::after {
+    animation: goutte 2.6s cubic-bezier(0.6, 0, 0.3, 1) 3s infinite;
+  }
+
+  /* Sur l'accueil seulement, la barre descend après le rideau. */
+  body:has(.ouv) .entete {
+    animation: entete-entree 1.1s cubic-bezier(0.2, 0.75, 0.15, 1) 1.2s both;
+  }
+}
+
+@keyframes rideau {
+  from {
+    clip-path: inset(50% 0 50% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes trait-naitre {
+  from {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes trait-haut {
+  from {
+    top: 50%;
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  to {
+    top: 0%;
+    opacity: 0;
+  }
+}
+
+@keyframes trait-bas {
+  from {
+    top: 50%;
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes lettre {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) rotate(7deg);
+    filter: blur(12px);
+  }
+  55% {
+    filter: blur(0);
+  }
+}
+
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes goutte {
+  to {
+    top: 100%;
+  }
+}
+
+@keyframes entete-entree {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-18px);
+  }
+}
+
 @keyframes entree {
   from {
     opacity: 0;
+    transform: translateY(22px);
+    filter: blur(6px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .ouv {
+    justify-content: flex-start;
+  }
+
+  .ouv-propos {
+    grid-column: 1 / -1;
+  }
+
+  .ouv-scene {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .ouv-voile {
+    background:
+      linear-gradient(180deg, rgb(10 16 32 / 0.82) 0%, rgb(10 16 32 / 0.6) 38%, rgb(10 16 32 / 0.08) 62%, transparent 74%);
+  }
+
+  .ouv-defiler {
+    display: none;
+  }
+}
+
+@media (max-height: 720px) {
+  .ouv-defiler {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* L'accord : la carte de verre de l'ouverture                       */
+/* ---------------------------------------------------------------- */
+
+.accord {
+  width: min(100%, 30rem);
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  border-radius: 34px;
+}
+
+/* La carte se matérialise : elle monte, se redresse et sort du flou. */
+@media (prefers-reduced-motion: no-preference) {
+  .accord-arrivee {
+    animation: materialiser 1.6s cubic-bezier(0.2, 0.75, 0.15, 1) 1.25s both;
+  }
+
+  .accord-lisere {
+    animation: lisere 2.4s cubic-bezier(0.45, 0, 0.2, 1) 2.4s both;
+  }
+}
+
+@keyframes materialiser {
+  from {
+    opacity: 0;
+    transform: translateY(70px) rotateX(16deg) scale(0.93);
+    filter: blur(18px);
+  }
+  60% {
+    filter: blur(0);
+  }
+}
+
+/* Le liseré d'or qui fait le tour de la carte, une fois. */
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.accord-lisere {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  opacity: 0;
+  pointer-events: none;
+  background: conic-gradient(from var(--angle), transparent 0deg, transparent 240deg, rgb(233 214 160 / 0.95) 305deg, transparent 345deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes lisere {
+  0% {
+    --angle: 0deg;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    --angle: 360deg;
+    opacity: 0;
+  }
+}
+
+.accord-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--faible);
+}
+
+.accord-contenu {
+  margin-top: 2rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .accord-contenu > * {
+    animation: entree 0.9s var(--ease-lent) both;
+  }
+
+  .accord-contenu > :nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  .accord-contenu > :nth-child(3) {
+    animation-delay: 0.24s;
+  }
+
+  .accord-contenu > :nth-child(4) {
+    animation-delay: 0.36s;
+  }
+}
+
+.accord-legende {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--faible);
+  margin-bottom: 0.45rem;
+}
+
+.accord-plat {
+  font-family: var(--f-voix);
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
+  line-height: 1.2;
+  color: var(--creme);
+  text-wrap: balance;
+}
+
+/* Le fil d'or entre le plat et le vin : c'est l'accord lui-même. */
+.accord-fil {
+  position: relative;
+  height: 3.75rem;
+  margin: 1rem 0 1rem 0.35rem;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--or) 30%, var(--or) 70%, transparent);
+  transform-origin: top;
+}
+
+.accord-fil::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--or-clair);
+  box-shadow: 0 0 0 4px rgb(201 165 78 / 0.15), 0 0 18px rgb(217 190 116 / 0.8);
+  transform: translate(-50%, -50%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .accord-contenu > .accord-fil {
+    animation: fil 1s var(--ease-lent) 0.15s both;
+  }
+}
+
+@keyframes fil {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+.accord-vin {
+  font-family: var(--f-voix);
+  font-size: clamp(2.2rem, 3.4vw, 2.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  color: var(--creme);
+}
+
+.accord-detail {
+  margin-top: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--or-clair);
+}
+
+.accord-raison {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgb(241 234 220 / 0.12);
+  font-family: var(--f-voix);
+  font-style: italic;
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--creme);
+  opacity: 0.9;
+  text-wrap: pretty;
+}
+
+.accord-pas {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+}
+
+/* Le trait est fin, la cible ne l'est pas : 52 px de haut pour le doigt,
+   et encore 44 quand la carte arrive inclinée et réduite. */
+.accord-pas button {
+  position: relative;
+  flex: 1;
+  height: 3.25rem;
+}
+
+.accord-pas button::before,
+.accord-pas button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.accord-pas button::before {
+  background: rgb(241 234 220 / 0.14);
+}
+
+.accord-pas button::after {
+  background: var(--or);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.accord-pas button[aria-current="true"]::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .accord[data-auto="oui"] .accord-pas button[aria-current="true"]::after {
+    animation: avance var(--duree, 6500ms) linear both;
+  }
+
+  .accord[data-pause="oui"] .accord-pas button[aria-current="true"]::after {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes avance {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* II · Le constat : la question qui s'allume                        */
+/* ---------------------------------------------------------------- */
+
+.cst-amorce {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--or);
+}
+
+/* Sans script, la phrase est allumée : --p vaut 1 tant que personne ne
+   l'a abaissé. */
+.cst-question {
+  --p: 1;
+  max-width: 15ch;
+  margin: 1.5rem auto clamp(4.5rem, 9vw, 7.5rem);
+  text-align: center;
+  font-family: var(--f-voix);
+  font-style: italic;
+  font-size: clamp(2.6rem, 7.4vw, 7.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.022em;
+  color: var(--creme);
+  text-wrap: balance;
+}
+
+.cst-mot {
+  opacity: clamp(0.13, calc(var(--p) * (var(--n) + 1.5) - var(--i)), 1);
+  transition: opacity 0.3s linear;
+}
+
+.cst-guillemet {
+  color: var(--or);
+  opacity: clamp(0.15, calc(var(--p) * 4), 1);
+}
+
+.constat-tete {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 2rem;
+  align-items: end;
+}
+
+.constat-tete h2 {
+  grid-column: 1 / 8;
+}
+
+.constat-tete .chapeau {
+  grid-column: 8 / -1;
+}
+
+.constat-maux {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.9rem, 1.6vw, 1.25rem);
+  margin-top: clamp(3rem, 5vw, 4rem);
+}
+
+.cst-mal {
+  padding: clamp(1.6rem, 2.4vw, 2.1rem);
+}
+
+.cst-picto {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 1.6rem;
+  color: var(--vin-clair);
+}
+
+.cst-mal h3 {
+  margin-bottom: 0.7rem;
+}
+
+@media (max-width: 1023px) {
+  .constat-tete h2,
+  .constat-tete .chapeau {
+    grid-column: 1 / -1;
+  }
+
+  .constat-maux {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* III · Les étapes : une scène épinglée                             */
+/* ---------------------------------------------------------------- */
+
+.etp {
+  position: relative;
+}
+
+/* La piste donne la longueur du récit ; l'écran reste épinglé dessus. */
+.etp-piste {
+  position: relative;
+  height: 360vh;
+}
+
+.etp-ecran {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: center;
+  padding-top: 5.5rem;
+}
+
+.etp-gauche {
+  grid-column: 1 / 6;
+}
+
+.etp-gauche .chapeau {
+  margin-top: 1.25rem;
+}
+
+.etp-liste-cadre {
+  position: relative;
+  margin-top: clamp(2rem, 4vh, 2.75rem);
+}
+
+/* Le fil d'or descend le long des étapes, au rythme du défilement. */
+.etp-fil {
+  position: absolute;
+  left: 1.375rem;
+  top: 1.4rem;
+  bottom: 1.4rem;
+  width: 1px;
+  background: rgb(241 234 220 / 0.14);
+}
+
+.etp-fil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--or-pale), var(--or));
+  transform-origin: top;
+  transform: scaleY(var(--p, 0));
+  box-shadow: 0 0 12px rgb(217 190 116 / 0.6);
+}
+
+.etp-liste {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.etp-etape {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  column-gap: 1.1rem;
+  padding: 0.55rem 0;
+}
+
+.etp-chiffre {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-family: var(--f-voix);
+  font-size: 1rem;
+  color: var(--faible);
+  background: var(--nuit-2);
+  border: 1px solid rgb(241 234 220 / 0.14);
+  transition:
+    color 0.5s,
+    border-color 0.5s,
+    background-color 0.5s,
+    box-shadow 0.5s,
+    transform 0.6s var(--ease);
+}
+
+.etp-etape[data-passe="oui"] .etp-chiffre {
+  color: var(--or);
+  border-color: rgb(201 165 78 / 0.45);
+}
+
+.etp-etape[data-actif="oui"] .etp-chiffre {
+  color: #0a1020;
+  background: linear-gradient(180deg, #e3c981, #c9a54e);
+  border-color: transparent;
+  box-shadow: 0 0 0 6px rgb(201 165 78 / 0.12), 0 10px 30px -8px rgb(217 190 116 / 0.8);
+  transform: scale(1.06);
+}
+
+.etp-corps h3 {
+  padding-top: 0.55rem;
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 1.7vw, 1.55rem);
+  line-height: 1.2;
+  color: rgb(241 234 220 / 0.45);
+  transition: color 0.5s;
+}
+
+.etp-etape[data-actif="oui"] h3 {
+  color: var(--creme);
+}
+
+/* Le détail de l'étape s'ouvre quand elle devient active. */
+.etp-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.7s var(--ease),
+    opacity 0.5s;
+}
+
+.etp-detail > div {
+  overflow: hidden;
+}
+
+.etp-detail p {
+  padding-top: 0.6rem;
+  max-width: 30rem;
+}
+
+.etp-qui {
+  display: block;
+  margin-top: 0.7rem;
+  padding-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--or);
+}
+
+.etp-etape[data-actif="oui"] .etp-detail {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.etp-vignette-mobile {
+  display: none;
+}
+
+.etp-droite {
+  grid-column: 7 / -1;
+}
+
+.etp-scene {
+  position: relative;
+  aspect-ratio: 48 / 38;
+  border-radius: 36px;
+}
+
+.etp-tableau {
+  position: absolute;
+  inset: 6% 5% 12%;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(0.96) translateY(14px);
+  filter: blur(8px);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.9s var(--ease),
+    filter 0.7s var(--ease);
+}
+
+.etp-tableau[data-actif="oui"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.etp-tableau svg {
+  width: 100%;
+  height: 100%;
+  color: var(--or);
+}
+
+.etp-compteur {
+  position: absolute;
+  left: 2rem;
+  bottom: 1.6rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--f-voix);
+  font-size: 1.6rem;
+  color: var(--or-clair);
+}
+
+.etp-compteur-sur {
+  font-family: var(--f-texte);
+  font-size: 0.8rem;
+  color: var(--faible);
+}
+
+/* Sur téléphone et tablette : le récit se déroule, rien n'est épinglé. */
+@media (max-width: 1023px) {
+  .etp {
+    padding-block: clamp(4.5rem, 8vw, 7rem);
+  }
+
+  .etp-piste {
+    height: auto;
+  }
+
+  .etp-ecran {
+    position: static;
+    height: auto;
+    display: block;
+    padding-top: 0;
+  }
+
+  .etp-droite {
+    display: none;
+  }
+
+  .etp-fil::after {
+    transform: none;
+  }
+
+  .etp-etape h3 {
+    color: var(--creme);
+  }
+
+  .etp-etape .etp-chiffre {
+    color: var(--or);
+    border-color: rgb(201 165 78 / 0.45);
+    background: var(--nuit-2);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .etp-detail {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .etp-liste {
+    gap: 2.25rem;
+  }
+
+  .etp-vignette-mobile {
+    display: block;
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: 22px;
+    color: var(--or);
+  }
+
+  .etp-vignette-mobile svg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Une fenêtre trop basse pour épingler le récit sans le couper. */
+@media (min-width: 1024px) and (max-height: 640px) {
+  .etp-piste {
+    height: auto;
+  }
+
+  .etp-ecran {
+    position: static;
+    height: auto;
+    padding-block: 5rem;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Les vignettes : ce qui se joue quand l'étape est active           */
+/* ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-actif="oui"] .vg-balai {
+    animation: vg-balayer 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s infinite;
+  }
+
+  [data-actif="oui"] .vg-reconnu {
+    animation: vg-glisser 0.8s var(--ease) both;
+    animation-delay: calc(0.5s + var(--k) * 0.45s);
+  }
+
+  [data-actif="oui"] .vg-assiette {
+    animation: vg-poser 0.8s var(--ease) both;
+    animation-delay: calc(0.1s + var(--k) * 0.35s);
+  }
+
+  [data-actif="oui"] .vg-fil {
+    stroke-dasharray: 1;
+    animation: vg-tirer 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
+    animation-delay: calc(0.5s + var(--k) * 0.35s);
+  }
+
+  [data-actif="oui"] .vg-noeud {
+    animation: vg-briller 0.6s var(--ease) both;
+    animation-delay: calc(0.95s + var(--k) * 0.35s);
+  }
+
+  [data-actif="oui"] .vg-vin {
+    animation: vg-poser 0.8s var(--ease) both;
+    animation-delay: calc(1.1s + var(--k) * 0.35s);
+  }
+
+  [data-actif="oui"] .vg-module {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: vg-module 0.5s cubic-bezier(0.2, 0.75, 0.15, 1.4) both;
+    animation-delay: calc(0.1s + var(--k) * 0.045s);
+  }
+
+  [data-actif="oui"] .vg-reflet {
+    animation: vg-reflet 1.4s cubic-bezier(0.65, 0, 0.35, 1) 1.5s both;
+  }
+
+  [data-actif="oui"] .vg-niveau {
+    animation: vg-remplir 2s cubic-bezier(0.3, 0, 0.2, 1) 0.2s both;
+  }
+
+  [data-actif="oui"] .vg-note {
+    animation: vg-glisser 0.9s var(--ease) 1.3s both;
+  }
+}
+
+/* Le niveau du vin au repos : servi. */
+.vg-niveau {
+  transform: translateY(78px);
+}
+
+@keyframes vg-balayer {
+  from {
+    transform: translateY(0);
   }
   to {
+    transform: translateY(330px);
+  }
+}
+
+@keyframes vg-glisser {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes vg-poser {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes vg-tirer {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vg-briller {
+  from {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #e9d6a0);
+  }
+}
+
+@keyframes vg-module {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+@keyframes vg-reflet {
+  from {
+    transform: skewX(-18deg) translateX(-160px);
+  }
+  to {
+    transform: skewX(-18deg) translateX(420px);
+  }
+}
+
+@keyframes vg-remplir {
+  from {
+    transform: translateY(170px);
+  }
+  to {
+    transform: translateY(78px);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* IV · Les fonctionnalités                                          */
+/* ---------------------------------------------------------------- */
+
+.fct-tete {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 1.5rem;
+  align-items: end;
+}
+
+.fct-tete h2 {
+  grid-column: 1 / 9;
+}
+
+.fct-tete .chapeau {
+  grid-column: 9 / -1;
+}
+
+.fct-chapitre {
+  margin-top: clamp(4.5rem, 8vw, 6.5rem);
+}
+
+.fct-chapitre-tete {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-bottom: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Le filet du chapitre : il se tire quand le chapitre arrive. */
+.fct-chapitre-fil {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--or), rgb(201 165 78 / 0.25) 45%, var(--filet));
+  transform-origin: left;
+}
+
+.fct-chapitre-tete h3 {
+  margin-top: 0.6rem;
+  font-family: var(--f-voix);
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--creme);
+}
+
+.fct-chapitre-tete p {
+  max-width: 30rem;
+  color: var(--faible);
+  font-size: 0.95rem;
+}
+
+.fct-grille {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: clamp(0.9rem, 1.6vw, 1.25rem);
+}
+
+.fct {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.6rem, 2.6vw, 2.25rem);
+  min-height: 100%;
+}
+
+.fct--majeure {
+  grid-column: span 7;
+  grid-row: span 2;
+}
+
+.fct--mineure {
+  grid-column: span 5;
+}
+
+.fct--demi {
+  grid-column: span 6;
+}
+
+.fct--droite {
+  grid-column: 6 / -1;
+}
+
+.fct-illu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -0.25rem -0.25rem 1.75rem;
+  color: var(--or);
+}
+
+.fct--majeure .fct-illu {
+  flex: 1;
+  min-height: 15rem;
+}
+
+.fct--mineure .fct-illu,
+.fct--demi .fct-illu {
+  min-height: 8.5rem;
+  justify-content: flex-start;
+}
+
+.fct-illu svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.fct-illu svg.fct-picto {
+  width: 5rem;
+  height: 5rem;
+}
+
+.fct--majeure .fct-illu svg {
+  max-width: 30rem;
+}
+
+.fct--mineure .fct-illu svg,
+.fct--demi .fct-illu svg {
+  max-height: 8.5rem;
+  width: auto;
+}
+
+.fct h4 {
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 1.9vw, 1.7rem);
+  line-height: 1.15;
+  color: var(--creme);
+  text-wrap: balance;
+}
+
+.fct p {
+  margin-top: 0.75rem;
+  font-size: 0.98rem;
+  line-height: 1.62;
+  color: var(--texte);
+  max-width: 34rem;
+  text-wrap: pretty;
+}
+
+.fct-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.4rem;
+}
+
+.fct-points li {
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--creme);
+  background: rgb(241 234 220 / 0.05);
+  border: 1px solid rgb(241 234 220 / 0.1);
+}
+
+/* Les langues : une illustration faite de mots. */
+.langues {
+  position: relative;
+  width: 100%;
+  height: 8.5rem;
+  font-family: var(--f-voix);
+  font-style: italic;
+  color: var(--creme);
+}
+
+.langues span {
+  position: absolute;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 1023px) {
+  .fct-tete h2,
+  .fct-tete .chapeau {
+    grid-column: 1 / -1;
+  }
+
+  .fct--majeure,
+  .fct--mineure,
+  .fct--demi,
+  .fct--droite {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .fct--majeure .fct-illu {
+    min-height: 12rem;
+  }
+}
+
+/* Les illustrations s'animent : à l'entrée au rythme du défilement, au
+   survol pour la carte imprimée, et deux battements seulement en continu
+   (les cases en alerte, le dernier point de la courbe), parce qu'ils
+   signalent quelque chose. */
+.langues span {
+  opacity: var(--o, 0.4);
+}
+
+.il-alerte-halo,
+.il-pouls {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.il-aiguille {
+  transform-origin: 110px 118px;
+}
+
+.il-etiquette {
+  transform-origin: 72px 30px;
+}
+
+.il-page-arriere,
+.il-page-avant {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.9s var(--ease);
+}
+
+.fct:hover .il-page-arriere {
+  transform: translate(22px, -10px) rotate(3deg);
+}
+
+.fct:hover .il-page-avant {
+  transform: translate(-12px, 4px) rotate(-2.5deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .il-alerte-halo,
+  .il-pouls {
+    animation: il-pouls 2.6s ease-in-out infinite;
+  }
+
+  .langues span {
+    animation: il-langue 10s ease-in-out infinite;
+    animation-delay: calc(var(--k) * 2s);
+  }
+
+  @supports (animation-timeline: view()) {
+    .il-qr,
+    .il-case {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: il-apparaitre linear both;
+      animation-timeline: view();
+      animation-range: entry calc(10% + var(--k) * 2.5%) cover calc(30% + var(--k) * 2.5%);
+    }
+
+    .il-vin {
+      transform-box: fill-box;
+      transform-origin: bottom;
+      animation: il-remplir linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 50%;
+    }
+
+    .il-etiquette {
+      animation: il-balancer linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 45%;
+    }
+
+    .il-arc,
+    .il-courbe {
+      stroke-dasharray: 1;
+      animation: il-tracer linear both;
+      animation-timeline: view();
+      animation-range: entry 25% cover 48%;
+    }
+
+    .il-aiguille {
+      animation: il-aiguille linear both;
+      animation-timeline: view();
+      animation-range: entry 25% cover 48%;
+    }
+
+    .il-aire {
+      animation: il-doux linear both;
+      animation-timeline: view();
+      animation-range: entry 35% cover 52%;
+    }
+
+    .il-tache {
+      animation: il-tache linear both;
+      animation-timeline: view();
+      animation-range: entry calc(25% + var(--k) * 8%) cover calc(38% + var(--k) * 8%);
+    }
+  }
+}
+
+@keyframes il-pouls {
+  50% {
+    transform: scale(1.4);
+    opacity: 0.04;
+  }
+}
+
+@keyframes il-langue {
+  0%,
+  26%,
+  100% {
+    opacity: var(--o, 0.4);
+  }
+  6%,
+  18% {
     opacity: 1;
   }
 }
 
-/* Les entrées du sommaire, décalées l'une après l'autre. */
-@keyframes monte {
+@keyframes il-apparaitre {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: scale(0.3);
+  }
+}
+
+@keyframes il-remplir {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes il-balancer {
+  from {
+    opacity: 0;
+    transform: rotate(-30deg);
+  }
+}
+
+@keyframes il-tracer {
+  from {
+    stroke-dashoffset: 1;
   }
   to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes il-aiguille {
+  from {
+    transform: rotate(-125deg);
+  }
+}
+
+@keyframes il-doux {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes il-tache {
+  from {
+    opacity: 0.2;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* V · Les bénéfices                                                 */
+/* ---------------------------------------------------------------- */
+
+.ben {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 3rem;
+}
+
+.ben-tete {
+  grid-column: 1 / 6;
+  align-self: start;
+  position: sticky;
+  top: 8rem;
+}
+
+.ben-tete .chapeau {
+  margin-top: 1.5rem;
+}
+
+.ben-tete .bouton {
+  margin-top: 2.25rem;
+}
+
+.ben-liste-cadre {
+  position: relative;
+  grid-column: 7 / -1;
+}
+
+/* Le fil de lecture : il descend jusqu'au bénéfice qu'on est en train de lire. */
+.ben-fil {
+  position: absolute;
+  left: 1.375rem;
+  top: 2.5rem;
+  bottom: 2.5rem;
+  width: 1px;
+  background: rgb(241 234 220 / 0.12);
+}
+
+.ben-fil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--or-pale), var(--or));
+  box-shadow: 0 0 12px rgb(217 190 116 / 0.55);
+  transform-origin: top;
+  transform: scaleY(var(--p, 0));
+}
+
+.ben-liste li {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  column-gap: 1.5rem;
+  padding: clamp(1.6rem, 3vw, 2.4rem) 0;
+}
+
+.ben-picto-cadre {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-top: 0.15rem;
+  border-radius: 50%;
+  background: var(--nuit-2);
+  border: 1px solid rgb(241 234 220 / 0.14);
+  transition:
+    border-color 0.6s,
+    box-shadow 0.6s;
+}
+
+.ben-picto {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--faible);
+  transition: color 0.6s;
+}
+
+.ben-liste h3 {
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+  line-height: 1.1;
+  color: rgb(241 234 220 / 0.32);
+  transition: color 0.6s;
+}
+
+.ben-liste p {
+  margin-top: 0.75rem;
+  max-width: 34rem;
+  opacity: 0.45;
+  transition: opacity 0.6s;
+}
+
+.ben-liste li[data-actif="oui"] h3 {
+  color: var(--creme);
+}
+
+.ben-liste li[data-actif="oui"] p {
+  opacity: 1;
+}
+
+.ben-liste li[data-actif="oui"] .ben-picto-cadre {
+  border-color: rgb(201 165 78 / 0.55);
+  box-shadow: 0 0 0 6px rgb(201 165 78 / 0.08), 0 0 34px rgb(217 190 116 / 0.35);
+}
+
+.ben-liste li[data-actif="oui"] .ben-picto {
+  color: var(--or-clair);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ben-liste h3 {
+    color: var(--creme);
+  }
+
+  .ben-liste p {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1023px) {
+  .ben-tete,
+  .ben-liste-cadre {
+    grid-column: 1 / -1;
+    position: static;
+  }
+
+  .ben-liste-cadre {
+    position: relative;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* L'origine                                                         */
+/* ---------------------------------------------------------------- */
+
+.origine {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.75rem clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+  padding: clamp(2.25rem, 5vw, 4.5rem);
+}
+
+.origine-texte {
+  font-family: var(--f-voix);
+  font-size: clamp(1.45rem, 2.5vw, 2.3rem);
+  line-height: 1.28;
+  letter-spacing: -0.008em;
+  color: var(--creme);
+  max-width: 38ch;
+  text-wrap: pretty;
+}
+
+.origine-signature {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 639px) {
+  .origine {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Les deux rubans du métier, derrière la carte. */
+.org {
+  overflow: clip;
+}
+
+.org-ruban {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.org-piste {
+  display: inline-flex;
+  width: max-content;
+}
+
+.org-mot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42em;
+  padding-right: 0.42em;
+  font-family: var(--f-voix);
+  font-style: italic;
+  font-size: clamp(3.4rem, 9vw, 8.5rem);
+  line-height: 1.15;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(201 165 78 / 0.4);
+}
+
+.org-mot--plein {
+  color: rgb(241 234 220 / 0.075);
+  -webkit-text-stroke: 0;
+}
+
+.org-losange {
+  display: inline-block;
+  width: 0.12em;
+  height: 0.12em;
+  background: var(--or);
+  opacity: 0.55;
+  transform: rotate(45deg);
+}
+
+.org-avant {
+  position: relative;
+  z-index: 1;
+  margin-block: clamp(-2rem, -2.6vw, -1rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .org-ruban--gauche .org-piste {
+    animation: defiler 80s linear infinite;
+  }
+
+  .org-ruban--droite .org-piste {
+    animation: defiler 90s linear infinite reverse;
+  }
+}
+
+@keyframes defiler {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* VI · Pour qui : une liste qu'on parcourt du doigt                 */
+/* ---------------------------------------------------------------- */
+
+.qui-tete {
+  max-width: 50rem;
+}
+
+.qui-liste {
+  position: relative;
+  margin-top: clamp(3rem, 5vw, 4rem);
+  border-top: 1px solid var(--filet-fort);
+}
+
+.qui-ligne {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  border-bottom: 1px solid var(--filet-fort);
+}
+
+.qui-ligne::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--or-pale), var(--or) 40%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s var(--ease);
+}
+
+.qui-ligne[data-actif="oui"]::after {
+  transform: scaleX(1);
+}
+
+.qui-titre button {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  min-height: 3.5rem;
+  text-align: left;
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.3vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: rgb(241 234 220 / 0.36);
+  transition:
+    color 0.5s,
+    transform 0.7s var(--ease);
+}
+
+.qui-ligne[data-actif="oui"] .qui-titre button {
+  color: var(--creme);
+  transform: translateX(0.6rem);
+}
+
+.qui-picto {
+  flex: none;
+  width: 2.2rem;
+  height: 2.2rem;
+  color: var(--faible);
+  transition: color 0.5s;
+}
+
+.qui-ligne[data-actif="oui"] .qui-picto {
+  color: var(--or);
+}
+
+.qui-detail {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.6s,
+    transform 0.7s var(--ease);
+}
+
+.qui-ligne[data-actif="oui"] .qui-detail {
+  opacity: 1;
+  transform: none;
+}
+
+.qui-detail .fct-points {
+  margin-top: 1rem;
+}
+
+/* Le médaillon de verre qui suit la main, avec l'emblème de la maison. */
+.qui-medaillon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(calc(var(--cx, 0px) + 1.75rem), calc(var(--cy, 0px) - 115%)) scale(0.6);
+  transition:
+    opacity 0.4s,
+    transform 0.55s cubic-bezier(0.2, 0.75, 0.15, 1);
+}
+
+.qui-medaillon[data-suivi="oui"] {
+  opacity: 1;
+  transform: translate(calc(var(--cx, 0px) + 1.75rem), calc(var(--cy, 0px) - 115%)) scale(1);
+}
+
+.qui-embleme {
+  grid-area: 1 / 1;
+  width: 2.6rem;
+  height: 2.6rem;
+  color: var(--or-clair);
+  opacity: 0;
+  transform: scale(0.7) rotate(-10deg);
+  transition:
+    opacity 0.4s,
+    transform 0.6s var(--ease);
+}
+
+.qui-embleme--actif {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none), (max-width: 1023px) {
+  .qui-medaillon {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .qui-ligne {
+    grid-template-columns: 1fr;
+    row-gap: 0.75rem;
+    padding: 1.5rem 0;
+  }
+
+  .qui-titre button,
+  .qui-ligne[data-actif="oui"] .qui-titre button {
+    color: var(--creme);
+    transform: none;
+  }
+
+  .qui-picto {
+    color: var(--or);
+  }
+
+  .qui-detail {
     opacity: 1;
     transform: none;
   }
+
+  .qui-ligne::after {
+    display: none;
+  }
 }
+
+/* ---------------------------------------------------------------- */
+/* VII · Les formules                                                */
+/* ---------------------------------------------------------------- */
+
+.formules-tete {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 1.5rem;
+  align-items: end;
+}
+
+.formules-tete h2,
+.formules-tete h1 {
+  grid-column: 1 / 8;
+}
+
+.formules-tete .chapeau {
+  grid-column: 8 / -1;
+}
+
+.formules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.9rem, 1.6vw, 1.25rem);
+  margin-top: clamp(3rem, 5vw, 4rem);
+  align-items: stretch;
+}
+
+.formule {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.75rem, 2.6vw, 2.25rem);
+}
+
+.formule--conseillee {
+  border-color: rgb(217 190 116 / 0.45);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 1px rgb(201 165 78 / 0.12),
+    0 50px 90px -50px rgb(201 165 78 / 0.45);
+}
+
+/* La formule conseillée est cerclée d'un or vivant, qui tourne lentement. */
+.formule-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--angle),
+    rgb(201 165 78 / 0.18),
+    rgb(244 226 170 / 0.95) 10%,
+    rgb(201 165 78 / 0.18) 22%,
+    rgb(201 165 78 / 0.18) 50%,
+    rgb(244 226 170 / 0.7) 60%,
+    rgb(201 165 78 / 0.18) 72%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .formule-aura {
+    animation: aura 8s linear infinite;
+  }
+}
+
+@keyframes aura {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.formule-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.formule-nom {
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--creme);
+}
+
+.formule-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #0a1020;
+  background: var(--or);
+}
+
+.formule-pourqui {
+  margin-top: 1rem;
+  color: var(--texte);
+  font-size: 0.98rem;
+}
+
+.formule-prix {
+  margin-top: 1.5rem;
+  padding: 1rem 0;
+  border-block: 1px solid var(--filet);
+}
+
+.formule-prix strong {
+  display: block;
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: 1.45rem;
+  color: var(--creme);
+}
+
+.formule-prix span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--faible);
+}
+
+.formule-liste {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1.5rem 0 2rem;
+  font-size: 0.95rem;
+}
+
+.formule-liste li {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  color: var(--texte);
+}
+
+.formule-liste li strong {
+  font-weight: 500;
+  color: var(--creme);
+}
+
+.formule-liste svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.22rem;
+  color: var(--or);
+}
+
+.formule-liste .formule-inclus {
+  grid-template-columns: 1fr;
+  color: var(--creme);
+  font-weight: 500;
+}
+
+.formule .bouton {
+  margin-top: auto;
+  width: 100%;
+}
+
+.formules-note {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+}
+
+@media (max-width: 1023px) {
+  .formules-tete h2,
+  .formules-tete h1,
+  .formules-tete .chapeau {
+    grid-column: 1 / -1;
+  }
+
+  .formules {
+    grid-template-columns: 1fr;
+    max-width: 34rem;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* VIII · Les questions                                              */
+/* ---------------------------------------------------------------- */
+
+.faq {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 2.5rem;
+}
+
+.faq-tete {
+  grid-column: 1 / 5;
+  align-self: start;
+  position: sticky;
+  top: 8rem;
+}
+
+.faq-contact {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: var(--rayon-m);
+}
+
+.faq-contact .bouton {
+  margin-top: 1.1rem;
+}
+
+/* La réponse se déplie au lieu d'apparaître d'un coup, là où le navigateur
+   sait animer une hauteur « auto ». */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq-liste details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.55s var(--ease),
+      content-visibility 0.55s allow-discrete;
+  }
+
+  .faq-liste details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* Le filet d'or sous la question ouverte. */
+.faq-liste details {
+  position: relative;
+}
+
+.faq-liste details::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--or), transparent 70%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s var(--ease);
+}
+
+.faq-liste details[open]::after {
+  transform: scaleX(1);
+}
+
+.faq-liste {
+  grid-column: 6 / -1;
+  border-top: 1px solid var(--filet-fort);
+}
+
+.faq-liste details {
+  border-bottom: 1px solid var(--filet-fort);
+}
+
+.faq-liste summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 4.5rem;
+  padding: 1.1rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--f-voix);
+  font-size: clamp(1.2rem, 1.6vw, 1.38rem);
+  line-height: 1.3;
+  color: var(--creme);
+  transition: color 0.25s;
+}
+
+.faq-liste summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-liste summary:hover {
+  color: var(--or-pale);
+}
+
+.faq-signe {
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--filet-fort);
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.faq-signe::before,
+.faq-signe::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.75rem;
+  height: 1.5px;
+  background: var(--or);
+  transform: translate(-50%, -50%);
+  transition: transform 0.4s var(--ease);
+}
+
+.faq-signe::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+details[open] .faq-signe {
+  border-color: rgb(201 165 78 / 0.5);
+  background: rgb(201 165 78 / 0.08);
+}
+
+details[open] .faq-signe::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.faq-reponse {
+  padding: 0 3.5rem 1.6rem 0;
+  max-width: 44rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  details[open] .faq-reponse {
+    animation: entree 0.6s var(--ease-lent);
+  }
+}
+
+@media (max-width: 1023px) {
+  .faq-tete,
+  .faq-liste {
+    grid-column: 1 / -1;
+    position: static;
+  }
+
+  .faq-reponse {
+    padding-right: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* IX · L'appel : la voûte                                           */
+/* ---------------------------------------------------------------- */
+
+.appel-arche {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 58rem);
+  margin-inline: auto;
+  padding: clamp(13rem, 30vw, 19rem) clamp(1.5rem, 6vw, 5rem) clamp(3.5rem, 7vw, 5.5rem);
+  text-align: center;
+}
+
+/* L'arche : un demi-cercle posé sur deux piédroits, découpé dans la nuit. */
+.appel-fenetre {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: 999px 999px 28px 28px;
+  background: radial-gradient(60% 55% at 50% 55%, rgb(143 45 70 / 0.5), var(--nuit));
+  box-shadow:
+    0 0 0 1px rgb(217 190 116 / 0.45),
+    0 0 0 10px rgb(10 16 32 / 0.9),
+    0 0 0 11px rgb(217 190 116 / 0.18),
+    0 60px 120px -40px rgb(143 45 70 / 0.55);
+}
+
+.appel-liquide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-lent);
+}
+
+.appel-liquide[data-pret="oui"] {
+  opacity: 1;
+}
+
+.appel-voile {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 48% at 50% 70%, rgb(10 16 32 / 0.78), rgb(10 16 32 / 0.4) 62%, transparent),
+    linear-gradient(180deg, transparent 40%, rgb(10 16 32 / 0.55));
+}
+
+/* Les arcs de la voûte autour de l'arche. */
+.appel-voute {
+  position: absolute;
+  z-index: -2;
+  left: 50%;
+  bottom: 0;
+  width: 175%;
+  transform: translateX(-50%);
+  color: var(--or);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.appel-contenu .t-l {
+  max-width: 14ch;
+  margin-inline: auto;
+  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  line-height: 1.02;
+}
+
+.appel-contenu .chapeau {
+  margin: 1.5rem auto 0;
+  color: rgb(241 234 220 / 0.82);
+}
+
+.appel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+}
+
+.appel-contenu .petit {
+  margin-top: 1.1rem;
+  color: rgb(241 234 220 / 0.6);
+}
+
+@media (max-width: 639px) {
+  .appel-arche {
+    padding-top: 9.5rem;
+  }
+
+  .appel-actions .bouton {
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Le pied                                                           */
+/* ---------------------------------------------------------------- */
+
+.pied {
+  position: relative;
+  padding: clamp(4rem, 7vw, 5.5rem) 0 calc(2.25rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--filet);
+  background: linear-gradient(180deg, rgb(7 11 22 / 0), rgb(7 11 22 / 0.7));
+}
+
+.pied-haut {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+
+.pied-marque p {
+  margin-top: 1.25rem;
+  max-width: 22rem;
+  font-family: var(--f-voix);
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--creme);
+}
+
+.pied h2 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--faible);
+  margin-bottom: 0.9rem;
+}
+
+.pied ul a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.95rem;
+  color: var(--texte);
+  transition: color 0.25s;
+}
+
+.pied ul a:hover {
+  color: var(--creme);
+}
+
+/* La signature : le nom, en très grand, qui s'efface vers le bas. */
+.pied-signature {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  color: var(--or);
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(180deg, #000 10%, transparent 92%);
+  mask-image: linear-gradient(180deg, #000 10%, transparent 92%);
+}
+
+.pied-signature svg {
+  width: 100%;
+  height: auto;
+}
+
+.pied-bas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--filet);
+  font-size: 0.85rem;
+  color: var(--faible);
+}
+
+@media (max-width: 1023px) {
+  .pied-haut {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pied-marque {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 639px) {
+  .pied-haut {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Pages intérieures                                                 */
+/* ---------------------------------------------------------------- */
+
+.page-tete {
+  padding-top: clamp(9rem, 16vh, 12rem);
+  padding-bottom: clamp(3rem, 6vw, 4.5rem);
+}
+
+.page-tete .chapeau {
+  margin-top: 1.5rem;
+}
+
+/* Le comparatif des formules */
+.comparatif {
+  margin-top: clamp(4rem, 7vw, 6rem);
+}
+
+.comparatif-defile {
+  overflow-x: auto;
+  border-radius: var(--rayon-l);
+}
+
+.comparatif table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.comparatif th,
+.comparatif td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--filet);
+  vertical-align: top;
+}
+
+.comparatif thead th {
+  position: sticky;
+  top: 0;
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--creme);
+  background: rgb(14 22 40 / 0.92);
+}
+
+.comparatif tbody th {
+  font-weight: 400;
+  color: var(--texte);
+  width: 40%;
+}
+
+.comparatif td {
+  color: var(--creme);
+}
+
+.comparatif .vide {
+  color: var(--faible);
+}
+
+.comparatif .chapitre-ligne th {
+  padding-top: 2rem;
+  font-family: var(--f-voix);
+  font-size: 1.3rem;
+  color: var(--or-clair);
+  border-bottom-color: var(--filet-fort);
+}
+
+.comparatif .chapitre-ligne span {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--f-texte);
+  font-size: 0.85rem;
+  color: var(--faible);
+}
+
+.comparatif td svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--or);
+}
+
+/* La démonstration */
+.demo {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+  row-gap: 3rem;
+  padding-bottom: clamp(5rem, 9vw, 7.5rem);
+}
+
+.demo-formulaire {
+  grid-column: 1 / 8;
+  padding: clamp(1.6rem, 3vw, 2.5rem);
+}
+
+.demo-cote {
+  grid-column: 9 / -1;
+}
+
+.demo-cote h2 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+}
+
+.demo-cote ol {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.demo-cote li {
+  padding-left: 1.25rem;
+  border-left: 1px solid rgb(201 165 78 / 0.4);
+}
+
+.demo-cote li span {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--faible);
+}
+
+.demo-cote h3 {
+  margin-top: 0.3rem;
+  font-family: var(--f-voix);
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: var(--creme);
+}
+
+.demo-cote li p {
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.demo-essai {
+  margin-top: 2.5rem;
+  padding: 1.6rem;
+}
+
+.demo-essai p {
+  font-size: 0.95rem;
+}
+
+.demo-essai .bouton {
+  margin-top: 1.1rem;
+}
+
+@media (max-width: 1023px) {
+  .demo-formulaire,
+  .demo-cote {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Le formulaire */
+.form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-grille {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 639px) {
+  .form-grille {
+    grid-template-columns: 1fr;
+  }
+}
+
+.champ {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.champ label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--creme);
+}
+
+.champ-requis {
+  margin-left: 0.25rem;
+  color: var(--or);
+}
+
+.champ-facultatif {
+  margin-left: 0.5rem;
+  font-weight: 400;
+  color: var(--faible);
+}
+
+.champ input,
+.champ textarea {
+  width: 100%;
+  min-height: 3.1rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--rayon-s);
+  border: 1px solid rgb(241 234 220 / 0.14);
+  background: rgb(7 11 22 / 0.45);
+  color: var(--creme);
+  font-size: 1rem;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.champ textarea {
+  min-height: 7.5rem;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.champ input:hover,
+.champ textarea:hover {
+  border-color: rgb(241 234 220 / 0.26);
+}
+
+.champ input:focus,
+.champ textarea:focus {
+  outline: none;
+  border-color: var(--or);
+  box-shadow: 0 0 0 3px rgb(201 165 78 / 0.18);
+}
+
+.champ input[aria-invalid="true"],
+.champ textarea[aria-invalid="true"] {
+  border-color: #e5806f;
+}
+
+.champ-aide {
+  font-size: 0.85rem;
+  color: var(--faible);
+}
+
+.champ-erreur,
+.form-erreur {
+  font-size: 0.88rem;
+  color: #f0a090;
+}
+
+.form-pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.form-pied .bouton[disabled] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.leurre {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.merci {
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.merci p + p {
+  margin-top: 1rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Mouvement réduit                                                  */
+/* ---------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
-/* ==============================================================
-   L'ACCUEIL — LA LUMIÈRE TRAVERSÉE
-
-   Le vin est le seul produit de bouche qu'on regarde À TRAVERS.
-   Le geste du métier, c'est le verre levé vers la fenêtre : il exige
-   de la clarté DERRIÈRE. D'où l'ivoire — non par mode, par physique.
-
-   Conséquence : la couleur est MÉRITÉE. Le bordeaux et la braise ne
-   sont pas des accents posés sur un fond, ce sont ce que la lumière
-   DEVIENT après avoir traversé le verre. Ils arrivent donc en
-   `multiply` — le mode de la matière translucide — et jamais en aplat.
-
-   Quatre des jetons de texte sont ceux de Vintoria Pro 2.0.2
-   (encre, ardoise, discret, lie). Le site adopte la palette du
-   produit : la marque et l'outil cessent d'être deux mondes.
-   ============================================================== */
-
-.lumiere {
-  /* La force du halo du jeu clair. Même valeur que `.jour`, et pour la
-     même raison : ces deux jeux posent leurs cartes sur du crème. */
-  --halo-force: 0.3;
-
-  /* --- Jetons sémantiques ---------------------------------------
-     MESURÉS SUR LE FOND RÉELLEMENT PEINT, et non sur le jeton de fond.
-     La sonde rend tout le texte transparent, photographie la page et
-     échantillonne les pixels sous chaque nœud : elle voit donc les
-     dégradés, le grain, et surtout les flaques en `multiply` qui
-     assombrissent le fond bien au-delà de ce qu'annonce `--color-fond`.
-
-     Elle a trouvé la ligne « pour qui » du héros à 4,46:1 sur un chêne
-     peint à #e3d9cc — sous le seuil AA, alors que le calcul sur jetons
-     seuls ne l'aurait pas signalée au bon endroit.
-
-     L'ardoise et le discret du produit sont donc ASSOMBRIS : ils gardent
-     leur teinte, mais tiennent 4,8:1 sur le point le plus sombre de tout
-     l'arc de lumière. La hiérarchie y gagne aussi — 4,8 % et 4,0 % de
-     séparation de luminance, contre 3,6 % auparavant.
-
-     contrastes · fond le plus sombre de l'arc → ivoire
-       fort 12,07 → 16,28 · texte 6,65 → 8,96 · faible 4,82 → 6,50
-       accent 7,63 → 10,29 · feuille 5,17 → 6,98                     */
-  --color-fond: #f7f4ed;
-  --color-surface: #fcfaf5; /* la craie de l'Atelier, telle quelle */
-  --color-fort: #1b1618; /* l'encre du produit, telle quelle */
-  --color-texte: #474245; /* l'ardoise du produit, assombrie */
-  --color-faible: #5d5659; /* le discret du produit, assombri */
-  --color-accent: #6b1d38; /* la lie du produit */
-  --color-filet: rgba(27, 22, 24, 0.1);
-  --color-filet-fort: rgba(27, 22, 24, 0.2);
-
-  /* --- La matière de la scène ----------------------------------
-     INTERDITS ÉTABLIS PAR LA MESURE : la sauge (2,9:1) et l'or
-     (1,7:1) ne portent JAMAIS de texte sur l'ivoire. Décor seul. */
-  --sol: #ede7da;
-  --chene: #c8a478; /* 4,5:1 — grands titres et matière */
-  --sauge: #8fa58a; /* décor seul */
-  --feuille: #3d5a42; /* 6,9:1 — le vert, en texte */
-  --lie: #6b1d38;
-  --braise: #9a3a22;
-  --or: #c9a94e; /* filets et marques seuls */
-
-  /* Repli : la navigation souligne en `--robe-lumiere`, que posaient les
-     robes de vin de la Salle. L'accueil n'en a plus — sans ceci, le trait
-     serait transparent et le survol muet. */
-  --robe-lumiere: var(--color-accent);
-
-  /* AUCUNE peinture ici : l'en-tête porte aussi cette classe pour hériter
-     des jetons, et un fond l'empêcherait d'être transparent en haut de
-     page. C'est l'enveloppe de l'accueil qui applique `bg-fond`. */
-}
-
-/*
-   LE CORPS DE PAGE SUIT L'ENVELOPPE.
-   `.lumiere` est posée sur une enveloppe, pas sur `body` — la mise en page
-   racine est un composant serveur, elle ne connaît pas la route. Le fond
-   d'ivoire ne couvrait donc QUE l'enveloppe : au rebond de défilement
-   (trackpad macOS, élastique iOS) l'encre réapparaissait au-dessus et
-   au-dessous de la page.
-   `:has()` règle cela sans JavaScript et sans clignotement au premier
-   rendu, là où une bascule de classe après coup en aurait produit un. */
-body:has(.lumiere) {
-  background-color: #f7f4ed;
-}
-
-/* ET LE CANEVAS AVEC. Corriger `body` seul ne traitait que la moitié du
-   défaut : au-delà des bords de la page, c'est `html` qu'on voit — dans le
-   rebond élastique du trackpad macOS comme de Safari iOS. Une bande d'encre
-   réapparaissait donc au-dessus et au-dessous de l'ivoire.
-   `color-scheme` va avec : laissé à `dark`, il faisait rendre l'ascenseur et
-   les contrôles du navigateur en sombre tout le long d'une page claire — un
-   rail presque noir sur toute la hauteur droite. */
-html:has(.lumiere) {
-  background: #f7f4ed;
-  color-scheme: light;
-}
-
-.lumiere ::selection {
-  background: rgba(107, 29, 56, 0.16);
-  color: var(--color-fort);
-}
-
-/* --- LA SCÈNE ------------------------------------------------
-   Un volume, pas un fond. Tout est en `absolute` dans un parent
-   `relative isolate` : `isolate` est indispensable, car les modes
-   de fusion doivent se résoudre DANS la scène et non contre la
-   page entière. */
-
-/* Le jet de lumière. Il descend à 11°, flou, blanc sur l'ivoire. */
-.jet {
-  position: absolute;
-  top: -24%;
-  height: 112%;
-  width: clamp(170px, 22vw, 380px);
-  transform: translateX(-50%) rotate(11deg);
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 253, 247, 0.78) 32%,
-    rgba(255, 250, 240, 0.36) 60%,
-    rgba(255, 248, 236, 0) 86%
-  );
-  filter: blur(44px);
-  pointer-events: none;
-}
-
-/* Là où le jet traverse le vin, il CHANGE DE COULEUR.
-   `multiply` parce que c'est exactement ce que fait un liquide
-   coloré traversé : il soustrait. Un aplat l'aurait posé par-dessus. */
-.jet-vin {
-  position: absolute;
-  height: 48%;
-  width: clamp(140px, 18vw, 310px);
-  transform: translateX(-50%) rotate(11deg);
-  background: linear-gradient(
-    to bottom,
-    rgba(107, 29, 56, 0) 0%,
-    rgba(107, 29, 56, 0.44) 24%,
-    rgba(154, 58, 34, 0.5) 62%,
-    rgba(154, 58, 34, 0.12) 100%
-  );
-  mix-blend-mode: multiply;
-  filter: blur(36px);
-  pointer-events: none;
-}
-
-/* La flaque caustique, au pied. Elle est DÉCALÉE du jet : la
-   lumière réfractée ne retombe jamais à l'aplomb de sa source,
-   et c'est ce décalage qui fait croire au verre absent. */
-.flaque {
-  position: absolute;
-  aspect-ratio: 2.5 / 1;
-  width: clamp(210px, 26vw, 450px);
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(154, 58, 34, 0.64) 0%,
-    rgba(107, 29, 56, 0.4) 34%,
-    rgba(107, 29, 56, 0) 68%
-  );
-  mix-blend-mode: multiply;
-  filter: blur(20px);
-  pointer-events: none;
-}
-
-/* Le cœur chaud du caustique. Pas de `screen` : sur un fond clair
-   il ne ferait rien. Un ambre quasi blanc, en fusion normale. */
-.flaque-coeur {
-  position: absolute;
-  aspect-ratio: 3 / 1;
-  width: clamp(96px, 11vw, 190px);
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(255, 247, 226, 0.96) 0%,
-    rgba(255, 238, 200, 0.46) 42%,
-    rgba(255, 238, 200, 0) 70%
-  );
-  filter: blur(10px);
-  pointer-events: none;
-}
-
-/* Le chêne. Il se devine : le fil est à 5 % au plus fort. */
-.sol {
-  position: absolute;
-  inset: auto 0 0 0;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(237, 231, 218, 0) 0%,
-    rgba(237, 231, 218, 0.8) 12%,
-    #e9e1d1 44%,
-    #ded3bf 100%
-  );
-}
-
-.sol::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    1deg,
-    rgba(138, 106, 69, 0.032) 0px,
-    rgba(138, 106, 69, 0) 3px,
-    rgba(138, 106, 69, 0) 13px,
-    rgba(138, 106, 69, 0.022) 16px,
-    rgba(138, 106, 69, 0) 24px
-  );
-}
-
-/* L'arête de la table : le seul trait franc de la scène, et donc
-   le repère qui donne sa profondeur à tout le reste. */
-.arete {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    rgba(138, 106, 69, 0) 0%,
-    rgba(138, 106, 69, 0.3) 22%,
-    rgba(138, 106, 69, 0.42) 54%,
-    rgba(138, 106, 69, 0) 100%
-  );
-  pointer-events: none;
-}
-
-/* Le grain. Il n'est pas là pour « faire photo » : sans lui, les
-   dégradés de la scène bandent visiblement sur un écran 8 bits. */
-.grain-clair::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.4;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.17'/%3E%3C/svg%3E");
-}
-
-/* --- L'OBJET POSÉ -------------------------------------------
-   Un écran produit n'est pas une capture encadrée : c'est un
-   objet sur une table. Donc un filet d'un demi-pixel, une ombre
-   portée réelle à deux étages, et aucun rayon généreux. */
-/*
-  L'OBJET POSÉ — le cadre de toute capture produit du site.
-
-  IL NE DÉCLARE PLUS SES PROPRES VALEURS. Il avait son rayon (10 px), son
-  filet (une opacité écrite à la main) et ses trois ombres, teintées de
-  bordeaux. C'était cohérent avec lui-même et avec rien d'autre : les
-  cartes du site portent 18 px de rayon, le filet du thème, et des ombres
-  brunes. Deux grammaires d'élévation sur une même page se voient.
-
-  IL EMPRUNTE DONC AU SYSTÈME, et garde sa place dans la hiérarchie : une
-  capture n'est pas une carte au repos, c'est un objet LEVÉ — on l'a posé
-  là, il projette. `.objet-leve` monte d'un cran, pour celles qui passent
-  devant une autre.
-*/
-.objet {
-  border: 1px solid var(--color-filet);
-  border-radius: var(--radius-touche);
-  background: var(--color-surface);
-  box-shadow: var(--ombre-levee);
-}
-
-.objet-leve {
-  box-shadow: var(--ombre-ouverte);
-}
-
-/* --- LA STROPHE ---------------------------------------------
-   Le titre est une strophe, pas un paragraphe : les retours sont
-   posés à la main. Sérif MAIGRE à grande taille — l'inverse du
-   sérif gras devenu réflexe. C'est fragile, et c'est le propos. */
-.strophe {
-  font-family: var(--font-voix);
-  font-weight: 300;
-  letter-spacing: -0.022em;
-  line-height: 1.02;
-  color: var(--color-fort);
-  text-wrap: balance;
-}
-
-.strophe em {
-  font-style: italic;
-  font-weight: 300;
-  color: var(--color-accent);
-}
-
-/* Le filet d'or : la seule place où l'or est permis. */
-.filet-or {
-  background: linear-gradient(
-    to right,
-    rgba(201, 169, 78, 0) 0%,
-    rgba(201, 169, 78, 0.55) 30%,
-    rgba(201, 169, 78, 0.55) 70%,
-    rgba(201, 169, 78, 0) 100%
-  );
-}
-
-/* --- BOUTONS EN LUMIÈRE ------------------------------------- */
-.lumiere .bouton-primaire {
-  background: var(--lie);
-  color: #fcfaf5;
-  border-color: transparent;
-}
-
-.lumiere .bouton-primaire:hover:not(:disabled) {
-  background: #571730;
-  color: #fcfaf5;
-}
-
-.lumiere .bouton-fantome {
-  color: var(--color-fort);
-  border-color: rgba(27, 22, 24, 0.22);
-}
-
-.lumiere .bouton-fantome:hover {
-  border-color: rgba(107, 29, 56, 0.5);
-  background: rgba(107, 29, 56, 0.045);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* La scène RESTE COMPOSÉE : on retire le mouvement, pas la lumière. */
-  .jet,
-  .jet-vin,
-  .flaque,
-  .flaque-coeur {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* ==============================================================
-   LA SAUGE — le vert, et son sens
-
-   Le vert n'est pas un aplat décoratif : c'est la lumière passée par
-   une feuille. Il arrive donc comme les autres couleurs de ce site —
-   en `multiply`, posé sur le fond, jamais à la place du fond.
-   ============================================================== */
-
-/* Le vin du verre à Bourgogne : dilué sous 640 px, où le bloc de texte
-   occupe presque toute la hauteur de la fenêtre et où la masse passe
-   derrière du texte courant. Mesuré sur le rendu, pas estimé. */
-@media (max-width: 640px) {
-  .lumiere {
-    --vb-densite: 0.46;
-  }
-}
-
-.voile-sauge {
-  position: absolute;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    rgba(109, 134, 104, 0.3) 0%,
-    rgba(143, 165, 138, 0.16) 42%,
-    rgba(143, 165, 138, 0) 72%
-  );
-  mix-blend-mode: multiply;
-  filter: blur(46px);
-}
-
-/* ==============================================================
-   MICRO-INTERACTIONS
-
-   Règle : chacune répond à un GESTE de l'utilisateur et dit ce que le
-   geste va produire. Aucune ne tourne toute seule.
-   ============================================================== */
-
-/* Le lien qui se souligne depuis la gauche — le trait part de là où le
-   regard est déjà, et file vers la suite. */
-.lien-vif {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  gap: 0.5rem;
-  color: var(--color-fort);
-  transition: color var(--duree-etat) var(--ease-film);
-}
-
-.lien-vif::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.55rem;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 420ms var(--ease-film);
-}
-
-.lien-vif:hover,
-.lien-vif:focus-visible {
-  color: var(--color-accent);
-}
-
-.lien-vif:hover::after,
-.lien-vif:focus-visible::after {
-  transform: scaleX(1);
-}
-
-/* L'objet qu'on peut prendre se soulève. Uniquement s'il est CLIQUABLE :
-   une carte qui bouge sans mener nulle part est un mensonge tactile. */
-.objet-pris {
-  transition:
-    transform 520ms var(--ease-film),
-    box-shadow 520ms var(--ease-film);
-}
-
-.objet-pris:hover,
-.objet-pris:focus-within {
-  transform: translateY(-4px);
-  box-shadow:
-    0 1px 1px rgba(27, 22, 24, 0.05),
-    0 20px 40px -14px rgba(27, 22, 24, 0.2),
-    0 64px 110px -44px rgba(107, 29, 56, 0.3);
-}
-
-/* Le bouton principal : la braise s'allume sous le doigt. */
-.lumiere .bouton-primaire {
-  transition:
-    background-color var(--duree-etat) var(--ease-film),
-    box-shadow var(--duree-etat) var(--ease-film),
-    transform var(--duree-tactile) var(--ease-film);
-  box-shadow: 0 10px 26px -14px rgba(107, 29, 56, 0.6);
-}
-
-.lumiere .bouton-primaire:hover:not(:disabled) {
-  box-shadow: 0 16px 34px -14px rgba(107, 29, 56, 0.72);
-}
-
-.lumiere .bouton-primaire:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: 0 6px 16px -12px rgba(107, 29, 56, 0.6);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lien-vif::after,
-  .objet-pris,
-  .lumiere .bouton-primaire {
-    transition: none !important;
-  }
-  .objet-pris:hover,
-  .objet-pris:focus-within {
-    transform: none !important;
-  }
-}
-
-/* ==============================================================
-   LE PIED, EN LUMIÈRE
-
-   Il vit dans la mise en page racine et sert les trois routes. Sur les
-   routes du soir il ne change pas d'un pixel : les jetons sémantiques
-   y valent exactement les jetons bruts qu'il employait avant
-   (fond=encre, fort=os, texte=cendre, faible=cendre-2).
-
-   `:has()` suffit ici, là où l'en-tête réclamait une classe explicite :
-   le pied est le DERNIER élément du document, donc l'enveloppe `.lumiere`
-   est déjà analysée quand il se peint. Aucun clignotement possible.
-   ============================================================== */
-
-body:has(.lumiere) footer {
-  --color-fond: #e9dcc4;
-  --color-surface: #efe4d0;
-  --color-fort: #1b1618;
-  --color-texte: #474245;
-  --color-faible: #5d5659;
-  --color-accent: #6b1d38;
-  --color-filet: rgba(27, 22, 24, 0.12);
-  --color-filet-fort: rgba(27, 22, 24, 0.22);
-  --robe-lumiere: #6b1d38;
-
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: linear-gradient(to bottom, #e9dcc4 0%, #e3d4b8 100%);
-}
-
-body:has(.lumiere) footer ::selection {
-  background: rgba(107, 29, 56, 0.16);
-  color: var(--color-fort);
-}
-
-/* La dernière lumière du jour : rasante, chaude, elle vient de la
-   gauche et s'éteint sans jamais devenir noire. */
-.lueur-pied {
-  display: none;
-}
-
-body:has(.lumiere) .lueur-pied {
-  display: block;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      120% 90% at 8% 0%,
-      rgba(255, 246, 226, 0.9) 0%,
-      rgba(255, 240, 208, 0.34) 36%,
-      rgba(255, 240, 208, 0) 68%
-    ),
-    radial-gradient(
-      70% 52% at 98% 104%,
-      rgba(154, 58, 34, 0.07) 0%,
-      rgba(107, 29, 56, 0) 60%
-    );
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LE RYTHME D'UN MOUVEMENT — la respiration verticale, en un seul endroit.
-
-   CHAQUE SECTION DÉCLARAIT LA SIENNE, et elles ne concordaient pas :
-   `pt-28 pb-32 sm:pt-36 sm:pb-40` ici, `pt-28 pb-36 sm:pt-36` là,
-   `py-36 sm:py-44` ailleurs. Soit, au palier `sm`, 144 px en haut pour
-   l'une et 112 pour sa voisine — une irrégularité qu'on ne nomme pas en
-   lisant mais qu'on sent, parce que l'œil mesure les blancs.
-
-   UNE SEULE RÈGLE, FLUIDE. Le `clamp` remplace les deux paliers : la
-   respiration suit la largeur au lieu de sauter à 640 px. Le bas est
-   toujours un cran plus large que le haut — c'est ce qui sépare deux
-   mouvements plutôt que de les coller.
-   ══════════════════════════════════════════════════════════════════ */
-.mouvement {
-  padding-top: clamp(4.75rem, 6.2vw, 6.75rem);
-  padding-bottom: clamp(5.25rem, 7vw, 7.5rem);
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LA SURFACE — le système de cartes, commun à tout le site.
-
-   UNE SEULE CLASSE, TROIS ÉTATS. Avant, chaque section composait ses
-   propres cartes : rayons différents, ombres différentes, aucun langage
-   d'interaction partagé. « .surface » donne le repos, la levée et
-   l'ouverture, et les sections n'ont plus qu'à dire ce qu'elles portent.
-
-   LA LUMIÈRE EST UNE VARIABLE, PAS UN DÉGRADÉ POSÉ. « --jour » va de 0
-   à 1 ; le halo la suit. Une carte au repos vaut 0 — aucune lueur. Elle
-   monte à 1 au survol, au focus, ou quand la section la désigne. Le halo
-   vit sur un pseudo-élément : il ne touche donc ni au fond de la carte,
-   ni à son contenu, et son opacité seule s'anime — jamais sa taille.
-   ══════════════════════════════════════════════════════════════════ */
-.surface {
-  --jour: 0;
-  position: relative;
-  isolation: isolate;
-  border-radius: var(--radius-carte);
-  border: 1px solid var(--color-filet);
-  background-color: var(--color-surface);
-  box-shadow: var(--ombre-posee);
-  /* LE TRANSFORM N'EST PAS DANS CETTE LISTE, ET C'EST VOLONTAIRE. Les
-     cartes sont des éléments Motion : Motion écrit `transform` en style
-     en ligne, et un style en ligne bat toujours une classe. Une règle
-     CSS qui prétendait déplacer la carte ne s'appliquait donc jamais —
-     elle était écrasée par un `transform: none` posé par la librairie.
-     Le déplacement appartient maintenant à Motion, seul ; le CSS garde
-     ce que Motion ne touche pas : la lumière, le filet et l'ombre. */
-  transition:
-    box-shadow var(--duree-etat) var(--ease-film),
-    border-color var(--duree-etat) var(--ease-film);
-}
-
-/*
-  LA LUEUR — la lumière SANS le cadre.
-
-  « .surface » apporte deux choses qui n'ont pas à voyager ensemble : un
-  cadre (rayon, filet, fond, élévation) et une lumière. Certaines
-  compositions ont déjà leur cadre — les trois formules de /tarifs sont des
-  cellules d'une même dalle, séparées par un filet d'un pixel ; leur donner
-  une seconde bordure en ferait des cartes dans une carte.
-
-  « .lueur » n'apporte donc que la lumière, et elle obéit aux mêmes
-  commandes : `--jour` de 0 à 1, `data-jour` pour l'allumer sans survol,
-  `.lueur-prise` pour qu'elle réponde au geste.
-*/
-
-/* LE HALO, posé au-dessus du fond et SOUS le contenu. Il part du haut à
-   gauche — la même lumière que la matière de la feuille, pour qu'une
-   carte et son fond ne s'éclairent pas de deux côtés opposés. */
-.lueur {
-  --jour: 0;
-  position: relative;
-  isolation: isolate;
-}
-.lueur-prise:hover,
-.lueur:focus-within,
-.lueur[data-jour="true"] {
-  --jour: 1;
-}
-
-.surface::before,
-.lueur::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: var(--jour);
-  transition: opacity var(--duree-etat) var(--ease-film);
-  /* TROIS ARRÊTS, PAS DEUX. Avec deux arrêts, le dégradé perdait presque
-     toute sa chaleur au premier tiers et ne laissait qu'un soupçon sur
-     la surface visible. L'arrêt intermédiaire tient un plateau le temps
-     que la lumière traverse la carte, puis la chute reprend. La forme
-     du halo est inchangée : même origine, même rayon, même nature. */
-  background: radial-gradient(
-    120% 90% at 18% 0%,
-    rgba(var(--halo-chaud), var(--halo-force)) 0%,
-    rgba(var(--halo-chaud), calc(var(--halo-force) * 0.46)) 36%,
-    transparent 70%
-  );
-}
-
-/*
-  LE CONTENU PASSE DEVANT LE HALO SANS AVOIR À LE DIRE — et sans qu'on
-  touche à sa position.
-
-  PREMIÈRE VERSION, FAUSSE : `.surface > * { position: relative }`, pour
-  que les enfants prennent un `z-index` et passent devant un halo posé à
-  zéro. Elle a tenu tant qu'aucune carte n'a eu d'enfant en absolu. Dès
-  qu'une en a eu un — l'étiquette « Conseillée » de /tarifs, posée en haut
-  à droite —, la règle l'a repositionné en relatif : l'étiquette est
-  retombée dans le flux et s'est écrite par-dessus le titre de la formule.
-  Une classe de lumière n'a aucune raison de déplacer quoi que ce soit.
-
-  LE HALO DESCEND DONC SOUS LE CONTENU AU LIEU DE LE POUSSER DEVANT.
-  `z-index: -1` le peint après le fond de la carte et avant tout ce qu'elle
-  contient ; `isolation: isolate` garantit qu'il ne descend pas plus bas que
-  la carte elle-même. Aucun enfant n'est touché, et les positions déclarées
-  par les composants sont respectées.
-*/
-
-/* CE QUI SE TOUCHE SE LÈVE — et seulement ce qui mène quelque part.
-   Une carte qui bouge sans être cliquable est un mensonge tactile ;
-   « .surface-prise » est donc la marque de l'interactivité, pas une
-   décoration. Le focus déclenche exactement la même chose que le
-   survol : au clavier, on voit ce que la souris voit. */
-.surface-prise {
-  cursor: pointer;
-}
-.surface-prise:hover,
-.surface-prise:focus-visible,
-.surface-prise:focus-within {
-  --jour: 1;
-  border-color: var(--color-filet-fort);
-  box-shadow: var(--ombre-levee);
-}
-
-/* L'ÉTAT OUVERT — plus haut, plus éclairé, et il le reste. */
-.surface[data-ouverte="true"] {
-  --jour: 1;
-  border-color: var(--color-filet-fort);
-  box-shadow: var(--ombre-ouverte);
-}
-
-/* LA SECTION PEUT DÉSIGNER UNE CARTE à l'entrée dans le champ, sans
-   survol : « data-jour » allume le halo seul, sans lever la carte. */
-.surface[data-jour="true"] {
-  --jour: 1;
-}
-
-/* Le mouvement réduit garde les états — ils PORTENT l'information —
-   mais supprime le déplacement, qui n'en porte aucune. */
-/* Le mouvement réduit coupe les durées. Il n'a plus de déplacement à
-   annuler ici : la levée appartient à Motion, qui lit la préférence du
-   système par `useReducedMotion()` et ne la joue pas. */
-@media (prefers-reduced-motion: reduce) {
-  .surface,
-  .surface::before,
-  .lueur::before {
-    transition-duration: 1ms;
+    transition-duration: 0.01ms !important;
   }
 }

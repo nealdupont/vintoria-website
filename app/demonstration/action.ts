@@ -88,7 +88,7 @@ export async function demanderDemonstration(
     v ? `<tr><td style="padding:4px 16px 4px 0;color:#837d73">${etiquette}</td><td style="padding:4px 0"><strong>${echapperHtml(v)}</strong></td></tr>` : "";
 
   const resultat = await ecrireAuContact({
-    sujet: `Démonstration — ${valeurs.etablissement}`,
+    sujet: `Démonstration · ${valeurs.etablissement}`,
     repondreA: valeurs.courriel,
     html: `
       <div style="font-family:system-ui,sans-serif;color:#0b0a0c;line-height:1.6">
