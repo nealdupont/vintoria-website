@@ -43,12 +43,12 @@ export function Origine() {
               L’origine de Vintoria
             </h2>
             <blockquote className="origine-texte">
-              Vintoria est né en salle. Il a été conçu par un sommelier passé
-              par des maisons étoilées, en Europe et à New York, pour donner à
-              chaque restaurant ce qu’il faisait à chaque table.
+              Pensé par un sommelier passé par des maisons étoilées, Vintoria
+              réunit tout ce que le vin demande à un restaurant : la cave, la
+              carte, les commandes et le conseil à table.
             </blockquote>
             <figcaption className="petit origine-signature">
-              Le geste du sommelier, mis à la portée de toute la salle.
+              Le vin, de la cave à la table.
             </figcaption>
           </div>
         </figure>
